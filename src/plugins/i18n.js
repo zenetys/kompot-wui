@@ -91,6 +91,7 @@ const messages = {
         ackLabel: "Ack",
         noTrackLabel: "Not tracked",
         noAckLabel: "Not ack",
+        openGraphLabel: "Open graph",
     },
     'fr': {
 
@@ -182,6 +183,7 @@ const messages = {
         ackLabel: "Acquitté",
         noTrackLabel: "Non tracké",
         noAckLabel: "Non acquitté",
+        openGraphLabel: "Ouvrir le graphe",
     }
 };
 

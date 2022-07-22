@@ -92,6 +92,12 @@
                     <span :title="displayRowItem(item, h.value, index)" :class="cellClass(item, h.value, index)"> <v-icon v-if="h.value == 'name'" class="pb-1" size="13" color="black"> {{getIcon(item['info.device_type'])}} </v-icon> {{displayRowItem(item, h.value, index)}} </span>
                     <span v-if="h.value=='state-flag'">
                         <v-icon size="13" :color="setStatusIconColor(item)" :title="$t('stateFlag')">mdi-circle</v-icon>
+                        <v-icon
+                            @click.stop="onClickGraphIcon(item)"
+                            :title="$t('openGraphLabel')"
+                            size="13"
+                            class="openGraphIcon"
+                        >mdi-chart-areaspline-variant</v-icon>
                         <v-icon size="13" :title="$t('recentChange')" v-if="item.auto_track===true">mdi-alert-box-outline</v-icon><v-icon v-else></v-icon>
                         <v-icon size="13" :title="$t('trackLabel')" v-if="item.track===true">mdi-eye</v-icon><v-icon v-else></v-icon>
                         <v-icon size="13" :title="$t('passiveEnabled')" v-if="item.checks_enabled===false">mdi-parking</v-icon><v-icon v-else></v-icon>
@@ -168,7 +174,10 @@
     .v-data-table tbody tr:hover:not(.v-data-table__expanded__content) {
         -webkit-filter:  grayscale(10%) brightness(95%);
     }
-    
+
+    .v-icon.openGraphIcon { margin-left: 1px; }
+    .v-icon.openGraphIcon::after { background-color: transparent; } /* no round background on active */
+    .v-icon.openGraphIcon:active { color: #63B5F7; }
 
 </style>
 
@@ -843,8 +852,19 @@ export default {
                     document.querySelector('#go-to-top').style.display = "none";
                 }
             });
-        }
+        },
+        onClickGraphIcon(item) {
+            /* this should be in config.json but some refactoring is needed! */
+            const GRAPH_URL = '/monitoring-graph?device=%device%&indicator=%indicator%';
+            const GRAPH_DEVICE_INDICATOR = 'hostcheck';
+            const GRAPH_POPUP_OPTIONS = 'directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=500';
 
+            const indicator = item.description ?? GRAPH_DEVICE_INDICATOR;
+            const name = `${item.name}:${indicator}:graph`;
+            const url = GRAPH_URL.replace('%device%', encodeURIComponent(item.name))
+                                 .replace('%indicator%', encodeURIComponent(indicator));
+            window.open(url, name, GRAPH_POPUP_OPTIONS);
+        },
     },
     directives: {
         'sortable-table': {
