@@ -6,7 +6,7 @@
 
 <script>
 export default {
-    name: 'Time',
+    name: 'Clock',
     data() {
         return {
             time: '',

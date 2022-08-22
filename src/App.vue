@@ -21,7 +21,7 @@
             <div v-if="!$vuetify.breakpoint.smAndDown">
                 <Cartouche />
             </div>
-            <Time />
+            <Clock />
 
             <template v-if="$vuetify.breakpoint.smAndDown">
                 <div class="text-center ml-1">
@@ -118,7 +118,7 @@
 <script>
 import { setDefaultUserConfig } from './plugins/user-session-config';
 import vuetify from '../src/plugins/vuetify';
-import Time from '../src/components/Time';
+import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
@@ -128,7 +128,7 @@ export default {
     vuetify: vuetify,
 
     components: {
-        Time,
+        Clock,
         Cartouche,
     },
     data() {
