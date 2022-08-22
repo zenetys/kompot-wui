@@ -6,8 +6,8 @@ var iconTab = [
     { type: 'SW-Cisco', icon: 'mdi-access-point-network' },
     { type: 'ALOHA', icon: 'mdi-server' },
     { type: 'BARRACUDA', icon: 'mdi-barn' },
-    { type: 'OlfeoBox', icon: 'mdi-laptop-mac' }
-]
+    { type: 'OlfeoBox', icon: 'mdi-laptop-mac' },
+];
 
 export function getIcon(type) {
     var found = '';
@@ -16,7 +16,8 @@ export function getIcon(type) {
             found = iconTab[i].icon;
         }
     }
-    if (found)
+    if (found) {
         return found;
+    }
     return iconTab[0].icon;
 }

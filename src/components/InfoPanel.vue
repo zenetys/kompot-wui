@@ -1,94 +1,114 @@
 <template>
-    <div class="info-panel" style="z-index:30;" v-if="elements.length==1">
-        <v-card outlined :height="panelInfoHeight" style="overflow:hidden;" class="info-panel-card px-1">
-
+    <div v-if="elements.length==1" class="info-panel" style="z-index:30;">
+        <v-card
+            outlined :height="panelInfoHeight" style="overflow:hidden;"
+            class="info-panel-card px-1">
             <!-- Icon and device name -->
             <div class="pl-1 elevation-2" style="display:grid;grid-template-columns: 30% 70%;margin-bottom:10px;z-index: 30;background-color: #ffffff;">
-                <v-btn icon class="ml-3" style="position:absolute;right:0;top:0;z-index:32;" @click="setInfoEvent()">
-                    <v-icon size="17">mdi-close-circle</v-icon>
+                <v-btn
+                    icon class="ml-3" style="position:absolute;right:0;top:0;z-index:32;"
+                    @click="setInfoEvent()">
+                    <v-icon size="17">
+                        mdi-close-circle
+                    </v-icon>
                 </v-btn>
                 <div style="margin-top: 5px;">
-                    <v-icon :color="getColor(elements[0])" size="70"> {{ getElementIcon(elements[0]["info.device_type"]) }} </v-icon>
+                    <v-icon :color="getColor(elements[0])" size="70">
+                        {{ getElementIcon(elements[0]["info.device_type"]) }}
+                    </v-icon>
                 </div>
                 <div class="three-dots">
-                    <span style="font-size:30px;" :title="elements[0].name.split('.')[0]"> {{ elements[0].name.split('.')[0]  }} </span>
+                    <span style="font-size:30px;" :title="elements[0].name.split('.')[0]"> {{ elements[0].name.split('.')[0] }} </span>
                     <!-- <p style="margin-bottom: 0px;"> <v-chip x-small label> {{elements[0]["device_ip"]}} </v-chip> </p>  -->
-                    <p style="margin-bottom: 0px;"> <v-chip x-small label> {{elements[0]["_SITE"]}} </v-chip> </p>
+                    <p style="margin-bottom: 0px;">
+                        <v-chip x-small label>
+                            {{ elements[0]["_SITE"] }}
+                        </v-chip>
+                    </p>
                 </div>
-
             </div>
 
 
             <!-- Other information -->
             <div>
-                <v-divider></v-divider>
+                <v-divider />
                 <div>
                     <table>
                         <tbody>
                             <tr>
-                                <td> <v-chip x-small label>Output</v-chip> </td>
-                                <td>  <div class="text-caption three-dots" style="width:300px;" :title="elements[0]['plugin_output']">{{elements[0]["plugin_output"]}}</div> </td>
+                                <td>
+                                    <v-chip x-small label>
+                                        Output
+                                    </v-chip>
+                                </td>
+                                <td>
+                                    <div class="text-caption three-dots" style="width:300px;" :title="elements[0]['plugin_output']">
+                                        {{ elements[0]["plugin_output"] }}
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
-                                <td> <v-chip x-small label>Sla</v-chip> </td>
-                                <td> <div class="text-caption three-dots" style="width:300px;"> {{elements[0]["info.sla"]}} </div> </td>
+                                <td>
+                                    <v-chip x-small label>
+                                        Sla
+                                    </v-chip>
+                                </td>
+                                <td>
+                                    <div class="text-caption three-dots" style="width:300px;">
+                                        {{ elements[0]["info.sla"] }}
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
-                                <td> <v-chip x-small label>Email</v-chip> </td>
-                                <td> <div class="text-caption three-dots" style="width:300px;"> {{elements[0]["info.contact_email"]}} </div> </td>
+                                <td>
+                                    <v-chip x-small label>
+                                        Email
+                                    </v-chip>
+                                </td>
+                                <td>
+                                    <div class="text-caption three-dots" style="width:300px;">
+                                        {{ elements[0]["info.contact_email"] }}
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
-                                <td> <v-chip x-small label>Phone</v-chip> </td>
-                                <td> <div class="text-caption three-dots" style="width:300px;"> {{elements[0]["info.contact_phone"]}} </div> </td>
+                                <td>
+                                    <v-chip x-small label>
+                                        Phone
+                                    </v-chip>
+                                </td>
+                                <td>
+                                    <div class="text-caption three-dots" style="width:300px;">
+                                        {{ elements[0]["info.contact_phone"] }}
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <v-divider></v-divider>
+            <v-divider />
 
             <!-- Indicator information -->
             <div style="overflow-y:scroll;height:250px;">
-
                 <v-alert
-                    outlined
-                    v-for="item in this.data" :key="item._id"
+                    v-for="item in data"
+                    :key="item._id" outlined
                     :color="getColor(item)"
                     :if="item.indicator!=null"
                     class="elevation-1 mb-1 pa-2"
                     tile
-                    text
-                    >
+                    text>
                     <div class="title three-dots">
                         <!-- indicator -->
-                        {{item.display_name}}
+                        {{ item.display_name }} 
                     </div>
-                    <span class="" :title="item.plugin_output"> {{item.plugin_output}}  </span>
-
+                    <span class="" :title="item.plugin_output"> {{ item.plugin_output }}  </span>
                 </v-alert>
-
             </div>
-
         </v-card>
     </div>
 </template>
-
-<style lang="scss">
-    .info-panel::-webkit-scrollbar {
-        z-index: -200;
-    }
-    .v-alert__content {
-        width: 300px;
-    }
-    .three-dots {
-        width: 200px;
-    }
-    .v-alert__content, .three-dots {
-        white-space: nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-    }
-</style>
 
 <script>
 
@@ -102,6 +122,7 @@ export default {
     props: {
         elements: {
             type: Array,
+            required: true
         }
     },
     data() {
@@ -132,6 +153,16 @@ export default {
                 this.getDeviceData(queryurl.HOST_DETAILS + this.elements[0].name );
             }
         }
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowHeight);
+            this.getWindowHeight();
+        });
+    },
+
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowHeight);
     },
     methods: {
         setInfoEvent() {
@@ -184,30 +215,34 @@ export default {
                 },
                 responseType: 'json'
             })
-            .then(response => {
-                for (const [key, value] of Object.entries(response.data.data.servicelist[this.elements[0].name])) {
-                    var data = { name: key };
-                    this.data.push(Object.assign(value, data));
-                }
-            });
+                .then(response => {
+                    for (const [key, value] of Object.entries(response.data.data.servicelist[this.elements[0].name])) {
+                        var data = { name: key };
+                        this.data.push(Object.assign(value, data));
+                    }
+                });
         },
         // function to get the window height minus the filter bar height
         getWindowHeight() {
             this.panelInfoHeight = window.innerHeight - this.$parent.$children[0].$el.clientHeight;
         },
-    },
-    mounted() {
-
-        this.$nextTick(function() {
-            window.addEventListener('resize', this.getWindowHeight);
-            this.getWindowHeight();
-        });
-
-
-    },
-
-    beforeDestroy() {
-        window.removeEventListener('resize', this.getWindowHeight);
     }
 }
 </script>
+
+<style lang="scss">
+    .info-panel::-webkit-scrollbar {
+        z-index: -200;
+    }
+    .v-alert__content {
+        width: 300px;
+    }
+    .three-dots {
+        width: 200px;
+    }
+    .v-alert__content, .three-dots {
+        white-space: nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+</style>

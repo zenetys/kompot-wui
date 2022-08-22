@@ -5,7 +5,6 @@ export default function getTable(table) {
     resizableGrid(table);
 }
 
-
 // export default function startResize(){
 //     var tables = document.getElementsByTagName('table');
 //     for (var i=0; i<tables.length;i++){
@@ -15,15 +14,14 @@ export default function getTable(table) {
 
 function resizableGrid(table) {
     var row = table.getElementsByTagName('tr')[0],
-    cols = row ? row.children : undefined;
+        cols = row ? row.children : undefined;
     if (!cols) return;
 
-    if (cols[0].getAttribute('aria-label')=='') {
+    if (cols[0].getAttribute('aria-label') == '') {
         cols[0].style.width = '1%';
     }
 
-
-    for (var i=0;i<cols.length;i++){
+    for (var i = 0; i < cols.length; i++) {
         // var div = this.createDiv(table.offsetHeight);
         var div = createDiv(32);
         cols[i].appendChild(div);
@@ -32,10 +30,10 @@ function resizableGrid(table) {
     }
 }
 
-function createDiv(height){
-        height;
-        var div = document.createDocumentFragment('');
-        return div;
+function createDiv(height) {
+    height;
+    var div = document.createDocumentFragment('');
+    return div;
 }
 
 /* eslint-disable no-unused-vars */
@@ -61,16 +59,16 @@ var headerFromStorage = JSON.parse(localStorage.getItem('headers'));
 var headerToResize = null;
 var nextHeaderToResize = null;
 
-function setListeners(div){
-    var pageX,curCol,nxtCol,curColWidth,nxtColWidth;
+function setListeners(div) {
+    var pageX, curCol, nxtCol, curColWidth, nxtColWidth;
 
-    div.addEventListener('click', function(e) {
+    div.addEventListener('click', function (e) {
         e.stopPropagation();
-    })
+    });
 
-    div.addEventListener('mouseover', function(e) {
+    div.addEventListener('mouseover', function (e) {
         e.stopPropagation();
-    })
+    });
 
     div.addEventListener('mousedown', function (e) {
         e.stopPropagation();
@@ -82,7 +80,7 @@ function setListeners(div){
         var columnName = curCol.getAttribute('aria-label').split(':')[0];
 
         // identify the column in the header array
-        headerToResize = headerFromStorage.filter( curr => {
+        headerToResize = headerFromStorage.filter((curr) => {
             return curr.value == columnName;
         });
 
@@ -91,36 +89,32 @@ function setListeners(div){
         // get the current column name
         var nextColumnName = nxtCol.getAttribute('aria-label').split(':')[0];
         // identify the column in the header array
-        nextHeaderToResize = headerFromStorage.filter( nextCurr => {
+        nextHeaderToResize = headerFromStorage.filter((nextCurr) => {
             return nextCurr.value == nextColumnName;
         });
 
         // page abciss from the point the mouse down
-        pageX = Math.floor((e.pageX / tableWidth)*100)  ;
+        pageX = Math.floor((e.pageX / tableWidth) * 100);
 
-        curColWidth = Math.floor( ((curCol.offsetWidth/tableWidth)*100) ) ;
+        curColWidth = Math.floor((curCol.offsetWidth / tableWidth) * 100);
 
-        if (nxtCol)
-            nxtColWidth = Math.floor( ((nxtCol.offsetWidth/tableWidth)*100) );
-
+        if (nxtCol) nxtColWidth = Math.floor((nxtCol.offsetWidth / tableWidth) * 100);
     });
 
     document.addEventListener('mousemove', function (e) {
         e.stopPropagation();
 
         if (curCol) {
-            var diffX = Math.floor((e.pageX/tableWidth)*100) - pageX;
+            var diffX = Math.floor((e.pageX / tableWidth) * 100) - pageX;
 
-            if (nxtCol)
-                nxtCol.style.width = (nxtColWidth - diffX)+'%';
+            if (nxtCol) nxtCol.style.width = nxtColWidth - diffX + '%';
 
-            curCol.style.width = (curColWidth + diffX)+'%';
+            curCol.style.width = curColWidth + diffX + '%';
 
-            headerToResize[0].width = (curColWidth + diffX)+'%';
-            nextHeaderToResize[0].width = (nxtColWidth - diffX)+'%';
+            headerToResize[0].width = curColWidth + diffX + '%';
+            nextHeaderToResize[0].width = nxtColWidth - diffX + '%';
 
-            localStorage.setItem('headers',  JSON.stringify( headerFromStorage ));
-
+            localStorage.setItem('headers', JSON.stringify(headerFromStorage));
         }
     });
 

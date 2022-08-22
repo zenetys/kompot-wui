@@ -2,18 +2,11 @@
     <div>
         <v-row>
             <v-col cols="12">
-                <iframe class="frame" :src="this.getDrawUrl()" frameborder="0"></iframe>
+                <iframe class="frame" :src="getDrawUrl()" frameborder="0" />
             </v-col>
         </v-row>
     </div>
 </template>
-
-<style lang="scss">
-    .frame {
-        width:100%;
-        height:92vh;
-    }
-</style>
 
 <script>
 export default {
@@ -21,12 +14,20 @@ export default {
     props: {
         url: {
             type: String,
+            required: true,
         },
     },
     methods: {
         getDrawUrl() {
             return this.$route.fullPath.split('/drawio/')[1];
-        }
-    }
-}
+        },
+    },
+};
 </script>
+
+<style lang="scss">
+.frame {
+    width: 100%;
+    height: 92vh;
+}
+</style>

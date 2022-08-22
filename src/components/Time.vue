@@ -1,6 +1,6 @@
 <template>
     <div :class="($vuetify.breakpoint.xs) ? 'text-caption' : 'text-breakpoint-subtitle-1'">
-        {{this.date}} ~ {{this.time}}
+        {{ date }} ~ {{ time }}
     </div>
 </template>
 
@@ -13,6 +13,9 @@ export default {
             date: '',
         }
     },
+    created() {
+        setInterval(this.getTime, 1000);
+    },
     methods: {
         getTime() {
             const date = new Date();
@@ -22,9 +25,6 @@ export default {
         addZero(format) {
             return ("0" + format).slice(-2);
         }
-    },
-    created() {
-        setInterval(this.getTime, 1000);
     },
 }
 </script>
