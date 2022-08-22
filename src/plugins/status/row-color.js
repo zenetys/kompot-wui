@@ -21,6 +21,6 @@ function nagiosRowColor(item) {
     if (item.status == 16) return 'red lighten-3'; // red light
 }
 
-export function getRowColor(type_api, item) {
-    return apis[type_api](item);
+export function getRowColor(apiType, item) {
+    return apis[apiType](item);
 }

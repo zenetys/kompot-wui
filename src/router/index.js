@@ -21,7 +21,7 @@ const routes = [
         props: (route) => ({
             level: route.query.level,
             filter: route.query.filter,
-            type_api: 'nagios',
+            apiType: 'nagios',
         }),
     },
     {

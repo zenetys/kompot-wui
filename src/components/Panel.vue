@@ -178,14 +178,14 @@ export default {
         },
     },
     props: {
-        type_api: {
+        apiType: {
             type: String,
             required: true,
         },
     },
     data() {
         return {
-            headers: getHeader(this.$props.type_api),
+            headers: getHeader(this.$props.apiType),
             selected: [],
             openInInfo: [],
             current: [],
@@ -442,17 +442,17 @@ export default {
         },
         // return state cell color background
         getRowBackgroundClass(item) {
-            return getRowColor(this.$props.type_api, item);
+            return getRowColor(this.$props.apiType, item);
         },
         getIcon,
         // return state color for statusIconColor
         setStatusIconColor(item) {
-            return getCellColor(this.$props.type_api, item);
+            return getCellColor(this.$props.apiType, item);
         },
         // return row backround color
         displayRowItem(item, attr, index) {
             if (typeof this.headers[index].render == 'function') {
-                return this.headers[index].render(item[attr], item, this.$props.type_api);
+                return this.headers[index].render(item[attr], item, this.$props.apiType);
             } else if (this.headers[index].render == 'state-ext') {
                 return '';
             } else {
@@ -465,7 +465,7 @@ export default {
         // return cell background
         cellClass(item, attr, index) {
             if (typeof this.headers[index].shape == 'function') {
-                return this.headers[index].shape(this.$props.type_api, item);
+                return this.headers[index].shape(this.$props.apiType, item);
             }
             var returnClass = 'cell-' + this.headers[index].value;
             return returnClass.replace('.', '-');

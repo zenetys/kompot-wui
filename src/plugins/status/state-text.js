@@ -24,6 +24,6 @@ function nagiosStateText(status, item) {
     if (status == 16) return i18n.t('serviceCritical');
 }
 
-export function getStateText(status, item, type_api) {
-    return apis[type_api](status, item);
+export function getStateText(status, item, apiType) {
+    return apis[apiType](status, item);
 }

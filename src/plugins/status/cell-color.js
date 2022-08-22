@@ -19,6 +19,6 @@ function nagiosCellColor(item) {
     if (item.status == 16) return 'red darken-1'; // red dark
 }
 
-export function getCellColor(type_api, item) {
-    return apis[type_api](item);
+export function getCellColor(apiType, item) {
+    return apis[apiType](item);
 }

@@ -172,7 +172,7 @@ export default {
             return getIcon(type);
         },
         getColor(item) {
-            return getCellColor(this.$typeApi, item);
+            return getCellColor(this.$apiType, item);
         },
         getRowStateColor(item) {
             if (item.state==0 && (item.indicator=='' || item.indicator!=''))
