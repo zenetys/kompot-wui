@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import Panel from '../components/Panel';
 import Drawio from '../components/DrawIo';
 import Graph from '../components/Graph';
+import Config from '/public/static/config.json';
 
 Vue.use(VueRouter);
 
@@ -18,11 +19,9 @@ const routes = [
         path: '/panel',
         name: 'Bac à état',
         component: Panel,
-        props: (route) => ({
-            level: route.query.level,
-            filter: route.query.filter,
-            apiType: 'nagios',
-        }),
+        props: {
+            apiType: Config.apiType
+        },
     },
     {
         path: '/drawio/*',
