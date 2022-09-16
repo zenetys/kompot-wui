@@ -48,33 +48,23 @@
                     </v-row>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-list-item
-                    v-for="header in orderedHeaders"
-                    :key="header.value"
-                    class="__column-menu"
-                >
+                <v-list-item v-for="header in orderedHeaders" :key="header.value" class="__column-menu">
                     <v-row>
                         <v-col cols="5" align-self="center">
                             {{ header.text }}
                         </v-col>
                         <v-col cols="2" class="__column-menu--visible-switch">
                             <v-switch
-                                v-model="header.visible"
+                                v-model="header.show"
                                 dense
                                 hide-details
-                                @change="
-                                    StorageConfigManager.updateStorageColumnOptions(
-                                        header,
-                                        configId,
-                                        'visible'
-                                    )
-                                "
+                                @change="StorageConfigManager.updateStorageColumnOptions(header, configId, 'show')"
                             ></v-switch>
                         </v-col>
                         <v-col cols="2" class="__column-menu--width-field">
                             <v-text-field
                                 v-model="header.width"
-                                :disabled="!header.visible"
+                                :disabled="!header.show"
                                 dense
                                 hide-details
                                 @input="saveUpdatedWidth(header)"
@@ -85,10 +75,7 @@
                                 icon
                                 x-small
                                 color="primary"
-                                :disabled="
-                                    isFirstHeader(header.hid) ||
-                                        header.value === '__index'
-                                "
+                                :disabled="isFirstHeader(header.hid) || header.value === '__index'"
                                 @click="changeHeaderOrder(header, 'up')"
                             >
                                 <v-icon>mdi-arrow-up</v-icon>
@@ -97,10 +84,7 @@
                                 icon
                                 x-small
                                 color="primary"
-                                :disabled="
-                                    isLastHeader(header.hid) ||
-                                        header.value === '__index'
-                                "
+                                :disabled="isLastHeader(header.hid) || header.value === '__index'"
                                 @click="changeHeaderOrder(header, 'down')"
                             >
                                 <v-icon>mdi-arrow-down</v-icon>
@@ -111,41 +95,38 @@
             </v-list>
         </v-menu>
 
-        <!-- DATA TABLE -->
+        <!-- VUETIFY DATA TABLE -->
         <v-data-table
             v-if="computedHeaders && formattedTableItems"
             id="auto-table"
+            :value="selectedItems"
             :headers="computedHeaders"
             :items="formattedTableItems"
             class="elevation-2"
             dense
             :item-class="itemClass"
-            item-key="__zid"
+            :item-key="itemKey"
             :search="search"
             fixed-header
             :height="tableHeight"
-            :footer-props="tableFooterProps"
-            mobile-breakpoint="0"
+            :footer-props="tableOptions?.footerProps"
+            :mobile-breakpoint="tableOptions?.mobileBreakpoint"
+            :show-select="tableOptions?.showSelect"
+            :single-select="tableOptions?.singleSelect"
+            v-bind="tableOptions?.vDataTableProps"
+            :multi-sort="tableOptions?.multiSort"
+            @input="handleItemSelect"
         >
-            <template
-                v-for="header in computedHeaders"
-                #[`item.${header.value}`]="{ item }"
-            >
+            <template v-for="header in computedHeaders" #[`item.${header.value}`]="{ item }">
                 <span
-                    v-if="
-                        item[header.value] ||
-                            item[header.value] === 0 ||
-                            header.value === '__index'
-                    "
                     :key="header.hid"
                     :class="header.getCellClasses(header, item)"
                     :title="header.getCellContent(header, item).text"
+                    @click="handleItemClick(item)"
                 >
-                    <span
-                        v-if="
-                            header.getCellContent(header, item) && header.getCellContent(header, item).isHtml
-                        "
-                    >{{ header.getCellContent(header, item).value }}</span>
+                    <template v-if="header.getCellContent(header, item) && header.getCellContent(header, item).isHtml">
+                        <slot name="custom-item" v-bind="{ header, item }"></slot>
+                    </template>
                     <span v-else>
                         {{ header.getCellContent(header, item).value }}
                     </span>
@@ -166,6 +147,20 @@ export default {
         VDataTable,
     },
     props: {
+        /**
+         * @prop {Boolean} offsetColumnsButton - If true, the column options button will be offset to the top.
+         */
+        offsetColumnsButton: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * @prop {Array} selectedItems - Array of items to select in the table
+         */
+        selectedItems: {
+            type: Array,
+            default: () => [],
+        },
         /**
          * @prop {string} items - the table items to display
          */
@@ -209,13 +204,53 @@ export default {
             type: [String, Function],
             default: '',
         },
+        /**
+         * @prop {number} offsetTop - The height of the page's top element to offset the table's height by
+         */
+        offsetTop: {
+            type: Number,
+            default: 0,
+        },
+        /**
+         * @prop {string} itemKey - the key to use as table items' unique identifiers
+         */
+        itemKey: {
+            type: String,
+            default: '__zid',
+        },
+        /**
+         * @prop {string} search - the search query to filter the table items by
+         */
+        search: {
+            type: String,
+            default: '',
+        },
+        /**
+         * @prop {object} tableOptions - An object used to pass custom options
+         * and event callbacks to Vuetify's v-data-table component.
+         * @property {object} footerProps - custom options to the table's footer.
+         * @property {number} mobileBreakpoint - the breakpoint at which the table will switch to mobile mode.
+         * @property {boolean} showSelect - whether to show the select column or not.
+         * @property {boolean} singleSelect - whether to allow only one item to be selected at a time.
+         * @property {boolean} multiSort - whether to allow multiple columns to be sorted at a time.
+         * @property {object} handlers - an object containing event callbacks : ["handleItemClick", "handleItemSelect"].
+         * @property {object} vDataTableProps - additional props to add to the vuetify component using v-bind.
+         */
+        tableOptions: {
+            type: Object,
+            default: () => ({
+                footerProps: {
+                    itemsPerPageOptions: [50, 100, 150, -1],
+                },
+                showSelect: false,
+                singleSelect: false,
+                mobileBreakpoint: 0,
+            }),
+        },
     },
     data() {
         return {
             StorageConfigManager,
-            selected: [],
-            search: '',
-            tableFooterProps: { 'items-per-page-options': [50, 100, 150, -1] },
             tableHeight: null,
             inputTimeout: null,
             orderedHeaders: [],
@@ -252,7 +287,7 @@ export default {
          * @returns {Array} the filtered table headers to display in the table
          */
         computedHeaders() {
-            return this.orderedHeaders.filter((header) => header.visible);
+            return this.orderedHeaders.filter((header) => header.show);
         },
     },
     watch: {
@@ -282,26 +317,36 @@ export default {
          * Calculate the height of the table
          */
         handleWindowResize() {
-            /* HANDLE TABLE HEIGHT */
-            /* Calculate the height of the Breadcrumbs component */
-            const breadcrumbsElement = document.getElementById('__breadcrumbs');
-            const breadcrumbsHeight = breadcrumbsElement
-                ? breadcrumbsElement.clientHeight
-                : 0;
             /* Calculate the height of the table footer component */
-            const footerElements =
-                document.getElementsByClassName('v-data-footer');
-            const footerHeight =
-                footerElements?.length > 0 ? footerElements[0].clientHeight : 0;
-
-            this.tableHeight =
-                window.innerHeight - breadcrumbsHeight - footerHeight;
+            const footerElements = document.getElementsByClassName('v-data-footer');
+            const footerHeight = footerElements?.length > 0 ? footerElements[0].clientHeight : 0;
+            this.tableHeight = window.innerHeight - (this.offsetTop + footerHeight);
 
             /* HANDLE COLUMN BUTTON POSITIONNING */
             this.columnButtonClasses =
-                window.innerWidth < 900 && this.apiType === 'generic'
+                this.offsetColumnsButton || (window.innerWidth < 900 && this.apiType === 'generic')
                     ? '__column-options-button--offset-top'
                     : '';
+        },
+        /**
+         * Handle the selection of item(s) in the table via their checkbox,
+         * with an optional custom callback from the tableOptions prop
+         * @param {array} newSelected - the updated selected items from the table
+         */
+        handleItemSelect(newSelected) {
+            if (this.tableOptions?.handlers?.handleItemSelect) {
+                this.tableOptions.handlers.handleItemSelect(newSelected);
+            }
+        },
+        /**
+         * Handle the click event on a table row with an optional
+         * custom callback from the tableOptions prop
+         * @param {object} item - the clicked item
+         */
+        handleItemClick(item) {
+            if (this.tableOptions?.handlers?.handleItemClick) {
+                this.tableOptions.handlers.handleItemClick(item);
+            }
         },
         /**
          * Update the width of a table header and save its config in local storage
@@ -313,19 +358,13 @@ export default {
 
             this.inputTimeout = setTimeout(() => {
                 const headers = [...this.headers];
-                const updatedHeader = headers.find(
-                    (h) => h.value === header.value
-                );
+                const updatedHeader = headers.find((h) => h.hid === header.hid);
                 /* Update header's width in the table */
 
                 updatedHeader.width = header.width;
                 this.orderedHeaders = headers;
                 /* Save the column options in storage */
-                StorageConfigManager.updateStorageColumnOptions(
-                    header,
-                    this.configId,
-                    'width'
-                );
+                StorageConfigManager.updateStorageColumnOptions(header, this.configId, 'width');
             }, 400);
         },
         /**
@@ -335,7 +374,7 @@ export default {
          */
         isFirstHeader(headerId) {
             // index of 1 instead of 0 because [0] is always the "index" header and is not sortable
-            return headerId === this.orderedHeaders[1].hid;
+            return headerId === this.orderedHeaders[0].hid;
         },
         /**
          * Assess whether a header is the last header in order or not.
@@ -343,10 +382,7 @@ export default {
          * @returns {boolean} true if the header is the last header
          */
         isLastHeader(headerId) {
-            return (
-                headerId ===
-                this.orderedHeaders[this.orderedHeaders.length - 1].hid
-            );
+            return headerId === this.orderedHeaders[this.orderedHeaders.length - 1].hid;
         },
         /**
          * Move a header in the table order.
@@ -354,9 +390,7 @@ export default {
          * @param {string} direction - the direction of the movement
          */
         changeHeaderOrder(header, direction) {
-            const headerPosition = this.orderedHeaders.findIndex(
-                (h) => h.hid === header.hid
-            );
+            const headerPosition = this.orderedHeaders.findIndex((h) => h.hid === header.hid);
 
             if (direction === 'up') {
                 this.swapHeadersPositions(headerPosition, headerPosition - 1);
@@ -370,43 +404,26 @@ export default {
          * @param {number} position2 - the position of the second header
          */
         swapHeadersPositions(position1, position2) {
-            this.orderedHeaders = swapElementsInArray(
-                this.orderedHeaders,
-                position1,
-                position2
-            );
+            this.orderedHeaders = swapElementsInArray(this.orderedHeaders, position1, position2);
 
             /* Save the column order in storage */
-            StorageConfigManager.saveOrderedHeadersInStorage(
-                this.orderedHeaders,
-                this.configId
-            );
+            StorageConfigManager.saveOrderedHeadersInStorage(this.orderedHeaders, this.configId);
         },
         /**
          * Toggle the active color class of the column config button.
          */
         toggleActiveClass() {
-            if (
-                this.$refs['options-button']?.$el.classList.value.includes(
-                    '__column-options-button--active'
-                )
-            ) {
-                this.$refs['options-button'].$el.classList.remove(
-                    '__column-options-button--active'
-                );
+            if (this.$refs['options-button']?.$el.classList.value.includes('__column-options-button--active')) {
+                this.$refs['options-button'].$el.classList.remove('__column-options-button--active');
             } else {
-                this.$refs['options-button']?.$el.classList.add(
-                    '__column-options-button--active'
-                );
+                this.$refs['options-button']?.$el.classList.add('__column-options-button--active');
             }
         },
         /**
          * Remove the active color class from the column config button.
          */
         removeActiveClass() {
-            this.$refs['options-button']?.$el.classList.remove(
-                '__column-options-button--active'
-            );
+            this.$refs['options-button']?.$el.classList.remove('__column-options-button--active');
         },
     },
 };
@@ -490,5 +507,26 @@ export default {
 .__settings-btn {
     bottom: 2vh !important;
     left: 2vw !important;
+}
+
+thead th span {
+    position: absolute;
+    top: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 5px 5px 5px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+thead .v-data-table__divider .mdi-arrow-up {
+    border-radius: 50%;
+    background: #1976d2;
+    color: white !important;
+    position: absolute;
+    right: 12px;
+    bottom: 7px;
 }
 </style>

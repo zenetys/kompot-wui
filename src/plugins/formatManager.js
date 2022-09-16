@@ -1,5 +1,5 @@
 import { generateLinkToSubPath, generateUrlFromPath } from '@/plugins/utils';
-import Config from '/wui/public/static/config.json';
+import Config from '@wui/public/static/config.json';
 
 /**
  * Configuration object matching formatting methods with formats

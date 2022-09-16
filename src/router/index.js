@@ -20,7 +20,7 @@ const routes = [
         name: 'Bac à état',
         component: Panel,
         props: {
-            apiType: Config.apiType
+            apiType: Config.apiType,
         },
     },
     {

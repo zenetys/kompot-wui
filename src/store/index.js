@@ -21,29 +21,29 @@ export const store = new Vuex.Store({
         },
     },
     actions: {
-        updateServerProblem( { commit }, value ) {
+        updateServerProblem({ commit }, value) {
             commit('EDIT_SERVER_PROBLEM', value);
         },
-        updateLastUpdate( { commit } , value ) {
-            commit('EDIT_LAST_UPDATE_DURATION', new Date() - value );
+        updateLastUpdate({ commit }, value) {
+            commit('EDIT_LAST_UPDATE_DURATION', new Date() - value);
         },
-        updateServerState( { commit } ) {
+        updateServerState({ commit }) {
             if (!this.state.server_problem && this.state.last_update_duration <= 60000) {
                 commit('EDIT_SERVER_STATE', 0);
             } else {
                 commit('EDIT_SERVER_STATE', 1);
             }
-        }
+        },
     },
     getters: {
-        serverProblem: state => {
+        serverProblem: (state) => {
             return state.server_problem;
         },
-        lastUpdateDuration: state => {
+        lastUpdateDuration: (state) => {
             return state.last_update_duration;
         },
-        serverState: state => {
+        serverState: (state) => {
             return state.server_state;
-        }
+        },
     },
 });

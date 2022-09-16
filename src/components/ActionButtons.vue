@@ -8,7 +8,8 @@
                 style="text-decoration: none"
                 v-bind="attrs"
                 v-on="on"
-                @click="setAction(item)">
+                @click="setAction(item)"
+            >
                 <v-tooltip top>
                     <template #activator="tooltipScope">
                         <v-btn class="mx-2" fab dark small :color="item.color" v-bind="tooltipScope.attrs" v-on="tooltipScope.on">

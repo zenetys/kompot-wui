@@ -14,6 +14,8 @@ Vue.use(VueSession);
 // Global variable for api to call
 Vue.prototype.$apiType = Config.apiType;
 Vue.prototype.$api = Config.api;
+Vue.prototype.$dataPath = Config.dataPath;
+Vue.prototype.$columnSettingsId = Config.columnSettingsId;
 
 new Vue({
     router,

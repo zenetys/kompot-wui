@@ -2,9 +2,7 @@
     <div class="ml-5 mr-5 mt-1">
         <v-row>
             <v-col cols="12">
-                <v-chip-group
-                    v-model="timeSelected" mandatory active-class="primary--text"
-                    class="mb-4">
+                <v-chip-group v-model="timeSelected" mandatory active-class="primary--text" class="mb-4">
                     <v-chip
                         v-for="item in timeButtons"
                         :key="item.text"

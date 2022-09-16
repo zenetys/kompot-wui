@@ -34,7 +34,7 @@ export default {
             /* Update the whole options object */
             columnOptions[column.value] = {
                 ...columnOptions[column.value],
-                visible: column.visible,
+                show: column.show,
                 width: column.width,
             };
         }
@@ -94,7 +94,6 @@ export default {
         let config = null;
 
         if (storageConfigIndex > -1) {
-            console.log('Storage config found.');
             config = storageConfigs[storageConfigIndex];
         }
 

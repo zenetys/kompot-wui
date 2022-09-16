@@ -3,17 +3,15 @@
     <div>
         <div v-if="!$vuetify.breakpoint.xs" class="d-flex">
             <v-toolbar dense class="elevation-1 blue-grey lighten-5">
-                <v-row
-                    align="center"
-                    no-gutters
-                    style="height: 150px;">
+                <v-row align="center" no-gutters style="height: 150px">
                     <v-col cols="12" md="4" lg="3">
                         <v-btn-toggle
                             v-model="toggleFilter"
                             color="white"
                             class="mr-1 mb-1 elevation-2"
                             mandatory
-                            @change="setFilterLevel">
+                            @change="setFilterLevel"
+                        >
                             <v-btn value="critical" active-class="red lighten-1" :title="$t('filters.critical')">
                                 <v-icon>mdi-numeric-1-circle-outline</v-icon>
                             </v-btn>
@@ -23,7 +21,11 @@
                             <v-btn value="known" active-class="orange darken-4" :title="$t('filters.known')">
                                 <v-icon>mdi-numeric-3-circle-outline</v-icon>
                             </v-btn>
-                            <v-btn value="all-problems" active-class="orange darken-1" :title="$t('filters.allProblems')">
+                            <v-btn
+                                value="all-problems"
+                                active-class="orange darken-1"
+                                :title="$t('filters.allProblems')"
+                            >
                                 <v-icon>mdi-numeric-4-circle-outline</v-icon>
                             </v-btn>
                             <v-btn value="any" active-class="blue lighten-1" :title="$t('filters.any')">
@@ -40,7 +42,8 @@
                             dense
                             class="mt-6"
                             prepend-inner-icon="mdi-magnify"
-                            clearable>
+                            clearable
+                        >
                             <!-- Help icon -->
                             <template slot="append-outer">
                                 <v-icon class="mr-1" :title="$t('helpFilterQueryFormat')">
@@ -49,9 +52,7 @@
                             </template>
                         </v-text-field>
                     </v-col>
-                    <v-col
-                        cols="12" md="4" lg="4"
-                        class="text-right" />
+                    <v-col cols="12" md="4" lg="4" class="text-right" />
                 </v-row>
             </v-toolbar>
         </div>
@@ -59,7 +60,13 @@
 </template>
 
 <script>
-import { setUserFilterConfig, getUserSessionConfig, deleteUserFilter, updateUserFilter, saveHistoricFilter } from "../plugins/user-session-config";
+import {
+    setUserFilterConfig,
+    getUserSessionConfig,
+    deleteUserFilter,
+    updateUserFilter,
+    saveHistoricFilter,
+} from '../plugins/user-session-config';
 import i18n from '../plugins/i18n';
 export default {
     name: 'FilterBar',
@@ -67,8 +74,8 @@ export default {
     data() {
         return {
             filterItems: [],
-            toggleFilter: "all",
-            selectFilter: "",
+            toggleFilter: 'all',
+            selectFilter: '',
             searchInput: null,
             selectedItem: null,
             saveFilterDialog: null,
@@ -86,7 +93,7 @@ export default {
             formValid: true,
             checkedFilter: [],
             setFilterEventTimeout: null,
-        }
+        };
     },
     watch: {
         searchBox() {
@@ -97,8 +104,8 @@ export default {
             }, 500);
         },
         checkedFilter() {
-            this.searchBox = (this.checkedFilter) ? this.checkedFilter.box : "";
-            this.toggleFilter = (this.checkedFilter) ? this.checkedFilter.level : "all";
+            this.searchBox = this.checkedFilter ? this.checkedFilter.box : '';
+            this.toggleFilter = this.checkedFilter ? this.checkedFilter.level : 'all';
             this.setFilterEvent();
         },
     },
@@ -106,11 +113,11 @@ export default {
         this.toggleFilter = this.$route.query.level;
         this.searchBox = this.$route.query.filter;
 
-        this.filterItems = JSON.parse(getUserSessionConfig()).filters
+        this.filterItems = JSON.parse(getUserSessionConfig()).filters;
 
         document.addEventListener('click', () => {
             this.menuProps.value = false;
-        } );
+        });
     },
     methods: {
         setFilterEvent() {
@@ -123,24 +130,21 @@ export default {
             };
         },
         // get level filter
-        getLevelPartOfFilter(){
+        getLevelPartOfFilter() {
             if (this.toggleFilter) {
-                if (this.toggleFilter=="all")
-                    return "";
-                if (this.toggleFilter=="incident")
+                if (this.toggleFilter == 'all') return '';
+                if (this.toggleFilter == 'incident')
                     // return "(( state!=0 AND checks_enabled!=true AND acknowledged!=true ) OR ( _TRACK=1 ))";
-                    return "q=///(state!=0 and checks_enabled!=1 and acknowledged!=1)///";
-                if (this.toggleFilter=="maintenance")
+                    return 'q=///(state!=0 and checks_enabled!=1 and acknowledged!=1)///';
+                if (this.toggleFilter == 'maintenance')
                     // return "(( state!=0 AND checks_enabled!=true AND acknowledged=true ) OR ( _TRACK=1 ))";
-                    return "q=///(state!=0 and checks_enabled!=1 and acknowledged=1)///";
-                if (this.toggleFilter=="all-problems")
+                    return 'q=///(state!=0 and checks_enabled!=1 and acknowledged=1)///';
+                if (this.toggleFilter == 'all-problems')
                     // return "( state=0 ) OR ( _TRACK=1 )";
-                    return "q=///(state=0)///";
-                if (this.toggleFilter=="inventory")
-                    return "";
+                    return 'q=///(state=0)///';
+                if (this.toggleFilter == 'inventory') return '';
             }
-            return "";
-
+            return '';
         },
         // get search filter
         getSearchBoxPartOfFilter() {
@@ -149,15 +153,15 @@ export default {
                 var boxArray = this.searchBox.split(' ');
                 for (let i = 0; i < boxArray.length; i++) {
                     var searchInfo = boxArray[i].split(':');
-                    if (searchInfo.length>1) {
-                        if (searchInfo[0]=="d") {
-                            search.push('name[regex]='+searchInfo[1]);
-                        } else if (searchInfo[0]=="ip"){
-                            search.push("device_ip[regex]="+searchInfo[1]);
-                        } else if (searchInfo[0]=="i") {
-                            search.push("display_name[regex]="+searchInfo[1]);
-                        } else if (searchInfo[0]=="o") {
-                            search.push("plugin_output[regex]="+searchInfo[1]);
+                    if (searchInfo.length > 1) {
+                        if (searchInfo[0] == 'd') {
+                            search.push('name[regex]=' + searchInfo[1]);
+                        } else if (searchInfo[0] == 'ip'){
+                            search.push('device_ip[regex]=' + searchInfo[1]);
+                        } else if (searchInfo[0] == 'i') {
+                            search.push('display_name[regex]=' + searchInfo[1]);
+                        } else if (searchInfo[0] == 'o') {
+                            search.push('plugin_output[regex]=' + searchInfo[1]);
                         } else {
                             search.push(boxArray[i]);
                         }
@@ -166,7 +170,7 @@ export default {
                 }
                 return search.join('&');
             }
-            return "";
+            return '';
 
         },
         setQuery() {
@@ -180,30 +184,30 @@ export default {
             var filtersSelected;
 
             if (this.checkedFilter) {
-                if (this.checkedFilter.length!=0) {
+                if (this.checkedFilter.length != 0) {
                     // filtersSelected = "q=///" + this.checkedFilter.join(" or ") + "///";
                     filtersSelected = this.checkedFilter.content;
                 } else {
                     filtersSelected = '';
                 }
             } else {
-                filtersSelected = ''
+                filtersSelected = '';
             }
 
             // format the query string
             var querryArray = [];
-            (level!='') ? querryArray.push(level) : querryArray;
-            (box!='') ? querryArray.push(box) : querryArray;
-            (level=='' && box=='' && !filtersSelected) ? querryArray.push("") : querryArray;
+            level != '' ? querryArray.push(level) : querryArray;
+            box != '' ? querryArray.push(box) : querryArray;
+            level == '' && box == '' && !filtersSelected ? querryArray.push('') : querryArray;
 
             // this.filterContent = querryArray.join(" AND ");
-            return querryArray.join("&");
+            return querryArray.join('&');
         },
         getKeyCode: function (event) {
             if (event.keyCode === 13) {
                 this.menuProps.value = false;
                 this.setFilterEvent();
-            } else if(event.keyCode === 27) {
+            } else if (event.keyCode === 27) {
                 this.menuProps.value = false;
             } else {
                 this.menuProps.value = true;
@@ -215,7 +219,7 @@ export default {
         setDialogType(type, item) {
             this.saveFilterDialog = true;
             this.dialogType = type;
-            if (type=='update') {
+            if (type == 'update') {
                 this.filterId = item.id;
                 this.filterTitle = item.title;
                 this.filterDescription = item.description;
@@ -223,11 +227,10 @@ export default {
             }
         },
         saveHistoricFilter() {
-            var historicFilter = {box:this.searchBox, id: Date.now(), title: this.searchBox, type: 'historic'};
+            var historicFilter = { box:this.searchBox, id: Date.now(), title: this.searchBox, type: 'historic' };
             this.saveHistoric(historicFilter);
         },
         saveFilter() {
-
             if (this.$refs.formFilter.validate()) {
                 var filter = {
                     id: Date.now(),
@@ -262,7 +265,7 @@ export default {
             }
         },
         deleteFilter(item) {
-            var found = this.filterItems.findIndex(data => data.id === item.id);
+            var found = this.filterItems.findIndex((data) => data.id === item.id);
             deleteUserFilter(item, found);
             this.searchBox = '';
             this.selectFilter = '';
@@ -272,25 +275,25 @@ export default {
             // this.filterItems.unshift(historicFilter)
             saveHistoricFilter(historicFilter);
             this.filterItems = JSON.parse(getUserSessionConfig()).filters;
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style lang="scss">
-    .v-btn-toggle:not(.v-btn-toggle--dense) .v-btn.v-btn.v-size--default {
-        height: 39px !important;
-        min-height: 0;
-        min-width: 40px;
-    }
-    .search-box .v-input__append-inner .v-input__icon > .v-icon {
-        padding-bottom: 0px;
-    }
-    .level-box {
-        display:contents;
-    }
-    // combobox list item height
-    .v-list--dense .v-list-item, .v-list-item--dense {
-        min-height: 24px !important;
-    }
+.v-btn-toggle:not(.v-btn-toggle--dense) .v-btn.v-btn.v-size--default {
+    height: 39px !important;
+    min-height: 0;
+    min-width: 40px;
+}
+.search-box .v-input__append-inner .v-input__icon > .v-icon {
+    padding-bottom: 0px;
+}
+.level-box {
+    display:contents;
+}
+// combobox list item height
+.v-list--dense .v-list-item, .v-list-item--dense {
+    min-height: 24px !important;
+}
 </style>

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 // import axios from 'axios';
-import StorageConfigManager from '@/components/AutoTable/storageConfigManager';
+// import StorageConfigManager from '@zenetys/ztable'';
 // import Router from '@/router';
-import Config from '/wui/public/static/config.json';
+import Config from '@wui/public/static/config.json';
 import {
     getCellContent,
     getCellClasses,
@@ -16,7 +16,7 @@ export default {
         align: 'start',
         getCellContent,
         getCellClasses,
-        visible: true,
+        show: true,
     },
     _getItemClassesFromHeaderConfig: null,
     _headersConfig: {},
@@ -349,7 +349,9 @@ export default {
      */
     applyColumnConfigFromStorage() {
         const columnSettingsId = Config.columnSettingsId;
-        const storageConfig = StorageConfigManager.getStorageConfig(columnSettingsId);
+        // const storageConfig = StorageConfigManager.getStorageConfig(columnSettingsId);
+        // console.log('storageConfig found', storageConfig);
+        const storageConfig = false;
 
         if (storageConfig) {
             const columnOptions = storageConfig.columnOptions;
@@ -358,18 +360,18 @@ export default {
             /* Load column options configuration */
             if (columnOptions) {
                 this.headers.forEach((column) => {
-                    const columnOption = columnOptions[column.value];
+                    const options = columnOptions[column.value];
 
-                    if (columnOption) {
-                        if (Object.prototype.hasOwnProperty.call(columnOption, 'visible')) {
-                            column.visible = columnOption.visible;
+                    if (options) {
+                        if (Object.prototype.hasOwnProperty.call(options, 'show')) {
+                            column.show = options.show;
                         } else {
                             /* Make column visible by default if it has no visibility option */
-                            column.visible = true;
+                            column.show = true;
                         }
 
-                        if (columnOption.width) {
-                            column.width = columnOption.width;
+                        if (options.width) {
+                            column.width = options.width;
                         }
                     }
                 });

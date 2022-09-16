@@ -5,8 +5,7 @@ import Panel from './App';
 
 new Vue({
     vuetify: vuetify,
-})
-
+});
 
 const CustomComponent = wrap(Vue, Panel);
 

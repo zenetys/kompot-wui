@@ -1,53 +1,23 @@
 <template>
     <div>
-        <v-chip
-            :title="$t('hostUp')"
-            small
-            class="mr-1 elevation-2"
-            color="green lighten-2"
-            label>
+        <v-chip :title="$t('hostUp')" small class="mr-1 elevation-2" color="green lighten-2" label>
             {{ host.up }}
         </v-chip>
-        <v-chip
-            :title="$t('hostUnreachable')"
-            small
-            class="mr-1 elevation-2"
-            color="orange lighten-2"
-            label>
+        <v-chip :title="$t('hostUnreachable')" small class="mr-1 elevation-2" color="orange lighten-2" label>
             {{ host.unreachable }}
         </v-chip>
-        <v-chip
-            :title="$t('hostDown')"
-            small
-            class="mr-1 elevation-2"
-            color="red lighten-2"
-            label>
+        <v-chip :title="$t('hostDown')" small class="mr-1 elevation-2" color="red lighten-2" label>
             {{ host.down }}
         </v-chip>
         <span v-if="!$vuetify.breakpoint.smAndDown">|</span>
         <span v-else><v-divider class="mt-2 mb-2" /></span>
-        <v-chip
-            :title="$t('hostUp')"
-            small
-            class="mr-1 ml-1 elevation-2"
-            color="green lighten-2"
-            label>
+        <v-chip :title="$t('hostUp')" small class="mr-1 ml-1 elevation-2" color="green lighten-2" label>
             {{ service.ok }}
         </v-chip>
-        <v-chip
-            :title="$t('serviceWarning')"
-            small
-            class="mr-1 elevation-2"
-            color="orange lighten-2"
-            label>
+        <v-chip :title="$t('serviceWarning')" small class="mr-1 elevation-2" color="orange lighten-2" label>
             {{ service.warning }}
         </v-chip>
-        <v-chip
-            :title="$t('serviceCritical')"
-            small
-            class="mr-1 elevation-2"
-            color="red lighten-2"
-            label>
+        <v-chip :title="$t('serviceCritical')" small class="mr-1 elevation-2" color="red lighten-2" label>
             {{ service.critical }}
         </v-chip>
     </div>
@@ -89,11 +59,7 @@ export default {
         this.refresh();
     },
     methods: {
-        ...mapActions([
-            'updateServerProblem',
-            'updateLastUpdate',
-            'updateServerState',
-        ]),
+        ...mapActions(['updateServerProblem', 'updateLastUpdate', 'updateServerState']),
         refresh() {
             this.progressValue = 0;
             clearInterval(this.progressInterval);
@@ -128,26 +94,17 @@ export default {
                 ])
                 .then(
                     axios.spread((hostResponse, serviceResponse) => {
-                        this.updateLastUpdate(
-                            hostResponse.data.result.last_data_update
-                        );
+                        this.updateLastUpdate(hostResponse.data.result.last_data_update);
                         this.updateServerProblem(0);
                         this.updateServerState();
-                        this.host.up =
-                            hostResponse.data.data.count.up +
-                            hostResponse.data.data.count.pending;
+                        this.host.up = hostResponse.data.data.count.up + hostResponse.data.data.count.pending;
                         this.host.down = hostResponse.data.data.count.down;
-                        this.host.unreachable =
-                            hostResponse.data.data.count.unreachable;
+                        this.host.unreachable = hostResponse.data.data.count.unreachable;
 
-                        this.service.ok =
-                            serviceResponse.data.data.count.ok +
-                            serviceResponse.data.data.count.pending;
+                        this.service.ok = serviceResponse.data.data.count.ok + serviceResponse.data.data.count.pending;
                         this.service.warning =
-                            serviceResponse.data.data.count.warning +
-                            serviceResponse.data.data.count.unknown;
-                        this.service.critical =
-                            serviceResponse.data.data.count.critical;
+                            serviceResponse.data.data.count.warning + serviceResponse.data.data.count.unknown;
+                        this.service.critical = serviceResponse.data.data.count.critical;
                     })
                 )
                 .catch(() => {

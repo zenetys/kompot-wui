@@ -6,15 +6,13 @@
             :class="{ 'red lighten-2': serverState == 1, 'blue-grey darken-1': serverState == 0 }"
             dark
             dense
-            clipped-left>
-            <v-app-bar-nav-icon
-                v-if="$vuetify.breakpoint.mdAndDown"
-                @click.stop="drawer = !drawer" />
+            clipped-left
+        >
+            <v-app-bar-nav-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer" />
             <v-col cols="2">
                 <v-img id="img-logo" src="./../public/kompot.png" width="30" />
             </v-col>
-            <v-toolbar-title
-                :class="$vuetify.breakpoint.xs ? 'text-caption' : 'text-breakpoint-subtitle-1'">
+            <v-toolbar-title :class="$vuetify.breakpoint.xs ? 'text-caption' : 'text-breakpoint-subtitle-1'">
                 {{ appTitle ? appTitle + ' - ' : '' }}{{ $route.name }}
             </v-toolbar-title>
             <v-spacer />
@@ -27,10 +25,7 @@
                 <div class="text-center ml-1">
                     <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
                         <template #activator="{ on, attrs }">
-                            <v-btn
-                                color="blue-grey lighten-1" dark v-bind="attrs"
-                                fab x-small text
-                                v-on="on">
+                            <v-btn color="blue-grey lighten-1" dark v-bind="attrs" fab x-small text v-on="on">
                                 <v-icon>mdi-filter</v-icon>
                             </v-btn>
                         </template>
@@ -41,9 +36,7 @@
                 </div>
             </template>
         </v-app-bar>
-        <v-navigation-drawer
-            v-model="drawer" class="aside-navigation" app
-            clipped>
+        <v-navigation-drawer v-model="drawer" class="aside-navigation" app clipped>
             <v-img id="img-logo" src="" width="140" />
             <v-divider />
 
@@ -54,7 +47,8 @@
                         :key="i"
                         :to="link.url"
                         active-class="deep-cyan--text text--accent-4"
-                        class="v-list-item">
+                        class="v-list-item"
+                    >
                         <v-list-item-action>
                             <v-icon>{{ link.icon }}</v-icon>
                         </v-list-item-action>
@@ -69,7 +63,8 @@
                         active-class="deep-cyan--text text--accent-4"
                         color=""
                         append-icon=""
-                        disabled>
+                        disabled
+                    >
                         <template #activator>
                             <v-list-item-action>
                                 <v-icon>{{ link.icon }}</v-icon>
@@ -90,9 +85,7 @@
                 <v-list dense>
                     <v-list-item @click="reloadServer()">
                         <v-list-item-icon class="side-menu-icon">
-                            <v-icon class="menu-icon">
-                                mdi-restart
-                            </v-icon>
+                            <v-icon class="menu-icon"> mdi-restart </v-icon>
                         </v-list-item-icon>
                         <v-list-item-title class="side-menu-title">
                             <span style="font-size: large">Recharger</span>

@@ -1,7 +1,9 @@
 import { compactFormat, frenchFormat } from '@/plugins/utils';
 import { getCellColor } from '@/plugins/status/cell-color';
 import { getStateText } from '@/plugins/status/state-text';
+import DataManager from '@/plugins/dataManager';
 import i18n from '@/plugins/i18n';
+import Config from '@wui/public/static/config';
 
 const apis = {
     elastic: elasticHeader,
@@ -20,7 +22,6 @@ function thrukHeader() {
             value: 'state-ext',
             label: 'state-ext',
             divider: true,
-            align: '',
             sortable: false,
             show: true,
             render: 'state-ext',
@@ -31,7 +32,6 @@ function thrukHeader() {
             value: 'state',
             label: i18n.tc('state'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: getStateText,
@@ -43,7 +43,6 @@ function thrukHeader() {
             value: 'last_state_change',
             label: i18n.tc('lastEv'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: compactFormat,
@@ -54,7 +53,6 @@ function thrukHeader() {
             value: 'name',
             label: i18n.tc('device'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             width: '20%',
@@ -65,7 +63,6 @@ function thrukHeader() {
             value: 'display_name',
             label: i18n.tc('indicator'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             width: '15%',
@@ -75,7 +72,6 @@ function thrukHeader() {
             value: 'plugin_output',
             label: i18n.tc('output'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: 'output',
@@ -86,7 +82,6 @@ function thrukHeader() {
             value: '_DEBUG',
             label: i18n.tc('debug'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             width: '10%',
@@ -96,7 +91,6 @@ function thrukHeader() {
             value: '_SITE',
             label: i18n.tc('site'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             width: '10%',
@@ -106,7 +100,6 @@ function thrukHeader() {
             value: '_TYPE',
             label: i18n.tc('type'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             width: '20%',
@@ -123,11 +116,10 @@ function nagiosHeader() {
             vkey: 'state-flag',
             label: i18n.tc('stateFlag'),
             divider: true,
-            align: '',
             sortable: false,
             show: true,
             render: 'state-ext',
-            width: '4%',
+            width: '8%',
         },
         {
             text: 'priority',
@@ -135,7 +127,6 @@ function nagiosHeader() {
             vkey: 'priority',
             label: i18n.tc('priority'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -148,11 +139,10 @@ function nagiosHeader() {
             vkey: 'status',
             label: i18n.tc('state'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: getStateText,
-            width: '5%',
+            width: '10%',
             shape: getCellColor,
         },
         {
@@ -161,11 +151,10 @@ function nagiosHeader() {
             vkey: 'name',
             label: i18n.tc('device'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: '',
-            width: '10%',
+            width: '20%',
             shape: '',
         },
         {
@@ -174,11 +163,10 @@ function nagiosHeader() {
             vkey: 'display_name',
             label: i18n.tc('indicator'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: '',
-            width: '15%',
+            width: '11%',
             shape: '',
         },
         {
@@ -187,7 +175,6 @@ function nagiosHeader() {
             vkey: 'description',
             label: i18n.tc('description'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -213,22 +200,20 @@ function nagiosHeader() {
             vkey: 'last_state_change',
             label: i18n.tc('lastEv'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: frenchFormat,
-            width: '10%',
+            width: '15%',
             shape: '',
         },
-        // { text: 'duration_last_state_change', value:'duration_last_state_change', vkey: 'last_state_change', label: i18n.tc('durationLastStateChange'), divider: true, align: '', sort: '', show: true, render: compactFormat, width: '5%', shape: '' }, // same as the last but render different
-        // { text: 'last_update', value:'last_state_change', vkey: 'last_update', label: i18n.tc('durationLastUpdate'), divider: true, align: '', sort: '', show: true, render: compactFormat, width: '5%', shape: '' },
+        // { text: 'duration_last_state_change', value:'duration_last_state_change', vkey: 'last_state_change', label: i18n.tc('durationLastStateChange'), divider: true, sort: '', show: true, render: compactFormat, width: '5%', shape: '' }, // same as the last but render different
+        // { text: 'last_update', value:'last_state_change', vkey: 'last_update', label: i18n.tc('durationLastUpdate'), divider: true, sort: '', show: true, render: compactFormat, width: '5%', shape: '' },
         {
             text: 'notifications_enabled',
             value: 'notifications_enabled',
             vkey: 'notifications_enabled',
             label: i18n.tc('notificationsEnabled'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -241,7 +226,6 @@ function nagiosHeader() {
             vkey: 'last_check',
             label: i18n.tc('durationLastUpdate'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: compactFormat,
@@ -254,7 +238,6 @@ function nagiosHeader() {
             vkey: 'check_type',
             label: i18n.tc('checkType'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -267,7 +250,6 @@ function nagiosHeader() {
             vkey: 'accept_passive_checks',
             label: i18n.tc('passiveEnabled'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -280,7 +262,6 @@ function nagiosHeader() {
             vkey: 'checks_enabled',
             label: i18n.tc('checksEnabled'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -293,7 +274,6 @@ function nagiosHeader() {
             vkey: 'problem_has_been_acknowledged',
             label: i18n.tc('ack'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -306,7 +286,6 @@ function nagiosHeader() {
             vkey: 'outage',
             label: i18n.tc('outage'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -319,7 +298,6 @@ function nagiosHeader() {
             vkey: 'state_type',
             label: i18n.tc('stateType'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -332,7 +310,6 @@ function nagiosHeader() {
             vkey: 'auto_track',
             label: i18n.tc('autoTrack'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -345,7 +322,6 @@ function nagiosHeader() {
             vkey: 'track',
             label: i18n.tc('track'),
             divider: true,
-            align: ' d-none',
             sort: '',
             show: false,
             render: '',
@@ -358,7 +334,6 @@ function nagiosHeader() {
             vkey: 'plugin_output',
             label: i18n.tc('output'),
             divider: true,
-            align: '',
             sort: '',
             show: true,
             render: '',
@@ -368,6 +343,101 @@ function nagiosHeader() {
     ];
 }
 
-export function getHeader(apiType) {
-    return apis[apiType]();
+/**
+ * Get headers depending on the provided type of API
+ * @param {string} apiType - API type
+ * @returns {object[]} - API specific headers
+ */
+export function getHeaders(apiType) {
+    return formatHeadersForAutotable(apis[apiType]());
+}
+
+/**
+ * Format some headers for the AutoTable component and apply custom settings from storage if any
+ * @param {object[]} headers - Headers to format
+ * @returns {object[]} - Formatted headers
+ */
+function formatHeadersForAutotable(headers) {
+    formatHeaders(headers);
+    // Once headers have been formatted and saved in the DataManager, look for headers settings in local storage
+    DataManager.applyColumnConfigFromStorage();
+    return DataManager.headers;
+}
+
+/**
+ * Format headers data for the AutoTable's v-data-table directive
+ * @param {object[]} headers
+ * @returns {object[]} The formatted headers
+ */
+function formatHeaders(headers) {
+    let hid = 0;
+
+    const formattedHeaders = headers.map((h) => {
+        h.text = h.label;
+        h.getCellContent = displayRowText;
+        h.getCellClasses = displayRowClasses;
+
+        const header = {
+            ...DataManager.defaultHeaderConfig,
+            ...h,
+            hid: hid++,
+        };
+
+        return header;
+    });
+
+    DataManager.headers = formattedHeaders;
+    return formattedHeaders;
+}
+
+/**
+ * Format a table cell's text value with custom options depending on the column.
+ * @param {String} header - the column to format
+ * @param {Object} item - the item to format
+ */
+function displayRowText(header, item) {
+    let cellValue = null;
+    let cellText = '';
+    let isHtml = false;
+
+    if (typeof header.render === 'function') {
+        cellValue = header.render(item[header.value], item, Config.apiType);
+        cellText = cellValue;
+    } else if (header.render === 'state-ext') {
+        isHtml = true;
+        cellValue = 'state-ext';
+        cellText = 'Etat';
+    } else {
+        if (item[header.value] === null) {
+            cellValue = '--';
+        } else {
+            cellValue = item[header.value];
+        }
+        cellText = cellValue;
+    }
+
+    // Return the AutoTable's cell format
+    return {
+        value: cellValue,
+        text: cellText,
+        isHtml,
+    };
+}
+
+/**
+ * Format a table cell's classes depending on the column.
+ * @param {String} header - the column to format
+ * @param {Object} item - the item to format
+ * @returns {String} - the classes to apply to the cell
+ */
+function displayRowClasses(header, item) {
+    if (typeof header.shape !== 'undefined') {
+        if (typeof header.shape === 'function') {
+            return header.shape(Config.apiType, item);
+        } else {
+            return header.shape;
+        }
+    } else {
+        return '';
+    }
 }

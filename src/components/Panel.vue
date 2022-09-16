@@ -18,123 +18,55 @@
         </div>
 
         <div ref="panelRow" class="panel-box" :style="seletedDetailsView()">
-            <div v-if="selected.length > 0" class="send-selected">
-                <ActionButtons :elements="selected" @send-data="initializeSelected" />
+            <div v-if="selectedItems.length > 0" class="send-selected">
+                <ActionButtons :elements="selectedItems" @send-data="initializeSelected" />
             </div>
 
             <!-- Go to top of table -->
             <div id="go-to-top" @click="goToTableTop()">
-                <v-btn
-                    class="mx-2" fab dark
-                    small color="blue-grey darken-1">
+                <v-btn class="mx-2" fab dark small color="blue-grey darken-1">
                     <v-icon dark> mdi-chevron-up </v-icon>
                 </v-btn>
             </div>
 
-            <v-data-table
-                ref="table"
-                :key="anIncreasingNumber"
-                v-model="selected"
+            <AutoTable
                 :headers="headers"
-                :items="data"
-                :show-select="allowSelect()"
-                :multi-sort="allowMultiSort()"
-                fixed-header
-                dense
-                :single-select="false"
-                item-key="id"
-                grid-lines
-                :height="filterBarHeight"
+                :items="formattedItems"
+                :api-type="apiType"
+                :config-id="$columnSettingsId"
                 :item-class="getRowBackgroundClass"
-                :no-data-text="$t('noDataText')"
+                :offset-top="tableTopOffset"
+                :table-options="tableOptions"
+                :selected-items="selectedItems"
                 :search="filters.box"
-                :footer-props="{
-                    'items-per-page-options': [50, 100, 150],
-                }"
-                :options.sync="options"
-                :mobile-breakpoint="0"
-                @input="selectAllRows($event)"
-                @current-items="current = $event"
-                @item-selected="multiSelectWithShift">
-                <template #[`header.data-table-select`]>
-                    <div class="select-show-column">
-                        <v-menu :close-on-content-click="false">
-                            <template #activator="{ on: onMenu }">
-                                <v-tooltip top>
-                                    <template #activator="{ on: onTooltip }">
-                                        <v-btn
-                                            icon
-                                            height="0"
-                                            width="0"
-                                            style="padding: 0 0 0 13px"
-                                            v-on="{ ...onMenu, ...onTooltip }">
-                                            <v-icon size="24">
-                                                mdi-table
-                                            </v-icon>
-                                        </v-btn>
-                                    </template>
-
-                                    <span> Activer / Désactiver les colonnes </span>
-                                </v-tooltip>
-                            </template>
-
-                            <!-- ...list with menu options... -->
-                            <v-card>
-                                <v-list>
-                                    <v-list-item v-for="(h, index) in headers" :key="index" style="min-height: 0px">
-                                        <v-list-item-action class="ma-0">
-                                            <v-checkbox
-                                                v-model="h.show"
-                                                :label="h.label"
-                                                @change="headerToShow(index)" />
-                                        </v-list-item-action>
-                                    </v-list-item>
-                                </v-list>
-                            </v-card>
-                        </v-menu>
-                    </div>
+                offset-columns-button
+                item-key="id"
+            >
+                <template #custom-item="{ header, item }">
+                    <span v-if="header.getCellContent(header, item).isHtml">
+                        <v-icon size="13" :color="setStatusIconColor(item)" :title="$t('stateFlag')">mdi-circle</v-icon>
+                        <v-icon
+                            :title="$t('openGraphLabel')"
+                            size="13"
+                            class="openGraphIcon"
+                            @click.stop="onClickGraphIcon(item)"
+                        >mdi-chart-areaspline-variant</v-icon>
+                        <v-icon v-if="item.auto_track === true" size="13" :title="$t('recentChange')"
+                        >mdi-alert-box-outline</v-icon>
+                        <v-icon v-else />
+                        <v-icon v-if="item.track === true" size="13" :title="$t('trackLabel')">mdi-eye</v-icon
+                        ><v-icon v-else />
+                        <v-icon v-if="item.checks_enabled === false" size="13" :title="$t('passiveEnabled')"
+                        >mdi-parking</v-icon>
+                        <v-icon v-else />
+                        <v-icon
+                            v-if="item.problem_has_been_acknowledged === false"
+                            size="13"
+                            :title="$t('noAckLabel')"
+                        /><v-icon v-else size="13" :title="$t('ackLabel')">mdi-traffic-cone</v-icon>
+                    </span>
                 </template>
-
-                <template v-for="h in headers" #[`header.${h.value}`]="{ header }">
-                    <span :key="h.id" :title="header.label">{{ header.label }}</span>
-                </template>
-
-                <template v-for="(h, index) in headers" #[`item.${h.value}`]="{ item }">
-                    <div
-                        :key="h.id"
-                        class="cell pl-1"
-                        :class="cellClass(item, h.value, index)"
-                        @click="selectOnClick(item)">
-                        <span :title="displayRowItem(item, h.value, index)" :class="cellClass(item, h.value, index)">
-                            <v-icon
-                                v-if="h.value == 'name'" class="pb-1" size="13"
-                                color="black">
-                                {{ getIcon(item['info.device_type']) }}
-                            </v-icon>
-                            {{ displayRowItem(item, h.value, index) }}
-                        </span>
-                        <span v-if="h.value == 'state-flag'">
-                            <v-icon
-                                size="13" :color="setStatusIconColor(item)" :title="$t('stateFlag')">mdi-circle</v-icon>
-                            <v-icon
-                                :title="$t('openGraphLabel')"
-                                size="13"
-                                class="openGraphIcon"
-                                @click.stop="onClickGraphIcon(item)">mdi-chart-areaspline-variant</v-icon>
-                            <v-icon
-                                v-if="item.auto_track === true" size="13" :title="$t('recentChange')">mdi-alert-box-outline</v-icon><v-icon v-else />
-                            <v-icon v-if="item.track === true" size="13" :title="$t('trackLabel')">mdi-eye</v-icon><v-icon v-else />
-                            <v-icon
-                                v-if="item.checks_enabled === false" size="13" :title="$t('passiveEnabled')">mdi-parking</v-icon><v-icon v-else />
-                            <v-icon
-                                v-if="item.problem_has_been_acknowledged === false"
-                                size="13"
-                                :title="$t('noAckLabel')" /><v-icon v-else size="13" :title="$t('ackLabel')">mdi-traffic-cone</v-icon>
-                        </span>
-                    </div>
-                </template>
-            </v-data-table>
-
+            </AutoTable>
             <InfoPanel :elements="openInInfo" @set-info-event="getInfoEvent" />
         </div>
     </div>
@@ -142,16 +74,14 @@
 
 <script>
 import axios from 'axios';
-import Sortable from 'sortablejs';
-import FilterBar from '@/components/FilterBar';
-import InfoPanel from '@/components/InfoPanel';
-import ActionButtons from '@/components/ActionButtons';
-import watchClass from '@/plugins/watchclass';
+import FilterBar from '@/components/FilterBar.vue';
+import InfoPanel from '@/components/InfoPanel.vue';
+import ActionButtons from '@/components/ActionButtons.vue';
 import { getRowColor } from '@/plugins/status/row-color';
 import { getCellColor } from '@/plugins/status/cell-color';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
-import { getHeader } from '@/plugins/header';
+import { getHeaders } from '@/plugins/header';
 import * as queryurl from '@/plugins/queryurls';
 import AutoTable from '@/components/AutoTable/AutoTable.vue';
 
@@ -161,21 +91,7 @@ export default {
         FilterBar,
         InfoPanel,
         ActionButtons,
-    },
-    directives: {
-        'sortable-table': {
-            inserted: (el, binding) => {
-                el.querySelectorAll('th').forEach((draggableEl) => {
-                    // Need a class watcher because sorting v-data-table rows asc/desc removes the sortHandle class
-                    watchClass(draggableEl, 'sortHandle');
-                    draggableEl.classList.add('sortHandle');
-                });
-                Sortable.create(
-                    el.querySelector('tr'),
-                    binding.value ? { ...binding.value, handle: '.sortHandle' } : {}
-                );
-            },
-        },
+        AutoTable,
     },
     props: {
         apiType: {
@@ -185,10 +101,8 @@ export default {
     },
     data() {
         return {
-            headers: getHeader(this.$props.apiType),
-            selected: [],
+            selectedItems: [],
             openInInfo: [],
-            current: [],
             singleSelect: false,
             selectedId: -1,
             bottom: false,
@@ -218,7 +132,6 @@ export default {
             showSelectTooltip: false,
             anIncreasingNumber: 1,
             floatingPanel: false,
-            filterBarHeight: 0,
             filters: {},
 
             // status variables
@@ -230,9 +143,58 @@ export default {
             SOFT_STATE: 1,
 
             scrollEnd: false,
+            tableTopOffset: 0,
+            /**
+             * An object used to pass custom options to the AutoTable component.
+             */
+            tableOptions: {
+                showSelect: true,
+                singleSelect: false,
+                footerProps: {
+                    itemsPerPageOptions: [50, 100, 150, -1],
+                },
+                mobileBreakpoint: 0,
+                handlers: {
+                    handleItemClick: (item) => this.selectOnClick(item),
+                    handleItemSelect: (newSelectedItems) => this.updateSelectedItems(newSelectedItems),
+                },
+                vDataTableProps: {
+                    noDataText: this.$t('noDataText'),
+                    'options.sync': this.options,
+                },
+            },
         };
     },
     computed: {
+        customSlots() {
+            const slots = [];
+
+            this.headers.forEach((header) => {
+                this.formattedItems.forEach((item) => {
+                    if (header.getCellContent(header, item)?.html) {
+                        slots.push({
+                            name: `item.${header.value}`,
+                            content: header.getCellContent(header, item).value,
+                        });
+                    }
+                });
+            });
+
+            return slots;
+        },
+        /**
+         * Returns the computed headers for the AutoTable component, with a custom cell formatting callback.
+         * @returns {Array}
+         */
+        headers() {
+            return getHeaders(this.apiType);
+        },
+        filterBarHeight() {
+            return this.$refs?.filterBar?.clientHeight || this.$refs?.filterBar?.$el.clientHeight;
+        },
+        progressBarHeight() {
+            return this.$refs?.progressBar?.clientHeight || this.$refs?.progressBar?.$el.clientHeight;
+        },
         formattedItems: {
             get: function () {
                 var returnData = [];
@@ -317,7 +279,7 @@ export default {
     watch: {
         options: {
             handler() {
-                this.selected = [];
+                this.selectedItems = [];
             },
             deep: true,
         },
@@ -361,52 +323,31 @@ export default {
         window.addEventListener('keyup', this.keyUpHandler);
     },
     mounted() {
-        this.$nextTick(function () {
-            window.addEventListener('resize', this.getWindowHeight);
-            this.getWindowHeight();
-            this.topButtonDisplay();
-            resizetable(document.getElementsByTagName('table').item(0));
-        });
-
-        this.simpleGet();
-
-        // document.querySelector('th').style.borderColor = '#ad4444 !important';
-        // document.querySelector('th').style.backgroundColor = '#e0e0e0 !important';
+        const navBarHeight = document.getElementById('navbar').clientHeight;
+        this.tableTopOffset = navBarHeight + this.progressBarHeight + this.filterBarHeight + 2;
+        this.topButtonDisplay();
+        this.startFetchInterval();
     },
     methods: {
         /**
-         * Select multilign in the table.
-         *
-         * @param {object} item: The element which is clicked.
-         * @param {boolean} value: Return true if element checkbox is clicked.
+         * Select or deselect a table item on row click
+         * @param {Object} item the item to select
          */
-        multiSelectWithShift({ item: b, value }) {
-            // Get some variable from this element.
-            const { selected, current, shiftKeyOn } = this;
-            if (value == true && shiftKeyOn) {
-                const [a] = selected;
-                // Set start and end element's index to select.
-                let start = current.findIndex((item) => item.id == a.id);
-                let end = current.findIndex((item) => item == b);
-                if (start - end > 0) {
-                    let temp = start;
-                    start = end;
-                    end = temp;
-                }
-                // Add elements in the selected array.
-                for (let i = start; i <= end; i++) {
-                    selected.push(current[i]);
-                }
+        selectOnClick(item) {
+            const foundIndex = this.selectedItems.findIndex((found) => found.id === item.id);
+
+            if (foundIndex === -1) {
+                this.selectedItems.push(item);
+            } else {
+                this.selectedItems.splice(foundIndex, 1);
             }
         },
-        selectOnClick: function (item) {
-            const { selected } = this;
-            var foundIndex = selected.findIndex((element) => element == item);
-            if (foundIndex == -1) {
-                selected.push(item);
-            } else {
-                selected.splice(foundIndex, 1);
-            }
+        /**
+         * Update the selected items array on an item checkbox click
+         * @param {Array} newSelectedItems the up-to-date selected items
+         */
+        updateSelectedItems(newSelectedItems) {
+            this.selectedItems = newSelectedItems;
         },
         getInfo(item) {
             this.openInInfo.length == 0 ? this.openInInfo.push(item) : (this.openInInfo = [item]);
@@ -420,17 +361,17 @@ export default {
         // get all filters from filter bar
         getFilters(payload) {
             this.filters = payload;
-            this.selected = [];
+            this.selectedItems = [];
             this.options.page = 1;
-            // this.data = [];
+            // this.formattedItems = [];
             // this.data_by_id = [];
             // this.dataLength = 0;
             // this.fromValue = 0;
-            // this.simpleGet();
+            // this.startFetchInterval();
         },
         // execute after send data to api
         initializeSelected() {
-            this.selected = [];
+            this.selectedItems = [];
         },
         // active / disable multi sort
         allowMultiSort() {
@@ -449,19 +390,6 @@ export default {
         setStatusIconColor(item) {
             return getCellColor(this.$props.apiType, item);
         },
-        // return row backround color
-        displayRowItem(item, attr, index) {
-            if (typeof this.headers[index].render == 'function') {
-                return this.headers[index].render(item[attr], item, this.$props.apiType);
-            } else if (this.headers[index].render == 'state-ext') {
-                return '';
-            } else {
-                if (item[attr] == null) {
-                    return '--';
-                }
-                return item[attr];
-            }
-        },
         // return cell background
         cellClass(item, attr, index) {
             if (typeof this.headers[index].shape == 'function') {
@@ -470,26 +398,28 @@ export default {
             var returnClass = 'cell-' + this.headers[index].value;
             return returnClass.replace('.', '-');
         },
-        // fonction to make header visible or not
-        headerToShow(indexField) {
-            if (this.headers[indexField].show == false) {
-                this.headers[indexField].align = ' d-none';
-            } else {
-                this.headers[indexField].align = '';
-            }
-        },
+        /** @TODO deprecated, to remove */
+        // // fonction to make header visible or not
+        // headerToShow(indexField) {
+        //     if (this.headers[indexField].show == false) {
+        //         this.headers[indexField].align = ' d-none';
+        //     } else {
+        //         this.headers[indexField].align = '';
+        //     }
+        // },
         // function to make all rows selected
-        selectAllRows(elements) {
-            if (elements.length == this.formattedItems.length) {
-                for (let i = 0; i < this.formattedItems.length; i++) {
-                    this.$set(this.formattedItems[i], 'selected', true);
-                }
-            } else if (elements.length == 0) {
-                for (let i = 0; i < this.formattedItems.length; i++) {
-                    this.$set(this.formattedItems[i], 'selected', false);
-                }
-            }
-        },
+        /** @TODO deprecated, to remove */
+        // selectAllRows(elements) {
+        //     if (elements.length == this.formattedItems.length) {
+        //         for (let i = 0; i < this.formattedItems.length; i++) {
+        //             this.$set(this.formattedItems[i], 'selected', true);
+        //         }
+        //     } else if (elements.length == 0) {
+        //         for (let i = 0; i < this.formattedItems.length; i++) {
+        //             this.$set(this.formattedItems[i], 'selected', false);
+        //         }
+        //     }
+        // },
         // function to apply user scroll in the table panel
         infiniteScroll() {
             // console.log('>>> ', this.scrollEnd);
@@ -504,7 +434,7 @@ export default {
             if (divOffset + 2 * divVisibleSize > divTotalSize) {
                 scrollDiv.removeEventListener('scroll', this.infiniteScroll);
                 this.fromValue = this.formattedItems.length;
-                this.simpleGet();
+                this.startFetchInterval();
             } else this.scrollEnd = false;
         },
 
@@ -809,7 +739,7 @@ export default {
         },
 
         // send the request
-        simpleGet() {
+        startFetchInterval() {
             this.progressQuery = true;
             this.progressShow = true;
             this.progressValue = 0;
@@ -824,7 +754,7 @@ export default {
                 if (this.progressValue === 100) {
                     clearInterval(this.progressInterval);
                     this.progressShow = true;
-                    return setTimeout(this.simpleGet, 2000);
+                    return setTimeout(this.startFetchInterval, 2000);
                 }
                 this.progressValue += 10;
             }, 1000);
@@ -849,25 +779,11 @@ export default {
             if (this.openInInfo.length == 0) {
                 return 'display:grid;grid-template-columns:100%';
             } else if (this.openInInfo.length == 1) {
-                // document.querySelector('.info-panel').style['display'] = 'block';
                 return 'display:grid;grid-template-columns:80% 20%';
-            }
-        },
-        // function to get the window height minus the filter bar height
-        getWindowHeight() {
-            let navbarHeight = document.getElementById('navbar') ? document.getElementById('navbar').clientHeight : 0;
-            if (this.$refs.panelRow) {
-                this.filterBarHeight =
-                    window.innerHeight -
-                    (navbarHeight +
-                        this.$refs.filterBar.$el.clientHeight +
-                        this.$refs.progressBar.clientHeight +
-                        document.getElementsByClassName('v-data-footer')[0].clientHeight);
             }
         },
         goToTableTop() {
             document.querySelector('.v-data-table__wrapper').scrollTop = 0;
-            // document.documentElement.scrollTop = 0;
         },
         topButtonDisplay() {
             document.querySelector('.v-data-table__wrapper').addEventListener('scroll', (element) => {
@@ -902,34 +818,6 @@ table {
     width: 100%;
     table-layout: auto;
     position: relative;
-}
-
-.v-data-table__divider {
-    position: relative;
-}
-
-.v-data-table__divider span {
-    position: absolute;
-    top: 1;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 5px 5px 5px 5px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-// Header arrow that define the sort type
-thead .v-data-table__divider .mdi-arrow-up {
-    position: absolute;
-    right: 12px;
-    bottom: 7px;
-}
-
-// Keep the header to the top
-th {
-    position: sticky !important;
 }
 
 .panel-box {
