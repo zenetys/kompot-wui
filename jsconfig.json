@@ -2,10 +2,9 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "components/*": [
-                "src/components/*",
-                "src/views/*"
-            ]
+            "components/*": ["wui/src/components/*", "wui/src/views/*"],
+            "@/*": ["./wui/src/*"],
+            "@wui/public/*": ["./wui/public/*"]
         },
         "jsx": "preserve"
     }
