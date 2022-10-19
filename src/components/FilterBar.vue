@@ -5,7 +5,7 @@
 
         <div class="d-flex"  v-if="!$vuetify.breakpoint.xs">
 
-            <v-toolbar dense class="elevation-1 blue-grey lighten-5">                
+            <v-toolbar dense class="elevation-1 blue-grey lighten-5">
 
                 <template>
 
@@ -15,8 +15,8 @@
                         style="height: 150px;"
                     >
                         <v-col cols="12" md="4" lg="3">
-                            <v-btn-toggle 
-                                color="white" 
+                            <v-btn-toggle
+                                color="white"
                                 v-model="toggleFilter"
                                 class="mr-1 mb-1 elevation-2"
                                 mandatory
@@ -65,7 +65,7 @@
         </div>
 
     </div>
-    
+
 </template>
 
 <style lang="scss">
@@ -106,14 +106,14 @@ export default {
             menuProps: { value: false },
             dialog: false,
             filterId: null,
-            filterTitle: null, 
-            filterDescription: null, 
+            filterTitle: null,
+            filterDescription: null,
             filterContent: null,
-            filterLevel: null, 
+            filterLevel: null,
             filterSavingErros: [],
             formValid: true,
             checkedFilter: [],
-            
+
         }
     },
     watch: {
@@ -172,16 +172,16 @@ export default {
                             search.push("display_name[regex]="+searchInfo[1]);
                         } else if (searchInfo[0]=="o") {
                             search.push("plugin_output[regex]="+searchInfo[1]);
-                        } else { 
+                        } else {
                             search.push(boxArray[i]);
                         }
-                        
+
                     }
                 }
                 return search.join('&');
             }
             return "";
-            
+
         },
         setQuery() {
             // level filter
@@ -192,11 +192,11 @@ export default {
 
             // filters selected
             var filtersSelected;
-            
+
             if (this.checkedFilter) {
-                if (this.checkedFilter.length!=0) {        
-                    // filtersSelected = "q=///" + this.checkedFilter.join(" or ") + "///";                    
-                    filtersSelected = this.checkedFilter.content;                    
+                if (this.checkedFilter.length!=0) {
+                    // filtersSelected = "q=///" + this.checkedFilter.join(" or ") + "///";
+                    filtersSelected = this.checkedFilter.content;
                 } else {
                     filtersSelected = '';
                 }
@@ -238,10 +238,10 @@ export default {
         },
         saveHistoricFilter() {
             var historicFilter = {box:this.searchBox, id: Date.now(), title: this.searchBox, type: 'historic'};
-            this.saveHistoric(historicFilter);   
+            this.saveHistoric(historicFilter);
         },
         saveFilter() {
-            
+
             if (this.$refs.formFilter.validate()) {
                 var filter = {
                     id: Date.now(),
@@ -249,9 +249,9 @@ export default {
                     description: this.filterDescription,
                     content: this.getSearchBoxPartOfFilter(),
                     box: this.searchBox,
-                    level: this.toggleFilter, 
+                    level: this.toggleFilter,
                 };
-                setUserFilterConfig(filter);                
+                setUserFilterConfig(filter);
                 this.saveFilterDialog = false;
                 this.$refs.formFilter.reset();
                 this.searchBox = '';
@@ -293,10 +293,10 @@ export default {
         this.searchBox = this.$route.query.filter;
 
         this.filterItems = JSON.parse(getUserSessionConfig()).filters
-        
+
         document.addEventListener('click', () => {
             this.menuProps.value = false;
         } );
     }
 }
-</script>   
+</script>

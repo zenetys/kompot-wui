@@ -26,10 +26,10 @@ export function simpleFormat(date) {
 export function compactFormat (date) {
     let now = new Date();
     let outTime = formatDateWithMillisecond( (now.getTime() - (new Date(date)).getTime())/1000);
-    
+
     // if (outTime.dayNumber > 49 )
     //     return '+7weeks';
-    
+
     let outTimeFormat = [];
     if (outTime.dayNumber > 0 && outTimeFormat.length < 2)
         outTimeFormat.push(outTime.dayNumber + 'd');
@@ -39,9 +39,9 @@ export function compactFormat (date) {
         outTimeFormat.push(outTime.minuteNumber + 'm');
     if (outTime.secondNumber > 0 && outTimeFormat.length < 2)
         outTimeFormat.push(outTime.secondNumber + 's');
-    
+
     return outTimeFormat.join('');
-        
+
 }
 
 function formatDateWithMillisecond (second) {

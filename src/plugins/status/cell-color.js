@@ -6,11 +6,11 @@ const apis = {
 }
 
 function elasticCellColor() {
-    
+
 }
 
 function thrukCellColor() {
-    
+
 }
 
 function nagiosCellColor(item) {

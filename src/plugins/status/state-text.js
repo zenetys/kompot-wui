@@ -8,11 +8,11 @@ const apis = {
 }
 
 function elasticStateText() {
-    
+
 }
 
 function thrukStateText() {
-    
+
 }
 
 function nagiosStateText(status, item) {

@@ -104,7 +104,7 @@
         <InfoPanel :elements="this.openInInfo" @set-info-event="getInfoEvent"></InfoPanel>
 
     </div>
-    
+
 </div>
 </template>
 
@@ -233,7 +233,7 @@ export default {
         progressQuery: false,
         progressShow: true,
         progressInterval: 0,
-        
+
         requestLink: this.$props.api,
         languages: ['en', 'fr'],
         shiftKeyOn: false,
@@ -321,7 +321,7 @@ export default {
                             return false;
                         });
                     break;
-                
+
                     default:
                         returnData = this.tempData;
                         break;
@@ -339,7 +339,7 @@ export default {
 
             },
             set: function() {
-                
+
             }
         }
     },
@@ -386,7 +386,7 @@ export default {
                 this.openInInfo = [];
             }
             this.seletedDetailsView();
-        },     
+        },
         // get all filters from filter bar
         getFilters(payload) {
             this.filters = payload;
@@ -429,7 +429,7 @@ export default {
                 if (item[attr]==null) {
                     return "--";
                 }
-                return item[attr];  
+                return item[attr];
             }
         },
         // return cell background
@@ -448,7 +448,7 @@ export default {
                 this.headers[indexField].align = '';
             }
         },
-        // function to make all rows selected      
+        // function to make all rows selected
         selectAllRows(elements) {
             if (elements.length == this.data.length) {
                 for (let i = 0; i < this.data.length; i++) {
@@ -472,7 +472,7 @@ export default {
             var divOffset = scrollDiv.scrollTop;
             var divVisibleSize = scrollDiv.clientHeight;
             var divTotalSize = scrollDiv.scrollHeight;
-            
+
             if (divOffset+2*divVisibleSize>divTotalSize) {
                 scrollDiv.removeEventListener('scroll', this.infiniteScroll);
                 this.fromValue = this.data.length;
@@ -481,14 +481,14 @@ export default {
             else
                 this.scrollEnd = false;
         },
-        
+
         // get sort options
         getSortPartOfLink() {
             var sortString = [];
             this.sortFields.field = null;
             this.sortFields.sort = null;
             if(this.options.sortBy) {
-                for (let i = 0; i < this.options.sortBy.length; i++) {            
+                for (let i = 0; i < this.options.sortBy.length; i++) {
                     if(this.options.sortDesc[i]==true) {
                         sortString.push("-"+this.options.sortBy[i]);
                         this.sortFields.field = this.options.sortBy[i];
@@ -509,7 +509,7 @@ export default {
             return '&offset='+this.fromValue;
         },
         getLink(host_type="") {
-            
+
             var defaultLink = this.$props.api;
 
             if (host_type=="host") {
@@ -519,12 +519,12 @@ export default {
             }
 
             // var sortArray = (this.getSortPartOfLink()) ? "sort="+this.getSortPartOfLink() : "";
-            
+
             // limit and from values
             // var limit = "limit=" + 100 + this.getFromPartOfLink();
 
-            // provisory link 
-            var link =  defaultLink; 
+            // provisory link
+            var link =  defaultLink;
                         // + "?" +
                         // sortArray + "&" +
                         // limit + "&" +
@@ -798,7 +798,7 @@ export default {
                     this.progressValue += 10;
             }, 1000);
 
-            
+
         },
         // reorder the headers keys
         sortTheHeadersAndUpdateTheKey(evt) {
@@ -814,7 +814,7 @@ export default {
             headersTmp.splice(newIndex, 0, headersTmp.splice(oldIndex, 1)[0]);
             this.table = headersTmp;
             this.anIncreasingNumber += 1;
-        },        
+        },
         // function to manage panel grid to show/hide info panel
         seletedDetailsView() {
             if (this.openInInfo.length == 0) {
@@ -886,7 +886,7 @@ export default {
         });
 
         this.simpleGet();
-        
+
         // document.querySelector('th').style.borderColor = '#ad4444 !important';
         // document.querySelector('th').style.backgroundColor = '#e0e0e0 !important';
 

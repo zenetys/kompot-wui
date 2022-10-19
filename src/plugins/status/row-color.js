@@ -6,11 +6,11 @@ const apis = {
 }
 
 function elasticRowColor() {
-    
+
 }
 
 function thrukRowColor() {
-    
+
 }
 
 function nagiosRowColor(item) {

@@ -24,14 +24,14 @@ export default new Vuetify({
                 cellstatewarning: "#FCC400",
             },
             dark:{
-                rowselect: '#5d5155',   
+                rowselect: '#5d5155',
                 tableheadercolor: "#616161",
                 cellstategreen: "#479a40",
                 cellstatered: "#D33115",
                 cellstateunknown: "#ADD0FF",
                 cellstatewarning: "#FCC400"
             }
-            
+
         }
     }
 });

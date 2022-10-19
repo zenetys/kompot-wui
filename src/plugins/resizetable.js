@@ -17,11 +17,11 @@ function resizableGrid(table) {
     var row = table.getElementsByTagName('tr')[0],
     cols = row ? row.children : undefined;
     if (!cols) return;
-    
+
     if (cols[0].getAttribute('aria-label')=='') {
         cols[0].style.width = '1%';
     }
-    
+
 
     for (var i=0;i<cols.length;i++){
         // var div = this.createDiv(table.offsetHeight);
@@ -65,22 +65,22 @@ function setListeners(div){
     var pageX,curCol,nxtCol,curColWidth,nxtColWidth;
 
     div.addEventListener('click', function(e) {
-        e.stopPropagation();        
+        e.stopPropagation();
     })
 
     div.addEventListener('mouseover', function(e) {
-        e.stopPropagation();        
+        e.stopPropagation();
     })
 
     div.addEventListener('mousedown', function (e) {
         e.stopPropagation();
-        
+
         // element which is the created div parent => the current column
         curCol = e.target.parentElement;
 
         // get the current column name
         var columnName = curCol.getAttribute('aria-label').split(':')[0];
-        
+
         // identify the column in the header array
         headerToResize = headerFromStorage.filter( curr => {
             return curr.value == columnName;
@@ -97,12 +97,12 @@ function setListeners(div){
 
         // page abciss from the point the mouse down
         pageX = Math.floor((e.pageX / tableWidth)*100)  ;
-        
+
         curColWidth = Math.floor( ((curCol.offsetWidth/tableWidth)*100) ) ;
-        
+
         if (nxtCol)
             nxtColWidth = Math.floor( ((nxtCol.offsetWidth/tableWidth)*100) );
-            
+
     });
 
     document.addEventListener('mousemove', function (e) {
@@ -114,7 +114,7 @@ function setListeners(div){
             if (nxtCol)
                 nxtCol.style.width = (nxtColWidth - diffX)+'%';
 
-            curCol.style.width = (curColWidth + diffX)+'%';           
+            curCol.style.width = (curColWidth + diffX)+'%';
 
             headerToResize[0].width = (curColWidth + diffX)+'%';
             nextHeaderToResize[0].width = (nxtColWidth - diffX)+'%';
@@ -124,7 +124,7 @@ function setListeners(div){
         }
     });
 
-    document.addEventListener('mouseup', function (e) { 
+    document.addEventListener('mouseup', function (e) {
         e.stopPropagation();
 
         curCol = undefined;

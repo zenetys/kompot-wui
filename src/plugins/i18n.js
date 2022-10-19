@@ -3,7 +3,7 @@ import VueI18n from 'vue-i18n';
 
 Vue.use(VueI18n);
 
-const messages = { 
+const messages = {
     'en': {
 
         // Table Panel Headers
@@ -83,7 +83,7 @@ const messages = {
             allProblems: 'All problems',
             any: 'All elements'
         },
-        helpFilterQueryFormat: "Enter here your query. \n" + 
+        helpFilterQueryFormat: "Enter here your query. \n" +
                             "Ex: 'down'",
 
         // Columns icons
@@ -174,7 +174,7 @@ const messages = {
             allProblems: 'Tous les problèmes',
             any: 'Tous les éléments'
         },
-        helpFilterQueryFormat: "Saisissez dans ce champ votre requette. \n" + 
+        helpFilterQueryFormat: "Saisissez dans ce champ votre requette. \n" +
                             "Ex: 'down'",
 
         // Columns icons
@@ -185,8 +185,8 @@ const messages = {
     }
 };
 
-const i18n = new VueI18n({  
-    locale: 'fr', // set locale    
+const i18n = new VueI18n({
+    locale: 'fr', // set locale
     fallbackLocale: 'fr', // set fallback locale
     messages, // set locale messages
 });

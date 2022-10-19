@@ -1,5 +1,5 @@
 <template>
-  <v-app>   
+  <v-app>
     <v-app-bar id="navbar" app :class="{'red lighten-2': this.serverState==1, 'blue-grey darken-1': this.serverState==0}" dark dense clipped-left>
       <v-app-bar-nav-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-col cols="2">

@@ -11,7 +11,7 @@ const apis = {
 
 function elasticHeader() {
     return [
-        
+
     ];
 }
 
@@ -27,7 +27,7 @@ function thrukHeader() {
         { text: '_DEBUG', value: '_DEBUG', label: i18n.tc('debug'), divider: true, align: '', sort: '', show: true, width: '10%' },
         { text: '_SITE', value: '_SITE', label: i18n.tc('site'), divider: true, align: '', sort: '', show: true, width: '10%' },
         { text: '_TYPE', value: '_TYPE', label: i18n.tc('type'), divider: true, align: '', sort: '', show: true, width: '20%' },
-        
+
     ];
 }
 
@@ -54,7 +54,7 @@ function nagiosHeader() {
         { text: 'auto_track', value:'auto_track', vkey: 'auto_track', label: i18n.tc('autoTrack'), divider: true, align: ' d-none', sort: '', show: false, render: '', width: '2%', shape: '' },
         { text: 'track', value:'track', vkey: 'track', label: i18n.tc('track'), divider: true, align: ' d-none', sort: '', show: false, render: '', width: '2%', shape: '' },
         { text: 'plugin_output', value:'plugin_output', vkey: 'plugin_output', label: i18n.tc('output'), divider: true, align: '', sort: '', show: true, render: '', width: '36%', shape: '' },
-        
+
     ];
 }
 

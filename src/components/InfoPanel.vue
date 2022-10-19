@@ -1,7 +1,7 @@
 <template>
     <div class="info-panel" style="z-index:30;" v-if="elements.length==1">
         <v-card outlined :height="panelInfoHeight" style="overflow:hidden;" class="info-panel-card px-1">
-            
+
             <!-- Icon and device name -->
             <div class="pl-1 elevation-2" style="display:grid;grid-template-columns: 30% 70%;margin-bottom:10px;z-index: 30;background-color: #ffffff;">
                 <v-btn icon class="ml-3" style="position:absolute;right:0;top:0;z-index:32;" @click="setInfoEvent()">
@@ -13,12 +13,12 @@
                 <div class="three-dots">
                     <span style="font-size:30px;" :title="elements[0].name.split('.')[0]"> {{ elements[0].name.split('.')[0]  }} </span>
                     <!-- <p style="margin-bottom: 0px;"> <v-chip x-small label> {{elements[0]["device_ip"]}} </v-chip> </p>  -->
-                    <p style="margin-bottom: 0px;"> <v-chip x-small label> {{elements[0]["_SITE"]}} </v-chip> </p> 
+                    <p style="margin-bottom: 0px;"> <v-chip x-small label> {{elements[0]["_SITE"]}} </v-chip> </p>
                 </div>
-                
+
             </div>
 
-            
+
             <!-- Other information -->
             <div>
                 <v-divider></v-divider>
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <v-divider></v-divider>
-            
+
             <!-- Indicator information -->
             <div style="overflow-y:scroll;height:250px;">
 
@@ -61,14 +61,14 @@
                     >
                     <div class="title three-dots">
                         <!-- indicator -->
-                        {{item.display_name}} 
+                        {{item.display_name}}
                     </div>
                     <span class="" :title="item.plugin_output"> {{item.plugin_output}}  </span>
-                    
+
                 </v-alert>
 
             </div>
-            
+
         </v-card>
     </div>
 </template>
@@ -146,7 +146,7 @@ export default {
         getRowStateColor(item) {
             if (item.state==0 && (item.indicator=='' || item.indicator!=''))
                 return 'green lighten-4';
-            if (item.state==1 && (item.indicator=='' || item.indicator!='')) 
+            if (item.state==1 && (item.indicator=='' || item.indicator!=''))
                 return 'blue lighten-4';
             if (item.state==2 && (item.indicator=='' || item.indicator!=''))
                 return 'yellow lighten-4';
@@ -169,7 +169,7 @@ export default {
                 document.querySelector('.panel-row').style['display'] = 'grid';
                 document.querySelector('.panel-row').style['grid-template-columns'] = '80% 20%';
             }
-                
+
         },
         /**
          * Function to get data from api
@@ -184,7 +184,7 @@ export default {
                 },
                 responseType: 'json'
             })
-            .then(response => {       
+            .then(response => {
                 for (const [key, value] of Object.entries(response.data.data.servicelist[this.elements[0].name])) {
                     var data = { name: key };
                     this.data.push(Object.assign(value, data));
@@ -202,8 +202,8 @@ export default {
             window.addEventListener('resize', this.getWindowHeight);
             this.getWindowHeight();
         });
-        
-        
+
+
     },
 
     beforeDestroy() {

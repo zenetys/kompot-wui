@@ -4,9 +4,9 @@ export function setUserFilterConfig(filter) {
 
         var filters = JSON.parse(userSessionConfig).filters;
         filters.push(filter);
-        
+
         setUserConfig({
-            filters: filters    
+            filters: filters
         });
     }
 }
@@ -19,9 +19,9 @@ export function updateUserFilter(filter) {
 
         var foundIndex = filters.findIndex(x => x.id == filter.id);
         filters[foundIndex] = filter;
-        
+
         setUserConfig({
-            filters: filters,    
+            filters: filters,
         });
     }
 }

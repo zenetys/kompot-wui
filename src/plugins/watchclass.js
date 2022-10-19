@@ -1,7 +1,7 @@
 // Add back the sortHandle class if it gets stripped away by external code
 export default function watchClass(targetNode, classToWatch) {
     let lastClassState = targetNode.classList.contains(classToWatch);
-    
+
     const observer = new MutationObserver((mutationsList) => {
       for (let i = 0; i < mutationsList.length; i++) {
         const mutation = mutationsList[i];
