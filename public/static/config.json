@@ -1,0 +1,12 @@
+{
+    "apiType": "nagios",
+    "apiBaseUrl": "./nagios",
+    "menu": [
+        {
+            "name": "Bac à état",
+            "url": "/panel",
+            "icon": "mdi-table",
+            "type": "div"
+        }
+    ]
+}
