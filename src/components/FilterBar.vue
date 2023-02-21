@@ -85,12 +85,16 @@ export default {
             filterSavingErros: [],
             formValid: true,
             checkedFilter: [],
-
+            setFilterEventTimeout: null,
         }
     },
     watch: {
         searchBox() {
-            this.setFilterEvent();
+            if (this.setFilterEventTimeout)
+                clearTimeout(this.setFilterEventTimeout);
+            this.setFilterEventTimeout = setTimeout(() => {
+                this.setFilterEvent();
+            }, 500);
         },
         checkedFilter() {
             this.searchBox = (this.checkedFilter) ? this.checkedFilter.box : "";
@@ -110,7 +114,7 @@ export default {
     },
     methods: {
         setFilterEvent() {
-            this.$emit('set-filter-event', this.setFilter() );
+            this.$emit('set-filter-event', this.setFilter());
         },
         setFilter() {
             return {
