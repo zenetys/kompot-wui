@@ -195,6 +195,19 @@ function nagiosHeader() {
             shape: '',
         },
         {
+            text: 'address',
+            value:'address',
+            vkey: 'address',
+            label: i18n.tc('ipAddress'),
+            divider: true,
+            align: ' d-none',
+            sort: '',
+            show: false,
+            render: '',
+            width: '10%',
+            shape: ''
+        },
+        {
             text: 'last_state_change',
             value: 'last_state_change',
             vkey: 'last_state_change',

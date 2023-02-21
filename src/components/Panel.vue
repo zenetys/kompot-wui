@@ -740,6 +740,7 @@ export default {
                                     auto_track:
                                         element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : true,
                                     track: element.__TRACK === '0;' || element.__TRACK == '1;0' ? false : true,
+                                    address: foundHostElement.address,
                                 };
 
                                 this.headers.forEach((h) => {
