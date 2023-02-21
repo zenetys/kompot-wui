@@ -29,6 +29,7 @@ const messages = {
         passiveEnabled: 'Passive',
         checksEnabled: 'Checked',
         recentChange: 'Recent Change',
+        tags: 'Tags',
 
         // Status labels
         pending: 'Pending',
@@ -119,6 +120,7 @@ const messages = {
         passiveEnabled: 'Passif',
         checksEnabled: 'Testé',
         recentChange: 'Changement Récent',
+        tags: 'Tags',
 
         // Status labels
         pending: 'En cours',

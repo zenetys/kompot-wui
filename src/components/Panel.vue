@@ -741,13 +741,21 @@ export default {
                                         element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : true,
                                     track: element.__TRACK === '0;' || element.__TRACK == '1;0' ? false : true,
                                     address: foundHostElement.address,
+                                    'tags': foundHostElement.tags,
                                 };
 
                                 this.headers.forEach((h) => {
                                     var elem = h.value.split('.').reduce((obj, i) => {
                                         return typeof obj == 'undefined' ? undefined : obj[i];
                                     }, element);
-                                    if (typeof elem !== 'undefined') data2[h.value] = elem;
+                                    if (typeof elem !== 'undefined') {
+                                        if (typeof(data2[h.value]) !== "undefined") {
+                                            data2[h.value] = data2[h.value] + " " + elem;
+                                        }
+                                        else {
+                                            data2[h.value] = elem;
+                                        }
+                                    }
                                 });
 
                                 if (typeof this.data_by_id_services[id] === 'undefined') {
