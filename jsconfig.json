@@ -7,5 +7,6 @@
             "@wui/public/*": ["./public/*"]
         },
         "jsx": "preserve"
-    }
+    },
+    "exclude": ["node_modules"]
 }
