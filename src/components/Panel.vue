@@ -30,17 +30,7 @@
             </div>
 
             <AutoTable
-                :headers="headers"
-                :items="formattedItems"
-                :api-type="apiType"
-                :config-id="$columnSettingsId"
-                :item-class="getRowBackgroundClass"
-                :offset-top="tableTopOffset"
-                :table-options="tableOptions"
-                :selected-items="selectedItems"
-                :search="filters.box"
-                offset-columns-button
-                item-key="id"
+                :config="config"
             >
                 <template #custom-item="{ header, item }">
                     <span v-if="header.getCellContent(header, item).isHtml">
@@ -82,7 +72,7 @@ import { getCellColor } from '@/plugins/status/cell-color';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
 import { getHeaders } from '@/plugins/header';
-import AutoTable from '@/components/AutoTable/AutoTable.vue';
+import AutoTable from '@zenetys/ztable';
 import { compactFormat, frenchFormat } from '@/plugins/utils';
 
 const getStateText = (status, item) => {
@@ -108,6 +98,12 @@ export default {
     },
     data() {
         return {
+            config: {
+                id: 'table-network',
+                api: '',
+                height: 'auto',
+                paginated: false,
+            },
             selectedItems: [],
             openInInfo: [],
             singleSelect: false,
@@ -283,6 +279,18 @@ export default {
         },
     },
     watch: {
+        formattedItems: {
+            handler(data) {
+                const promise = new Promise((resolve)=>{
+                    const res = {
+                        data
+                    }
+                    resolve(res);
+                });
+                this.config = { ...this.config, api: promise };
+            },
+            immediate: true
+        },
         options: {
             handler() {
                 this.selectedItems = [];
