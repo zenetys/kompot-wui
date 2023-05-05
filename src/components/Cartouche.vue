@@ -25,7 +25,7 @@
 
 <script>
 import axios from 'axios';
-import * as queryurl from '../plugins/queryurls';
+import { getQueryUrls } from '@/plugins/apis/api-manager';
 import { mapActions } from 'vuex';
 import i18n from '../plugins/i18n';
 
@@ -53,6 +53,7 @@ export default {
             serviceNumber: 0,
             progressInterval: 0,
             progressValue: 0,
+            queryUrls: getQueryUrls()
         };
     },
     mounted() {
@@ -76,7 +77,7 @@ export default {
             axios
                 .all([
                     axios({
-                        url: queryurl.HOST_COUNT,
+                        url: this.queryUrls.HOST_COUNT,
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ export default {
                         responseType: 'json',
                     }),
                     axios({
-                        url: queryurl.SERVICE_COUNT,
+                        url: this.queryUrls.SERVICE_COUNT,
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',

@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { fetchAndFormatData } from '@/plugins/apis/api-manager';
 import FilterBar from '@/components/FilterBar.vue';
 import InfoPanel from '@/components/InfoPanel.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
@@ -82,8 +82,22 @@ import { getCellColor } from '@/plugins/status/cell-color';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
 import { getHeaders } from '@/plugins/header';
-import * as queryurl from '@/plugins/queryurls';
 import AutoTable from '@/components/AutoTable/AutoTable.vue';
+import { compactFormat, frenchFormat } from '@/plugins/utils';
+import { getStatusTexts } from '@/plugins/apis/api-manager';
+
+const getStateText = (status, item) => {
+    // HOST
+    if (status == 2) return i18n.t('hostUp');
+    if (status == 4 && item.display_name == 'PING') return i18n.t('hostDown');
+    if (status == 4 && item.display_name != 'PING') return i18n.t('serviceWarning');
+    if (status == 8 && item.display_name == 'PING') return i18n.t('hostUnreachable');
+    if (item.status == 8 && item.display_name != 'PING') {
+        return i18n.t('serviceUnknown');
+    }
+    if (status == 1) return i18n.t('pending');
+    if (status == 16) return i18n.t('serviceCritical');
+}
 
 export default {
     i18n: i18n,
@@ -107,9 +121,6 @@ export default {
             selectedId: -1,
             bottom: false,
             tempData: [],
-            data_by_id_hosts: [],
-            data_by_id_services: [],
-            data_by_id_final_data: [],
             sortFields: { field: null, sort: null },
             tab: [],
             loading: true,
@@ -135,12 +146,13 @@ export default {
             filters: {},
 
             // status variables
-            UP: 2,
-            HOST_PENDING: 1,
-            HOST_DOWN: 4,
-            HOST_UNREACHABLE: 8,
-            HARD_STATE: 1,
-            SOFT_STATE: 1,
+            statusTexts: getStatusTexts(this.apiType),
+            UP: this.statusTexts?.UP,
+            HOST_PENDING: this.statusTexts?.HOST_PENDING,
+            HOST_DOWN: this.statusTexts?.HOST_DOWN,
+            HOST_UNREACHABLE: this.statusTexts?.HOST_UNREACHABLE,
+            HARD_STATE: this.statusTexts?.HARD_STATE,
+            SOFT_STATE: this.statusTexts?.SOFT_STATE,
 
             scrollEnd: false,
             tableTopOffset: 0,
@@ -505,236 +517,22 @@ export default {
             // return priority_value[status];
         },
         updateFromServer() {
-            var data_hosts = [];
-            var data_services = [];
+            // Fetch all data from API
+            fetchAndFormatData(this.headers).then(formattedApiData => {
+                this.tempData = formattedApiData;
 
-            axios
-                .all([
-                    axios({
-                        url: queryurl.OBJECT_HOST_LIST,
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        responseType: 'json',
-                    }),
-                    axios({
-                        url: queryurl.STATUS_HOST_LIST,
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        responseType: 'json',
-                    }),
-                ])
-                .then(
-                    axios.spread((result1, result2) => {
-                        // data 2 (status) => source
-                        // data 1 (object) => target
-                        var statusData = result2.data.data.hostlist;
-                        var objectData = result1.data.data.hostlist;
+                this.loading = false;
+                this.scrollEnd = false;
 
-                        // merge status data and object data
-                        for (const key in statusData) {
-                            for (const key2 in objectData) {
-                                if (statusData[key]['name'] === objectData[key2]['name']) {
-                                    objectData[key2] = Object.assign(objectData[key2], statusData[key]);
-                                }
-                            }
-                        }
-
-                        // Nagios loop on return data
-                        for (const [key, value] of Object.entries(objectData)) {
-                            var element = value;
-                            var id = key + ':' + 'PING';
-                            // add priority column
-                            var time_indice = element.last_update / new Date();
-                            var priority_indice = this.getPriorityIndice(element);
-                            var priority = time_indice + priority_indice;
-                            var data = {
-                                id: id,
-                                name: element.name,
-                                priority: priority,
-                                problem_has_been_acknowledged: element.problem_has_been_acknowledged,
-                                outage: element.status == this.HOST_UNREACHABLE ? true : false,
-                                TYPE: element.custom_variables ? element.custom_variables.TYPE : '',
-                                state_type: element.state_type,
-                                auto_track:
-                                    element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : true,
-                                track: element.__TRACK === '0;' || element.__TRACK == '1;0' ? false : true,
-                            };
-
-                            this.headers.forEach((h) => {
-                                var elem = h.value.split('.').reduce((obj, i) => {
-                                    return typeof obj == 'undefined' ? undefined : obj[i];
-                                }, element);
-                                if (typeof elem !== 'undefined') data[h.value] = elem;
-                            });
-                            data['display_name'] = 'PING';
-
-                            if (typeof this.data_by_id_hosts[id] === 'undefined') {
-                                data_hosts.push(data);
-                                this.data_by_id_hosts[id] = data_hosts.length - 1;
-                            } else {
-                                var idx = this.data_by_id_hosts[id];
-                                data_hosts[idx] = Object.assign({}, data_hosts[idx], data);
-                            }
-                        }
-                    })
-                )
-                .catch(() => {});
-
-            axios
-                .all([
-                    axios({
-                        url: queryurl.OBJECT_SERVICE_LIST,
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        responseType: 'json',
-                    }),
-                    axios({
-                        url: queryurl.STATUS_SERVICE_LIST,
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        responseType: 'json',
-                    }),
-                ])
-                .then(
-                    axios.spread((result1, result2) => {
-                        // data 2 (status) => source
-                        // data 1 (object) => target
-                        var statusData = result2.data.data.servicelist;
-                        var objectData = result1.data.data.servicelist;
-
-                        // merge status data and object data
-                        // loop on status data
-                        for (const [key, value] of Object.entries(statusData)) {
-                            key;
-                            for (let i = 0; i < Object.keys(value).length; i++) {
-                                var statusElement = value[Object.keys(value)[i]];
-
-                                // loop on object data
-                                for (const [key, value2] of Object.entries(objectData)) {
-                                    key;
-                                    for (let j = 0; j < Object.keys(value2).length; j++) {
-                                        var objectElement = value2[Object.keys(value2)[j]];
-
-                                        if (
-                                            statusElement['host_name'] === objectElement['host_name'] &&
-                                            statusElement['description'] === objectElement['description']
-                                        ) {
-                                            value2[Object.keys(value2)[j]] = Object.assign(
-                                                objectElement,
-                                                statusElement
-                                            );
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // Nagios loop on return data
-                        for (const [key, value] of Object.entries(objectData)) {
-                            for (let i = 0; i < Object.keys(value).length; i++) {
-                                var element = value[Object.keys(value)[i]];
-
-                                // look for each service parent (host)
-                                let foundHostElement = data_hosts.find((hostElement) => {
-                                    return hostElement['name'] == key;
-                                });
-
-                                var id = key + ':' + element.description;
-
-                                // add priority column
-                                var time_indice = element.last_update / new Date();
-                                var priority_indice = this.getPriorityIndice(element);
-                                var priority = time_indice + priority_indice;
-
-                                var data2 = {
-                                    id: id,
-                                    name: element.host_name,
-                                    priority: priority,
-                                    problem_has_been_acknowledged: element.problem_has_been_acknowledged,
-                                    outage: foundHostElement
-                                        ? foundHostElement.status == this.HOST_DOWN ||
-                                          foundHostElement.status == this.HOST_UNREACHABLE
-                                            ? true
-                                            : false
-                                        : '',
-                                    TYPE: element.custom_variables ? element.custom_variables.TYPE : '',
-                                    state_type: element.state_type,
-                                    auto_track:
-                                        element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : true,
-                                    track: element.__TRACK === '0;' || element.__TRACK == '1;0' ? false : true,
-                                    address: foundHostElement.address,
-                                    'tags': foundHostElement.tags,
-                                };
-
-                                this.headers.forEach((h) => {
-                                    var elem = h.value.split('.').reduce((obj, i) => {
-                                        return typeof obj == 'undefined' ? undefined : obj[i];
-                                    }, element);
-                                    if (typeof elem !== 'undefined') {
-                                        if (typeof(data2[h.value]) !== "undefined") {
-                                            data2[h.value] = data2[h.value] + " " + elem;
-                                        }
-                                        else {
-                                            data2[h.value] = elem;
-                                        }
-                                    }
-                                });
-
-                                if (typeof this.data_by_id_services[id] === 'undefined') {
-                                    data_services.push(data2);
-                                    this.data_by_id_services[id] = data_services.length - 1;
-                                } else {
-                                    var idx = this.data_by_id_services[id];
-                                    data_services[idx] = Object.assign({}, data_services[idx], data2);
-                                }
-                            }
-                        }
-
-                        var concatData = data_hosts.concat(data_services);
-
-                        var finalData = [];
-
-                        concatData.forEach((element) => {
-                            var data3 = { id: element.id, name: element.name };
-
-                            this.headers.forEach((h) => {
-                                var elem = h.value.split('.').reduce((obj, i) => {
-                                    return typeof obj == 'undefined' ? undefined : obj[i];
-                                }, element);
-                                if (typeof elem !== 'undefined') data3[h.value] = elem;
-                            });
-
-                            if (typeof this.data_by_id_final_data[element.id] === 'undefined') {
-                                finalData.push(data3);
-                                this.data_by_id_final_data[element.id] = finalData.length - 1;
-                            } else {
-                                var idx = this.data_by_id_final_data[element.id];
-                                finalData[idx] = Object.assign({}, finalData[idx], data3);
-                            }
-                        });
-
-                        this.tempData = [];
-                        this.tempData = finalData;
-
-                        this.loading = false;
-                        this.scrollEnd = false;
-
-                        if (this.dataLength < this.formattedItems.length) {
-                            this.dataLength = this.formattedItems.length;
-                            var scrollDiv = this.$el.querySelector('.v-data-table__wrapper');
-                            scrollDiv.addEventListener('scroll', this.infiniteScroll);
-                        }
-                    })
-                )
-                .catch(() => {});
+                if (this.dataLength < this.formattedItems.length) {
+                    this.dataLength = this.formattedItems.length;
+                    const scrollDiv = this.$el.querySelector('.v-data-table__wrapper');
+                    scrollDiv.addEventListener('scroll', this.infiniteScroll);
+                }
+            }).catch(() => {
+                this.loading = false;
+                this.scrollEnd = false;
+            });
             this.$forceUpdate();
         },
 

@@ -1,9 +1,6 @@
 {
     "apiType": "nagios",
-    "apiBaseUrl": "./nagios",
-    "api": "./nagios/statusjson.cgi?",
-    "dataPath": "data",
-    "columnSettingsId": "4578eef5-8718-49a2-bd41-34d5ae0785ca",
+    "nagiosBaseUrl": "./nagios",
     "menu": [
         {
             "name": "Bac à état",

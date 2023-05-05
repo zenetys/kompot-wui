@@ -121,7 +121,7 @@
 import axios from 'axios';
 import { getCellColor } from '../plugins/status/cell-color';
 import { getIcon } from '../plugins/device-icons';
-import * as queryurl from '../plugins/queryurls';
+import { getQueryUrls } from '@/plugins/apis/api-manager';
 
 export default {
     name: 'InfoPanel',
@@ -147,6 +147,7 @@ export default {
             ],
             panelInfoHeight: 0,
             infoEvent: { elements: 0 },
+            queryUrls: getQueryUrls(),
         };
     },
     watch: {
@@ -156,7 +157,7 @@ export default {
             } else {
                 this.data = [];
                 // Nagios getting services by hostname
-                this.getDeviceData(queryurl.HOST_DETAILS + this.elements[0].name);
+                this.getDeviceData(this.queryUrls.HOST_DETAILS + this.elements[0].name);
             }
         },
     },
