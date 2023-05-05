@@ -9,6 +9,7 @@ const apis = {
     elastic: elasticHeader,
     thruk: thrukHeader,
     nagios: nagiosHeader,
+    "livestatus": nagiosHeader, 
 };
 
 function elasticHeader() {

@@ -1,5 +1,6 @@
 {
-    "apiType": "nagios",
+    "apiType": "livestatus",
+    "livestatusBaseUrl": "./livestatus.cgi?",
     "nagiosBaseUrl": "./nagios",
     "menu": [
         {

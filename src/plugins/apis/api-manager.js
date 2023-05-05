@@ -1,4 +1,5 @@
 import * as Nagios from './nagios.js';
+import * as LiveStatus from './livestatus.js';
 import Config from '/public/static/config.json';
 
 const apiName = Config.apiType;
@@ -10,6 +11,8 @@ const apiName = Config.apiType;
 export function getStatusTexts() {
     if (apiName === 'nagios') {
         return Nagios.statusVariables;
+    } else if (apiName === 'livestatus') {
+        return LiveStatus.statusVariables;
     }
 }
 
@@ -21,6 +24,8 @@ export function getStatusTexts() {
 export function fetchAndFormatData(headers, filters = null) {
     if (apiName === 'nagios') {
         return Nagios.fetchAndFormatData(headers);
+    } else if (apiName === 'livestatus') {
+        return LiveStatus.fetchAndFormatData(headers, filters);
     }
 }
 
@@ -31,5 +36,7 @@ export function fetchAndFormatData(headers, filters = null) {
 export function getQueryUrls() {
     if (apiName === 'nagios') {
         return Nagios.queryUrls;
+    } else if (apiName === 'livestatus') {
+        return { ...Nagios.queryUrls, ...LiveStatus.queryUrls };
     }
 }
