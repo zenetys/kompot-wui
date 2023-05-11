@@ -96,7 +96,7 @@ export default {
             // The elements to give in the POST request is "this.elements" variables
             axios({
                 method: 'POST',
-                url: '/send-data',
+                url: './send-data',
                 responseType: 'json',
                 data: {
                     order: this.order_type,

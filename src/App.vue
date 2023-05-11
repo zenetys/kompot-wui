@@ -205,7 +205,7 @@ export default {
     },
     reloadServer() {
       axios({
-        url: '/reload',
+        url: './reload',
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ export default {
             element1.subMenus.push(
               {
                 name: element2,
-                url: "/graph/"+element2,
+                url: "./graph/"+element2,
               }
             )
           });
