@@ -857,7 +857,7 @@ export default {
             /* this should be in config.json but some refactoring is needed! */
             const GRAPH_URL = './monitoring-graph?device=%device%&indicator=%indicator%';
             const GRAPH_DEVICE_INDICATOR = 'hostcheck';
-            const GRAPH_POPUP_OPTIONS = 'directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=500';
+            const GRAPH_POPUP_OPTIONS = 'directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=453';
 
             const indicator = item.description ?? GRAPH_DEVICE_INDICATOR;
             const name = `${item.name}:${indicator}:graph`;
