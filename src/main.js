@@ -6,7 +6,6 @@ import axios from 'axios';
 import i18n from '@/plugins/i18n';
 import VueSession from 'vue-session';
 import { store } from './store';
-import Config from '/public/static/config.json';
 
 Vue.config.productionTip = false;
 Vue.use(VueSession);

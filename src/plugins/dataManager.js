@@ -2,7 +2,7 @@ import Vue from 'vue';
 // import axios from 'axios';
 // import StorageConfigManager from '@zenetys/ztable'';
 // import Router from '@/router';
-import Config from '@wui/public/static/config.json';
+
 import {
     getCellContent,
     getCellClasses,
@@ -348,7 +348,6 @@ export default {
      * and apply it to the current headers
      */
     applyColumnConfigFromStorage() {
-        const columnSettingsId = Config.columnSettingsId;
         // const storageConfig = StorageConfigManager.getStorageConfig(columnSettingsId);
         // console.log('storageConfig found', storageConfig);
         const storageConfig = false;

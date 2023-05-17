@@ -1,5 +1,5 @@
 import { generateLinkToSubPath, generateUrlFromPath } from '@/plugins/utils';
-import Config from '@wui/public/static/config.json';
+import { apiConfig } from '@/plugins/apis/api-manager';
 
 /**
  * Configuration object matching formatting methods with formats
@@ -109,7 +109,7 @@ export function formatContentForSubLinks(value, key, index = null) {
 
     if (key === '__index') {
         /* For the index header, generate a simple link to the table item */
-        const itemPath = `${Config.dataPath}.${index}`;
+        const itemPath = `${apiConfig.dataPath}.${index}`;
         const url = generateUrlFromPath(itemPath);
         const link = `<a href="${url}" title="Open table item">${index}</a>`;
 

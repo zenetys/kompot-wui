@@ -3,7 +3,7 @@ import { getCellColor } from '@/plugins/status/cell-color';
 import { getStateText } from '@/plugins/status/state-text';
 import DataManager from '@/plugins/dataManager';
 import i18n from '@/plugins/i18n';
-import Config from '@wui/public/static/config';
+import { apiConfig } from '@/plugins/apis/api-manager';
 
 const apis = {
     elastic: elasticHeader,
@@ -402,7 +402,7 @@ function displayRowText(header, item) {
     let isHtml = false;
 
     if (typeof header.render === 'function') {
-        cellValue = header.render(item[header.value], item, Config.apiType);
+        cellValue = header.render(item[header.value], item, apiConfig.apiType);
         cellText = cellValue;
     } else if (header.render === 'state-ext') {
         isHtml = true;
@@ -434,7 +434,7 @@ function displayRowText(header, item) {
 function displayRowClasses(header, item) {
     if (typeof header.shape !== 'undefined') {
         if (typeof header.shape === 'function') {
-            return header.shape(Config.apiType, item);
+            return header.shape(apiConfig.apiType, item);
         } else {
             return header.shape;
         }

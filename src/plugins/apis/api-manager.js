@@ -1,17 +1,26 @@
 import * as Nagios from './nagios.js';
 import * as LiveStatus from './livestatus.js';
-import Config from '/public/static/config.json';
+import Vue from 'vue';
 
-const apiName = Config.apiType;
+export var apiConfig = Vue.observable({});
+
+export function setApiConfig(data) {
+    Vue.set(apiConfig, 'apiType', data.apiType);
+    Vue.set(apiConfig, 'dataPath', data.dataPath);
+    Vue.set(apiConfig, 'livestatusBaseUrl', data.livestatusBaseUrl);
+    Vue.set(apiConfig, 'nagiosBaseUrl', data.nagiosBaseUrl);
+    Object.freeze(apiConfig);
+    console.log('apiConfig set to: ', apiConfig);
+}
 
 /**
  * Get all status texts for a specific API.
  * @returns {object} the status texts for the API and their respective codes
  */
 export function getStatusTexts() {
-    if (apiName === 'nagios') {
+    if (apiConfig.apiType === 'nagios') {
         return Nagios.statusVariables;
-    } else if (apiName === 'livestatus') {
+    } else if (apiConfig.apiType === 'livestatus') {
         return LiveStatus.statusVariables;
     }
 }
@@ -22,9 +31,9 @@ export function getStatusTexts() {
  * @returns {array} the formatted data
  */
 export function fetchAndFormatData(headers, filters = null) {
-    if (apiName === 'nagios') {
+    if (apiConfig.apiType === 'nagios') {
         return Nagios.fetchAndFormatData(headers);
-    } else if (apiName === 'livestatus') {
+    } else if (apiConfig.apiType === 'livestatus') {
         return LiveStatus.fetchAndFormatData(headers, filters);
     }
 }
@@ -34,9 +43,9 @@ export function fetchAndFormatData(headers, filters = null) {
  * @returns {object} the query URLs for the API
  */
 export function getQueryUrls() {
-    if (apiName === 'nagios') {
-        return Nagios.queryUrls;
-    } else if (apiName === 'livestatus') {
-        return { ...Nagios.queryUrls, ...LiveStatus.queryUrls };
+    if (apiConfig.apiType === 'nagios') {
+        return Nagios.getQueryUrls();
+    } else if (apiConfig.apiType === 'livestatus') {
+        return { ...Nagios.getQueryUrls(), ...LiveStatus.getQueryUrls() };
     }
 }

@@ -25,7 +25,7 @@
 
 <script>
 import axios from 'axios';
-import { getQueryUrls } from '@/plugins/apis/api-manager';
+import { getQueryUrls, apiConfig } from '@/plugins/apis/api-manager';
 import { mapActions } from 'vuex';
 import i18n from '../plugins/i18n';
 
@@ -53,11 +53,20 @@ export default {
             serviceNumber: 0,
             progressInterval: 0,
             progressValue: 0,
-            queryUrls: getQueryUrls()
+            queryUrls: null,
+            apiConfig,
         };
     },
-    mounted() {
-        this.refresh();
+    watch: {
+        apiConfig: {
+            immediate: true,
+            handler(newConfig) {
+                if (newConfig.apiType) {
+                    this.queryUrls = getQueryUrls();
+                    this.refresh();
+                }
+            }
+        },
     },
     methods: {
         ...mapActions(['updateServerProblem', 'updateLastUpdate', 'updateServerState']),

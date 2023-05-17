@@ -30,7 +30,7 @@
 // @ is an alias to /src
 import LineChart from '../library/chartjs/LineChart.js';
 import { data } from '../plugins/chart-data';
-import { getQueryUrls } from '@/plugins/apis/api-manager';
+import { getQueryUrls, apiConfig } from '@/plugins/apis/api-manager';
 import axios from 'axios';
 
 export default {
@@ -51,7 +51,8 @@ export default {
             dataCollection: null,
             data: [],
             config: {},
-            queryUrls: getQueryUrls(),
+            queryUrls: null,
+            apiConfig,
         };
     },
     computed: {
@@ -134,6 +135,14 @@ export default {
             this.site = to.params.site;
             this.getGraphData(this.site, this.timeValue);
             this.$forceUpdate();
+        },
+        apiConfig: {
+            immediate: true,
+            handler(newConfig) {
+                if (newConfig.apiType) {
+                    this.queryUrls = getQueryUrls();
+                }
+            },
         },
     },
     mounted() {

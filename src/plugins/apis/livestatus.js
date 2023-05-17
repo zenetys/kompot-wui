@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Config from '/public/static/config.json';
+import { apiConfig } from '@/plugins/apis/api-manager';
 
 /**
  * Livestatus status texts and their respective values.
@@ -23,9 +23,8 @@ export function fetchAndFormatData(headers, filters) {
     /** @TODO handle filters */
     filters;
     return axios
-        .get(queryUrls.COMBINED_LIST)
+        .get(getQueryUrls().COMBINED_LIST)
         .then((result) => {
-            console.log('RAW LIVESTATUS DATA', result.data);
             const rawData = result.data;
             // oraganise raw Nagios data and format it for the table
             return formatData(rawData, headers);
@@ -133,7 +132,10 @@ function formatDataPerHeader(headers, element, data) {
     });
 }
 
-/** LiveStatus related query urls */
-export const queryUrls = {
-    COMBINED_LIST: `${Config.livestatusBaseUrl}action=combined`,
-};
+/** 
+ * Get the query urls for the LiveStatus API.
+ * @returns {object} the query urls by type
+ * */
+export function getQueryUrls() {
+    return { COMBINED_LIST: `${apiConfig.livestatusBaseUrl}action=combined` };
+}

@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { fetchAndFormatData } from '@/plugins/apis/api-manager';
+import { fetchAndFormatData, getStatusTexts, apiConfig } from '@/plugins/apis/api-manager';
 import FilterBar from '@/components/FilterBar.vue';
 import InfoPanel from '@/components/InfoPanel.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
@@ -84,7 +84,6 @@ import i18n from '@/plugins/i18n';
 import { getHeaders } from '@/plugins/header';
 import AutoTable from '@/components/AutoTable/AutoTable.vue';
 import { compactFormat, frenchFormat } from '@/plugins/utils';
-import { getStatusTexts } from '@/plugins/apis/api-manager';
 
 const getStateText = (status, item) => {
     // HOST
@@ -106,12 +105,6 @@ export default {
         InfoPanel,
         ActionButtons,
         AutoTable,
-    },
-    props: {
-        apiType: {
-            type: String,
-            required: true,
-        },
     },
     data() {
         return {
@@ -146,7 +139,7 @@ export default {
             filters: {},
 
             // status variables
-            statusTexts: getStatusTexts(this.apiType),
+            statusTexts: null,
             UP: this.statusTexts?.UP,
             HOST_PENDING: this.statusTexts?.HOST_PENDING,
             HOST_DOWN: this.statusTexts?.HOST_DOWN,
@@ -175,6 +168,7 @@ export default {
                     'options.sync': this.options,
                 },
             },
+            apiConfig,
         };
     },
     computed: {
@@ -199,7 +193,7 @@ export default {
          * @returns {Array}
          */
         headers() {
-            return getHeaders(this.apiType);
+            return getHeaders(apiConfig?.apiType);
         },
         filterBarHeight() {
             return this.$refs?.filterBar?.clientHeight || this.$refs?.filterBar?.$el.clientHeight;
@@ -316,6 +310,15 @@ export default {
                 });
             }
         },
+        apiConfig: {
+            immediate: true,
+            handler(newConfig) {
+                if (newConfig.apiType) {
+                    this.startFetchInterval();
+                    this.statusTexts = getStatusTexts(this.apiType);
+                }
+            }
+        },
     },
     beforeDestroy() {
         clearInterval(this.progressInterval);
@@ -338,7 +341,6 @@ export default {
         const navBarHeight = document.getElementById('navbar').clientHeight;
         this.tableTopOffset = navBarHeight + this.progressBarHeight + this.filterBarHeight + 2;
         this.topButtonDisplay();
-        this.startFetchInterval();
     },
     methods: {
         /**
@@ -395,17 +397,17 @@ export default {
         },
         // return state cell color background
         getRowBackgroundClass(item) {
-            return getRowColor(this.$props.apiType, item);
+            return getRowColor(apiConfig?.apiType, item);
         },
         getIcon,
         // return state color for statusIconColor
         setStatusIconColor(item) {
-            return getCellColor(this.$props.apiType, item);
+            return getCellColor(apiConfig?.apiType, item);
         },
         // return cell background
         cellClass(item, attr, index) {
             if (typeof this.headers[index].shape == 'function') {
-                return this.headers[index].shape(this.$props.apiType, item);
+                return this.headers[index].shape(apiConfig?.apiType, item);
             }
             var returnClass = 'cell-' + this.headers[index].value;
             return returnClass.replace('.', '-');

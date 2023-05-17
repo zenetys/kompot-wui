@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Config from '/public/static/config.json';
+import { apiConfig } from '@/plugins/apis/api-manager';
 
 /**
  * Format Nagios data for AutoTable.
@@ -215,10 +215,10 @@ function organiseRawData(rawData) {
 export function fetchAndFormatData(headers) {
     return axios
         .all([
-            axios.get(queryUrls.OBJECT_HOST_LIST),
-            axios.get(queryUrls.OBJECT_SERVICE_LIST),
-            axios.get(queryUrls.STATUS_HOST_LIST),
-            axios.get(queryUrls.STATUS_SERVICE_LIST),
+            axios.get(getQueryUrls().OBJECT_HOST_LIST),
+            axios.get(getQueryUrls().OBJECT_SERVICE_LIST),
+            axios.get(getQueryUrls().STATUS_HOST_LIST),
+            axios.get(getQueryUrls().STATUS_SERVICE_LIST),
         ])
         .then(
             axios.spread((result1, result2, result3, result4) => {
@@ -242,18 +242,21 @@ export function fetchAndFormatData(headers) {
 const GRAPH_URI = './r';
 
 /**
- * Nagios related query urls.
+ * Compute Nagios query urls
+ * @returns {object} the Nagios query urls by type
  */
-export const queryUrls = {
-    OBJECT_HOST_LIST: `${Config.nagiosBaseUrl}/objectjson.cgi?query=hostlist&details=true`,
-    STATUS_HOST_LIST: `${Config.nagiosBaseUrl}/statusjson.cgi?query=hostlist&details=true`,
-    HOST_DETAILS: `${Config.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true&hostname=`,
-    OBJECT_SERVICE_LIST: `${Config.nagiosBaseUrl}/objectjson.cgi?query=servicelist&details=true`,
-    STATUS_SERVICE_LIST: `${Config.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true`,
-    HOST_COUNT: `${Config.nagiosBaseUrl}/statusjson.cgi?query=hostcount`,
-    SERVICE_COUNT: `${Config.nagiosBaseUrl}/statusjson.cgi?query=servicecount`,
-    // This function set the url for get data to populate the graph
-    setGraphUri: (database, start, datasources) => {
-        return GRAPH_URI + '?db=' + database.replace(':', '/') + '&start=' + start + '&ds=' + datasources;
-    },
-};
+export function getQueryUrls() {
+    return {
+        OBJECT_HOST_LIST: `${apiConfig.nagiosBaseUrl}/objectjson.cgi?query=hostlist&details=true`,
+        STATUS_HOST_LIST: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=hostlist&details=true`,
+        HOST_DETAILS: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true&hostname=`,
+        OBJECT_SERVICE_LIST: `${apiConfig.nagiosBaseUrl}/objectjson.cgi?query=servicelist&details=true`,
+        STATUS_SERVICE_LIST: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true`,
+        HOST_COUNT: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=hostcount`,
+        SERVICE_COUNT: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=servicecount`,
+        // This function set the url for get data to populate the graph
+        setGraphUri: (database, start, datasources) => {
+            return GRAPH_URI + '?db=' + database.replace(':', '/') + '&start=' + start + '&ds=' + datasources;
+        },
+    };
+}

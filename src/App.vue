@@ -115,6 +115,7 @@ import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
+import { setApiConfig } from '@/plugins/apis/api-manager';
 
 export default {
     name: 'App',
@@ -154,6 +155,8 @@ export default {
                 responseType: 'json',
             }).then((response) => {
                 this.config = response.data;
+                /* Register API config data in the app */
+                setApiConfig(this.config);
 
                 document.title = (this.config.title ? this.config.title + ' - ' : '') + 'Supervision';
                 this.appTitle = this.config.title;
