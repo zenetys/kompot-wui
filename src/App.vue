@@ -204,6 +204,7 @@ export default {
       });
     },
     reloadServer() {
+      /*
       axios({
         url: './reload',
         method: 'GET',
@@ -219,6 +220,8 @@ export default {
       }).catch((error)=>{
         console.log(error);
       });
+      */
+      this.$router.go();
     },
     getDataSources() {
       this.menuSide.forEach(element1 => {
