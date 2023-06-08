@@ -3,6 +3,7 @@ const apis = {
     elastic: elasticCellColor,
     thruk: thrukCellColor,
     nagios: nagiosCellColor,
+    'livestatus-cgi': nagiosCellColor,
 };
 
 function elasticCellColor() {}
