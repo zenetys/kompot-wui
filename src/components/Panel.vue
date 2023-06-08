@@ -32,8 +32,8 @@
             <AutoTable
                 :config="config"
             >
-                <template #custom-item="{ header, item }">
-                    <span v-if="header.getCellContent(header, item).isHtml">
+                <template #state_flag="{ item }">
+                    <span>
                         <v-icon size="13" :color="setStatusIconColor(item)" :title="$t('stateFlag')">mdi-circle</v-icon>
                         <v-icon
                             :title="$t('openGraphLabel')"
@@ -103,6 +103,110 @@ export default {
                 api: '',
                 height: 'auto',
                 paginated: false,
+                itemClass: this.getRowBackgroundClass,
+                customHeadersComputation: (headers) => {
+                    headers.unshift({ value: 'state_flag' });
+                },
+                columns: {
+                    state_flag: {
+                        slotName: 'state_flag',
+                        label: '',
+                        sortable: false,
+                        enabled: true,
+                        order: 1,
+                    },
+                    status: {
+                        label: 'Etat',
+                        enabled: true,
+                        formatText: getStateText,
+                        cssClass: this.setStatusIconColor,
+                        order: 2,
+                    },
+                    name: {
+                        label: 'Equipement',
+                        enabled: true,
+                        order: 3,
+                    },
+                    address: {
+                        label: 'Adresse IP',
+                        //align: ' d-none',
+                        enabled: true,
+                        order: 4,
+                    },
+                    display_name: {
+                        label: 'Indicateur',
+                        enabled: true,
+                        order: 5,
+                    },
+                    priority: {
+                        label: 'Priorite',
+                        enabled: false,
+                    },
+                    description: {
+                        label: 'Description',
+                        enabled: false,
+                    },
+                    last_state_change: {
+                        label: 'Dernier changement',
+                        enabled: true,
+                        formatText: frenchFormat,
+                        order: 6,
+                    },
+                    last_check: {
+                        label: 'Durée',
+                        enabled: true,
+                        formatText: compactFormat,
+                        order: 7,
+                    },
+                    plugin_output: {
+                        label: 'Sortie',
+                        enabled: true,
+                        order: 8,
+                    },
+
+                    id: {
+                        enabled: false,
+                    },
+                    TYPE: {
+                        enabled: false,
+                    },
+                    notifications_enabled: {
+                        label: 'notificationsEnabled',
+                        enabled: false,
+                    },
+                    check_type: {
+                        label: 'checkType',
+                        enabled: false,
+                    },
+                    accept_passive_checks: {
+                        label: 'passiveEnabled',
+                        enabled: false,
+                    },
+                    checks_enabled: {
+                        label: 'checksEnabled',
+                        enabled: false,
+                    },
+                    problem_has_been_acknowledged: {
+                        label: 'ack',
+                        enabled: false,
+                    },
+                    outage: {
+                        label: 'outage',
+                        enabled: false,
+                    },
+                    state_type: {
+                        label: 'stateType',
+                        enabled: false,
+                    },
+                    auto_track: {
+                        label:'autoTrack',
+                        enabled: false,
+                    },
+                    track: {
+                        label: 'track',
+                        enabled: false,
+                    },
+                }
             },
             selectedItems: [],
             openInInfo: [],
@@ -634,6 +738,40 @@ table {
     position: relative;
 }
 
+/* ZTable personnalizable column width */
+.sizable {
+    /* default max column width */
+    .v-data-table__divider {
+        max-width: 100px;
+    }
+
+    /* column specific constraints */
+    .col_state_flag {
+        width: 75px;
+    }
+
+    .col_status,
+    .col_name {
+        max-width: 130px;
+        width: 130px;
+    }
+
+    .col_display_name,
+    .col_last_state_change {
+        max-width: 65px;
+    }
+
+    .col_last_check {
+        width: 50px;
+    }
+
+    .col_plugin_output {
+        width: 450px;
+        max-width: 500px;
+    }
+
+}
+
 // Position Action button after select a row
 .send-selected {
     position: absolute;
@@ -664,5 +802,27 @@ table {
 } /* no round background on active */
 .v-icon.openGraphIcon:active {
     color: #63b5f7;
+}
+.sizable .col_address {
+    width: 130px;
+    max-width: 130px;
+}
+.sizable .col_display_name {
+    width: 150px;
+    max-width: 150px;
+}
+
+.sizable .col_last_state_change {
+    width: 150px;
+    max-width: 150px;
+}
+
+.sizable .col_last_check {
+    width: 100px;
+    max-width: 100px;
+}
+.sizable .col_status {
+    width: 100px;
+    max-width: 100px;
 }
 </style>
