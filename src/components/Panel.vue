@@ -31,6 +31,7 @@
 
             <AutoTable
                 :config="config"
+                :search="filters.box"
             >
                 <template #state_flag="{ item }">
                     <span>
