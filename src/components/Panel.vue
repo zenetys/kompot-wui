@@ -32,6 +32,8 @@
             <AutoTable
                 :config="config"
                 :search="filters.box"
+                :tableOptions="tableOptions"
+                :selectedItems="selectedItems"
             >
                 <template #state_flag="{ item }">
                     <span>
@@ -104,6 +106,9 @@ export default {
                 api: '',
                 height: 'auto',
                 paginated: false,
+                clickable: (item) => {
+                    this.selectOnClick(item);
+                },
                 itemClass: this.getRowBackgroundClass,
                 customHeadersComputation: (headers) => {
                     headers.unshift({ value: 'state_flag' });
@@ -261,8 +266,7 @@ export default {
                 },
                 mobileBreakpoint: 0,
                 handlers: {
-                    handleItemClick: (item) => this.selectOnClick(item),
-                    handleItemSelect: (newSelectedItems) => this.updateSelectedItems(newSelectedItems),
+                    handleItemSelect: (item) => { this.selectOnClick(item) },
                 },
                 vDataTableProps: {
                     noDataText: this.$t('noDataText'),
@@ -463,10 +467,10 @@ export default {
          * @param {Object} item the item to select
          */
         selectOnClick(item) {
-            const foundIndex = this.selectedItems.findIndex((found) => found.id === item.id);
+            const foundIndex = this.selectedItems.findIndex((found) => found === item.id);
 
             if (foundIndex === -1) {
-                this.selectedItems.push(item);
+                this.selectedItems.push(item.id);
             } else {
                 this.selectedItems.splice(foundIndex, 1);
             }
@@ -803,6 +807,21 @@ table {
 } /* no round background on active */
 .v-icon.openGraphIcon:active {
     color: #63b5f7;
+}
+
+th[data-col-name="data-table-select"],
+td[data-col-name="data-table-select"] {
+    width: 25px !important;
+    max-width: 25px !important;
+}
+td[data-col-name="data-table-select"] input {
+    vertical-align: middle;
+    position: relative;
+    top: -0.5px;
+}
+/* make columns not resizable, this option is not available in ztable */
+.col_data-table-select .resizeElement {
+    display: none;
 }
 .sizable .col_address {
     width: 130px;
