@@ -289,15 +289,17 @@ export default {
             },
             deep: true,
         },
-        filters() {
-            this.$router
-                .push({
-                    query: {
-                        level: this.filters.level,
-                        filter: this.filters.box,
-                    },
-                })
-                .catch(() => {});
+        filters: {
+            handler(filters) {
+                this.$router
+                    .push({
+                        query: {
+                            level: filters.level,
+                            filter: filters.box,
+                        },
+                    })
+                    .catch(() => {});
+            }
         },
         loading: function () {
             if (this.loading) {
