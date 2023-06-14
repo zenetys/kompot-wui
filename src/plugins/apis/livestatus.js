@@ -20,10 +20,13 @@ export const statusVariables = {
  * @returns {array} the formatted data
  */
 export function fetchAndFormatData(headers, filters) {
-    /** @TODO handle filters */
-    filters;
+    const level = filters ? filterStatus(filters.level) : 5;
+    let url = `${getQueryUrls().COMBINED_LIST}&level=${level}`;
+    if (filters && filters.box) {
+        url += `&query=${filters.box}`;
+    }
     return axios
-        .get(getQueryUrls().COMBINED_LIST)
+        .get(url)
         .then((result) => {
             const rawData = result.data;
             // oraganise raw Nagios data and format it for the table
@@ -138,4 +141,20 @@ function formatDataPerHeader(headers, element, data) {
  * */
 export function getQueryUrls() {
     return { COMBINED_LIST: `${apiConfig.livestatusBaseUrl}action=combined` };
+}
+
+function filterStatus(level) {
+    switch(level) {
+        case 'critical':
+            return 1;
+        case 'recent':
+            return 2;
+        case 'known':
+            return 3;
+        case 'all-problems':
+            return 4;
+        case 'any':
+            return 5;
+    }
+    return -1;
 }

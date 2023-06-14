@@ -31,7 +31,7 @@
 
             <AutoTable
                 :config="config"
-                :search="filters.box"
+                :search="apiConfig.apiType === 'nagios' ? filters.box : ''"
                 :tableOptions="tableOptions"
                 :selectedItems="selectedItems"
             >
@@ -309,6 +309,10 @@ export default {
         formattedItems: {
             get: function () {
                 var returnData = [];
+                if (apiConfig.apiType === "livestatus-cgi") {
+                    returnData = this.tempData.filter(() => true)
+                    return returnData;
+                }
                 switch (this.filters.level) {
                     case 'critical':
                         returnData = this.tempData.filter((element) => {
@@ -408,6 +412,9 @@ export default {
         },
         filters: {
             handler(filters) {
+                this.startFetchInterval();
+                this.updateFromServer();
+
                 this.$router
                     .push({
                         query: {
@@ -639,7 +646,7 @@ export default {
         },
         updateFromServer() {
             // Fetch all data from API
-            fetchAndFormatData(this.headers).then(formattedApiData => {
+            fetchAndFormatData(this.headers, this.filters).then(formattedApiData => {
                 this.tempData = formattedApiData;
 
                 this.loading = false;
@@ -666,12 +673,11 @@ export default {
 
             this.loading = true;
 
-            this.updateFromServer();
-
             this.progressQuery = false;
             this.progressInterval = setInterval(() => {
                 if (this.progressValue === 100) {
                     clearInterval(this.progressInterval);
+                    this.updateFromServer();
                     this.progressShow = true;
                     return setTimeout(this.startFetchInterval, 2000);
                 }
