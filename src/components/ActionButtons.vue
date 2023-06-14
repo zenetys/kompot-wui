@@ -1,10 +1,9 @@
 <template>
     <v-dialog v-model="dialog" max-width="600px">
         <template #activator="{ on, attrs }">
-            <a
+            <button
                 v-for="item in butonInfo"
                 :key="item.color"
-                href="#"
                 style="text-decoration: none"
                 v-bind="attrs"
                 v-on="on"
@@ -18,7 +17,7 @@
                     </template>
                     <span>{{ item.text }}</span>
                 </v-tooltip>
-            </a>
+            </button>
         </template>
         <v-card>
             <v-card-title class="headline mb-5">
