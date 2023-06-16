@@ -60,7 +60,6 @@
                     </span>
                 </template>
             </AutoTable>
-            <InfoPanel :elements="openInInfo" @set-info-event="getInfoEvent" />
         </div>
     </div>
 </template>
@@ -68,7 +67,6 @@
 <script>
 import { fetchAndFormatData, getStatusTexts, apiConfig } from '@/plugins/apis/api-manager';
 import FilterBar from '@/components/FilterBar.vue';
-import InfoPanel from '@/components/InfoPanel.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
 import { getRowColor } from '@/plugins/status/row-color';
 import { getCellColor } from '@/plugins/status/cell-color';
@@ -95,7 +93,6 @@ export default {
     i18n: i18n,
     components: {
         FilterBar,
-        InfoPanel,
         ActionButtons,
         AutoTable,
     },
