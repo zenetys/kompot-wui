@@ -109,7 +109,6 @@
 </template>
 
 <script>
-import { setDefaultUserConfig } from './plugins/user-session-config';
 import vuetify from '../src/plugins/vuetify';
 import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
@@ -141,7 +140,6 @@ export default {
         ...mapGetters(['serverState']),
     },
     mounted() {
-        setDefaultUserConfig();
         this.setConfig();
     },
     methods: {
