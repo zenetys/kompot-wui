@@ -61,10 +61,8 @@
 <script>
 import { gotoRoute } from '@/plugins/utils';
 
-import i18n from '../plugins/i18n';
 export default {
     name: 'FilterBar',
-    i18n: i18n,
     data() {
         return {
             levelToggle: null,
