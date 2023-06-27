@@ -103,7 +103,7 @@ export default {
         };
     },
     computed: {
-        sendData() {
+        orderData() {
             return this.$props.elements.map(function (element) {
                 if (typeof element == 'undefined') return;
                 return {
@@ -117,12 +117,11 @@ export default {
     methods: {
         setAction(item) {
             this.dialogTitle = item.text;
-            this.order_type = item.order;
+            this.orderCommand = item.order;
         },
         validForm() {
             this.dialog = false;
-            this.comment = '';
-            this.$emit('send-data');
+            this.$emit('sent');
             // Here the request to the web services
             // The elements to give in the POST request is "this.elements" variables
             axios({
@@ -130,13 +129,13 @@ export default {
                 url: './send-data',
                 responseType: 'json',
                 data: {
-                    order: this.order_type,
-                    comment: this.comment,
-                    data: this.sendData,
+                    order: this.orderCommand,
+                    data: this.orderData,
+                    comment: '',
                 },
             }).then((response) => {
                 response;
-            });
+            }).catch(() => { /* FIXME */ });
         },
     },
 };

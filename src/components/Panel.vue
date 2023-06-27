@@ -19,7 +19,7 @@
 
         <div ref="panelRow" class="panel-box" :style="seletedDetailsView()">
             <div v-if="selectedItems.length > 0" class="send-selected">
-                <ActionButtons :elements="selectedItems" @send-data="initializeSelected" />
+                <ActionButtons :elements="selectedItems" @sent="initializeSelected" />
             </div>
 
             <!-- Go to top of table -->
