@@ -112,9 +112,7 @@
 import vuetify from '../src/plugins/vuetify';
 import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
-import axios from 'axios';
 import { mapGetters } from 'vuex';
-import { setApiConfig } from '@/plugins/apis/api-manager';
 
 export default {
     name: 'App',
@@ -130,7 +128,6 @@ export default {
             menuSide: [],
             group: null,
             drawer: true,
-            config: {},
             appTitle: null,
             appVersion: process.env.VUE_APP_VERSION,
             appName: process.env.VUE_APP_NAME,
@@ -140,36 +137,23 @@ export default {
         ...mapGetters(['serverState']),
     },
     mounted() {
-        this.setConfig();
+        this.initApp();
     },
     methods: {
-        setConfig() {
-            axios({
-                url: 'static/config.json',
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                responseType: 'json',
-            }).then((response) => {
-                this.config = response.data;
-                /* Register API config data in the app */
-                setApiConfig(this.config);
+        initApp() {
+            document.title = (this.$kConfig.title ? this.$kConfig.title + ' - ' : '') + 'Supervision';
+            this.appTitle = this.$kConfig.title;
 
-                document.title = (this.config.title ? this.config.title + ' - ' : '') + 'Supervision';
-                this.appTitle = this.config.title;
+            // Set the side menu from static config.json
+            this.menuSide = this.$kConfig.menu;
 
-                // Set the side menu from static config.json
-                this.menuSide = this.config.menu;
-
-                // Set the IPSLA submenu from config.json
-                this.menuSide.forEach((element1) => {
-                    if (element1.name == 'IPSLA') {
-                        element1.subMenus.forEach((element2) => {
-                            element2.url += element2.database;
-                        });
-                    }
-                });
+            // Set the IPSLA submenu from config.json
+            this.menuSide.forEach((element1) => {
+                if (element1.name == 'IPSLA') {
+                    element1.subMenus.forEach((element2) => {
+                        element2.url += element2.database;
+                    });
+                }
             });
         },
         reloadServer() {
@@ -195,7 +179,7 @@ export default {
         getDataSources() {
             this.menuSide.forEach((element1) => {
                 if (element1.name == 'IPSLA') {
-                    this.config.databases.forEach((element2) => {
+                    this.$kConfig.databases.forEach((element2) => {
                         element1.subMenus.push({
                             name: element2,
                             url: './graph/' + element2,

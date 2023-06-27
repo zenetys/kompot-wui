@@ -3,19 +3,27 @@ import App from './App.vue';
 import router from './router';
 import vuetify from './plugins/vuetify';
 import axios from 'axios';
+import * as Config from './plugins/config';
 import i18n from './plugins/i18n';
 import VueSession from 'vue-session';
 import { store } from './store';
 
 Vue.config.productionTip = false;
+Vue.prototype.$kConfig = Config.kConfig;
 Vue.use(VueSession);
 
+(async function init() {
+    const earlyErrors = [];
 
-new Vue({
-    router,
-    vuetify,
-    axios,
-    i18n,
-    store,
-    render: (h) => h(App),
-}).$mount('#app');
+    try { await Config.init(); }
+    catch (e) { earlyErrors.push(e); }
+
+    new Vue({
+        router,
+        vuetify,
+        axios,
+        i18n,
+        store,
+        render: (h) => h(App),
+    }).$mount('#app');
+})();
