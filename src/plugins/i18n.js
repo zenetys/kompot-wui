@@ -69,6 +69,8 @@ const messages = {
         cmdPause: 'Playing, click to pause',
         cmdPlay: 'Paused, click to play',
         cmdRefresh: 'Reload data',
+        cmdPagePrevious: 'Previous page',
+        cmdPageNext: 'Next page',
 
         // Filters
         saveFilter: 'Save this filter',
@@ -173,6 +175,8 @@ const messages = {
         cmdPause: 'En lecture, cliquer pour mettre en pause',
         cmdPlay: 'En pause, cliquer pour activer le rechargement automatique',
         cmdRefresh: 'Recharger les données',
+        cmdPagePrevious: 'Page précédente',
+        cmdPageNext: 'Page suivante',
 
         // Filters
         saveFilter: 'Enregistrer ce filtre',

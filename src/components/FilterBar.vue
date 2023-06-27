@@ -74,6 +74,33 @@
                         >
                             <v-icon>mdi-table-refresh</v-icon>
                         </v-btn>
+                        <span
+                            id="page-specs"
+                            class="ml-2 mr-3 d-inline-block"
+                            :class="totalRows > 0 ? '' : 'visibility-hidden'"
+                        >
+                            {{ pageStart }}-{{ pageStop }} / {{ totalRows }}
+                        </span>
+                        <v-btn
+                            outlined
+                            :ripple="false"
+                            class="z-icon-btn mr-2"
+                            :title="$t('cmdPagePrevious')"
+                            :disabled="pageCurrent === 1"
+                            @click="$emit('previous')"
+                        >
+                            <v-icon>mdi-chevron-left</v-icon>
+                        </v-btn>
+                        <v-btn
+                            outlined
+                            :ripple="false"
+                            class="z-icon-btn"
+                            :title="$t('cmdPageNext')"
+                            :disabled="pageCurrent === pageCount"
+                            @click="$emit('next')"
+                        >
+                            <v-icon>mdi-chevron-right</v-icon>
+                        </v-btn>
                     </v-col>
                 </v-row>
             </v-toolbar>
@@ -109,6 +136,26 @@ export default {
         isPlaying: {
             type: Boolean,
             default: true,
+        },
+        pageCurrent: {
+            type: Number,
+            default: 1,
+        },
+        pageCount: {
+            type: Number,
+            default: 1,
+        },
+        pageStart: {
+            type: Number,
+            default: 0,
+        },
+        pageStop: {
+            type: Number,
+            default: 0,
+        },
+        totalRows: {
+            type: Number,
+            default: 0,
         },
     },
     data() {
@@ -177,6 +224,11 @@ export default {
     box-shadow: inset 0 0 10px rgb(0 0 0 / 12%);
 }
 
+.z-icon-btn.v-btn[disabled="disabled"] {
+    opacity: 0.5;
+    border-color: #ccc;
+    background-color: rgba(0, 0, 0, 0) !important;
+}
 .z-icon-btn.v-btn:hover:before {
     opacity: 0.02;
     border-color: #666;
@@ -184,5 +236,14 @@ export default {
 .z-icon-btn.v-btn.v-size--default.z-on {
     box-shadow: none;
 }
+/* pagination */
+#page-specs {
+    position: relative;
+    top: 1px;
+    font-size: 0.7rem;
+    min-width: 126px;
+}
+.visibility-hidden {
+    visibility: hidden;
 }
 </style>

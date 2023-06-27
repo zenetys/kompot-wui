@@ -3,10 +3,17 @@
         <FilterBar
             v-if="!$vuetify.breakpoint.smAndDown"
             :is-playing="playOn"
+            :page-current="pageSpecs.page || 1"
+            :page-count="pageSpecs.pageCount || 1"
+            :page-start="pageSpecs.itemsLength ? pageSpecs.pageStart + 1 : 0"
+            :page-stop="pageSpecs.pageStop"
+            :total-rows="pageSpecs.itemsLength"
             @filter="onFiltersChange"
             @play="onCmdPlay"
             @pause="onCmdPause"
             @refresh="onCmdRefresh"
+            @previous="onCmdPagePrevious"
+            @next="onCmdPageNext"
         />
 
         <v-progress-linear
@@ -31,6 +38,7 @@
                 :config="config"
                 :search="apiConfig.useZTableSearch ? filters.search : ''"
                 :selected-items="selectedItems"
+                :page="pageWanted"
             >
                 <template #state_flag="{ item }">
                     <span>
@@ -138,7 +146,10 @@ export default {
                 id: 'table-network',
                 api: '',
                 height: 'auto',
-                paginated: false,
+                paginated: true,
+                hideFooter: true,
+                footerProps: { 'items-per-page-options': [ 100 ] },
+                syncPagination: (specs) => this.onPaginationSync(specs),
                 selectable: (...args) => this.onSelectedItems(...args),
                 showSelect: true,
                 itemClass: (x) => this.getRowColor(x),
@@ -212,6 +223,8 @@ export default {
             filters: {},
             tableWrapperElement: undefined,
             showGoToTop: false,
+            pageSpecs: {},
+            pageWanted: 1,
 
             apiConfig,
         };
@@ -338,6 +351,12 @@ export default {
             this.playOn = false;
             this.userExplicitPlayOn = this.playOn;
         },
+        onCmdPagePrevious() {
+            this.pageWanted--;
+        },
+        onCmdPageNext() {
+            this.pageWanted++;
+        },
         onSelectedItems(item, newSelectedItems) {
             this.selectedItems = newSelectedItems;
         },
@@ -353,6 +372,9 @@ export default {
         onGoToTopClick() {
             if (this.tableWrapperElement)
                 this.tableWrapperElement.scrollTop = 0;
+        },
+        onPaginationSync(pageSpecs) {
+            this.pageSpecs = pageSpecs;
         },
 
         getIcon,
