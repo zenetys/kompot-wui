@@ -1,10 +1,9 @@
 {
-    "name": "ztable",
-    "version": "0.1.6",
+    "name": "kompot-wui",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/zenetys/ztable"
+        "url": "https://github.com/zenetys/kompot-wui"
     },
     "scripts": {
         "serve": "vue-cli-service serve",

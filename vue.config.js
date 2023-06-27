@@ -1,7 +1,10 @@
 const path = require('path');
+const pkg = require('./package.json');
 
-process.env.VUE_APP_NAME = process.env.VUE_APP_NAME ?? require('./package.json').name;
-process.env.VUE_APP_VERSION = process.env.VUE_APP_VERSION ?? require('./package.json').version;
+if (process.env.VUE_APP_NAME === undefined && pkg.name !== undefined)
+    process.env.VUE_APP_NAME = pkg.name;
+if (process.env.VUE_APP_VERSION === undefined && pkg.version !== undefined)
+    process.env.VUE_APP_VERSION = pkg.version;
 
 module.exports = {
     transpileDependencies: ['vuetify'],
