@@ -23,15 +23,6 @@
             <v-card-title class="headline mb-5">
                 {{ dialogTitle }}
             </v-card-title>
-            <v-card-text>
-                <v-row>
-                    <v-col cols="12">
-                        <v-form ref="form">
-                            <v-text-field v-show="false" :value="order_type" />
-                        </v-form>
-                    </v-col>
-                </v-row>
-            </v-card-text>
 
             <v-card-actions>
                 <v-spacer />
@@ -64,42 +55,35 @@ export default {
                     icon: 'mdi-traffic-cone',
                     text: this.$t('acquit'),
                     color: 'primary',
-                    dialog: false,
                     order: 'ack',
                 },
                 {
                     icon: 'mdi-eight-track',
                     text: this.$t('track'),
                     color: 'cyan darken-3',
-                    dialog: false,
                     order: 'track',
                 },
                 {
                     icon: 'mdi-lock-reset',
                     text: this.$t('resetState'),
                     color: 'pink',
-                    dialog: false,
                     order: 'reset-state',
                 },
                 {
                     icon: 'mdi-alarm-off',
                     text: this.$t('deactiveAlarm'),
                     color: 'indigo',
-                    dialog: false,
                     order: 'alarm-off',
                 },
                 {
                     icon: 'mdi-refresh',
                     text: this.$t('recheck'),
                     color: 'purple',
-                    dialog: false,
                     order: 'recharge',
                 },
             ],
             dialog: false,
-            alarmDialog: false /** @todo remove, unused */,
             dialogTitle: '',
-            order_type: '',
         };
     },
     computed: {
