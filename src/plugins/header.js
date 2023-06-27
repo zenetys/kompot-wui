@@ -1,4 +1,4 @@
-import { compactFormat, frenchFormat } from '@/modules/timedisplay';
+import { compactFormat, frenchFormat } from '@/plugins/utils';
 import { getCellColor } from '@/plugins/status/cell-color';
 import { getStateText } from '@/plugins/status/state-text';
 import i18n from '@/plugins/i18n';
