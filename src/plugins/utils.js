@@ -1,3 +1,13 @@
+const axiosBuildFullPath = require('axios/lib/core/buildFullPath');
+const axiosBuildURL = require('axios/lib/helpers/buildURL');
+export const axiosIsAxiosError = require('axios/lib/helpers/isAxiosError');
+export function axiosError2URL(e) {
+    const method = e.config.method.toUpperCase();
+    return (method === 'POST' || method === 'PUT' || method === 'PATCH')
+        ? (method + ' ' + axiosBuildFullPath(e.config.baseURL, e.config.url))
+        : (method + ' ' + axiosBuildFullPath(e.config.baseURL, axiosBuildURL(e.config.url, e.config.params)));
+}
+
 // Format: DD/MM/YYY (06/05/2021)
 export function frenchFormat(date) {
     return new Date(date).toLocaleDateString('fr-FR') + ' ~ ' + new Date(date).toLocaleTimeString('fr-FR');

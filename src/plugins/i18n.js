@@ -94,6 +94,9 @@ const messages = {
 
         // Menu
         menuEvents: 'Events',
+
+        // Errors
+        earlyErrorsTitle: 'Found early error, the application could not initialize properly!',
     },
     fr: {
         // Table Panel Headers
@@ -188,6 +191,9 @@ const messages = {
 
         // Menu
         menuEvents: 'Bac à état',
+
+        // Errors
+        earlyErrorsTitle: 'Erreur détectée, l\'application n\'a pas pu s\'initialiser correctement !',
     },
 };
 

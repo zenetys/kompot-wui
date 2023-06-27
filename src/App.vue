@@ -101,9 +101,32 @@
             </div>
         </v-navigation-drawer>
         <v-main>
-            <div class="ml-1 mr-2">
-                <router-view />
-            </div>
+            <router-view v-if="earlyErrors.length === 0" />
+            <v-container v-else fill-height>
+                <v-row no-gutters justify="center">
+                    <v-col align="center">
+                        <v-alert
+                            align="left"
+                            type="error"
+                            max-width="550"
+                            border="left"
+                            colored-border
+                            elevation="5"
+                        >
+                            <div class="text-subtitle-2">
+                                {{ $t('earlyErrorsTitle') }}
+                            </div>
+
+                            <div v-for="(error, i) in earlyErrors" :key="i" class="mt-2 grey lighten-5">
+                                <div class="text-body-2">{{ error.toString() }}</div>
+                                <div v-if="axiosIsAxiosError(error)" class="text-caption">
+                                    {{ axiosError2URL(error) }}
+                                </div>
+                            </div>
+                        </v-alert>
+                    </v-col>
+                </v-row>
+            </v-container>
         </v-main>
     </v-app>
 </template>
@@ -114,6 +137,7 @@ import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
 import { mapGetters } from 'vuex';
 import i18n from '@/plugins/i18n';
+import { axiosIsAxiosError, axiosError2URL } from '@/plugins/utils';
 
 export default {
     name: 'App',
@@ -122,6 +146,12 @@ export default {
     components: {
         Clock,
         Cartouche,
+    },
+    props: {
+        earlyErrors: {
+            type: Array,
+            default: () => [],
+        },
     },
     data() {
         return {
@@ -132,6 +162,10 @@ export default {
             appTitle: null,
             appVersion: process.env.VUE_APP_VERSION,
             appName: process.env.VUE_APP_NAME,
+
+            /* expose these to template */
+            axiosIsAxiosError,
+            axiosError2URL,
         };
     },
     computed: {
