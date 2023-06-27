@@ -399,8 +399,9 @@ export default {
     margin-left: 1px;
 }
 .v-icon.openGraphIcon::after {
+    /* no round background on active */
     background-color: transparent;
-} /* no round background on active */
+}
 .v-icon.openGraphIcon:active {
     color: #63b5f7;
 }
