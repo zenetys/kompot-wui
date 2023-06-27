@@ -227,11 +227,11 @@ export default {
             }
         },
     },
-    beforeDestroy() {
-        clearInterval(this.progressTimer);
-    },
     mounted() {
         this.topButtonDisplay();
+    },
+    beforeDestroy() {
+        clearInterval(this.progressTimer);
     },
     methods: {
         handleStateChange(filtersHaveChanged) {
