@@ -6,11 +6,10 @@
                 <v-row align="center" no-gutters style="height: 150px">
                     <v-col cols="12" md="4" lg="3">
                         <v-btn-toggle
-                            v-model="toggleFilter"
+                            v-model="levelToggle"
                             color="white"
                             class="mr-1 mb-1 elevation-2"
                             mandatory
-                            @change="setFilterLevel"
                         >
                             <v-btn value="critical" active-class="red lighten-1" :title="$t('filters.critical')">
                                 <v-icon>mdi-numeric-1-circle-outline</v-icon>
@@ -36,7 +35,7 @@
                     <v-col cols="12" md="4" lg="5">
                         <v-text-field
                             id="id"
-                            v-model="searchBox"
+                            v-model="searchInput"
                             :label="$t('filterBoxPlaceholder')"
                             solo
                             dense
@@ -60,39 +59,42 @@
 </template>
 
 <script>
+import { gotoRoute } from '@/plugins/utils';
+
 import i18n from '../plugins/i18n';
 export default {
     name: 'FilterBar',
     i18n: i18n,
     data() {
         return {
-            toggleFilter: 'all',
-            searchBox: null,
+            levelToggle: null,
+            searchInput: null,
             setFilterEventTimeout: null,
         };
     },
     watch: {
-        searchBox() {
+        '$route.query': {
+            immediate: true,
+            handler(q) {
+                this.levelToggle = q.level; // FIXME: check
+                this.searchInput = q.search;
+                this.$emit('filter', {
+                    level: this.levelToggle,
+                    search: this.searchInput,
+                });
+            },
+        },
+        levelToggle(level) {
+            gotoRoute(this, { query: { level } });
+        },
+        searchInput(search) {
             if (this.setFilterEventTimeout)
                 clearTimeout(this.setFilterEventTimeout);
-            this.setFilterEventTimeout = setTimeout(() => {
-                this.setFilterEvent();
-            }, 500);
-        },
-    },
-    mounted() {
-        this.toggleFilter = this.$route.query.level;
-        this.searchBox = this.$route.query.filter;
-    },
-    methods: {
-        setFilterEvent() {
-            this.$emit('filter', {
-                level: this.toggleFilter,
-                search: this.searchBox,
-            });
-        },
-        setFilterLevel() {
-            this.setFilterEvent();
+            /* search is null when the clear icon was clicked, in that
+             * case do not temporize */
+            this.setFilterEventTimeout = setTimeout(
+                () => gotoRoute(this, { query: { search } }),
+                search === null ? 0 : 500);
         },
     },
 };

@@ -41,3 +41,37 @@ function formatDateWithMillisecond(second) {
         secondNumber: second,
     };
 }
+
+/**
+ * Build a route location object based on another reference route object.
+ * The current $route is typically passed as reference in order to derive
+ * a new route from it, overriding only some query parameters given in the
+ * target route object.
+ * @param {Location|undefined} target - Target route object to override
+ *      the reference route object. Target route properties (name or path,
+ *      parameters) get preference over the ones in the reference object.
+ *      If undefined is given as target value, the resulting route will be
+ *      a no-op compared to the reference one.
+ * @param {Location} reference - Base route object to derive the target
+ *      route object from.
+ * @return {Location} - The resulting route.
+ */
+export function deriveRoute(target, reference) {
+    var outRoute = { name: target?.name, path: target?.path, query: {}, params: {} };
+    Object.assign(outRoute.query, reference.query, target?.query);
+    Object.assign(outRoute.params, reference.params, target?.params);
+    return outRoute;
+}
+
+/**
+ * Wrapper function to vue-router push(), deriving the current route to
+ * to build the new target route.
+ * @param {VueComponent} vm - Vue instance
+ * @param {Location|undefined} target - Target route object to override the
+ *      current route. See documentation in deriveRoute().
+ */
+export function gotoRoute(vm, target) {
+    vm.$router
+        .push(deriveRoute(target, vm.$route))
+        .catch(() => {});
+}
