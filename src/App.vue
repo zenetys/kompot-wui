@@ -19,7 +19,7 @@
             <div v-if="!$vuetify.breakpoint.smAndDown">
                 <Cartouche />
             </div>
-            <Clock />
+            <Clock class="ml-4" />
 
             <template v-if="$vuetify.breakpoint.smAndDown">
                 <div class="text-center ml-1">
