@@ -423,4 +423,9 @@ td[data-col-name="data-table-select"] input {
 .col_state_flag .resizeElement {
     display: none;
 }
+
+.col_device .v-icon {
+    vertical-align: baseline;
+    margin-right: 2px;
+}
 </style>
