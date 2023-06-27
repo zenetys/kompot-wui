@@ -382,6 +382,10 @@ export default {
     }
 }
 
+.v-progress-linear {
+    transition: none;
+}
+
 // Position Action button after select a row
 .action-panel {
     position: absolute;
