@@ -88,13 +88,11 @@ export default {
     },
     computed: {
         orderData() {
-            return Object.values(this.$props.elements).map(function (element) {
-                return {
-                    name: element.device,
-                    description: element.entry_kind === apiConfig.KIND_INDICATOR
-                        ? element.indicator : undefined,
-                };
-            });
+            return Object.values(this.elements).map((element) => ({
+                name: element.device,
+                description: element.entry_kind === apiConfig.KIND_INDICATOR
+                    ? element.indicator : undefined,
+            }));
         },
     },
     methods: {
