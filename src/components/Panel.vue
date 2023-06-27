@@ -16,13 +16,14 @@
             </div>
 
             <!-- Go to top of table -->
-            <div id="go-to-top" @click="goToTableTop()">
+            <div v-if="showGoToTop" id="go-to-top" @click="onGoToTopClick()">
                 <v-btn class="mx-2" fab dark small color="blue-grey darken-1">
                     <v-icon dark>mdi-chevron-up</v-icon>
                 </v-btn>
             </div>
 
             <AutoTable
+                ref="autotable"
                 :config="config"
                 :search="apiConfig.useZTableSearch ? filters.search : ''"
                 :selected-items="selectedItems"
@@ -203,6 +204,8 @@ export default {
             progressTimer: null,
 
             filters: {},
+            tableWrapperElement: undefined,
+            showGoToTop: false,
 
             apiConfig,
         };
@@ -228,10 +231,14 @@ export default {
         },
     },
     mounted() {
-        this.topButtonDisplay();
+        this.tableWrapperElement = this.$refs.autotable.$el.querySelector('.v-data-table__wrapper');
+        if (this.tableWrapperElement)
+            this.tableWrapperElement.addEventListener('scroll', this.onTableScroll);
     },
     beforeDestroy() {
         clearInterval(this.progressTimer);
+        if (this.tableWrapperElement)
+            this.tableWrapperElement.removeEventListener('scroll', this.onTableScroll);
     },
     methods: {
         handleStateChange(filtersHaveChanged) {
@@ -298,18 +305,6 @@ export default {
         onFiltersChange(payload) {
             this.filters = payload;
         },
-        goToTableTop() {
-            document.querySelector('.v-data-table__wrapper').scrollTop = 0;
-        },
-        topButtonDisplay() {
-            document.querySelector('.v-data-table__wrapper').addEventListener('scroll', (element) => {
-                if (element.target.scrollTop > 0) {
-                    document.querySelector('#go-to-top').style.display = 'block';
-                } else {
-                    document.querySelector('#go-to-top').style.display = 'none';
-                }
-            });
-        },
         onSelectedItems(item, newSelectedItems) {
             this.selectedItems = newSelectedItems;
         },
@@ -318,6 +313,13 @@ export default {
         },
         onActionSent() {
             this.selectedItems = {};
+        },
+        onTableScroll(ev) {
+            this.showGoToTop = (ev.target.scrollTop > 0);
+        },
+        onGoToTopClick() {
+            if (this.tableWrapperElement)
+                this.tableWrapperElement.scrollTop = 0;
         },
 
         getIcon,
