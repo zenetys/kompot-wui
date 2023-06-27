@@ -4,7 +4,7 @@
         <div v-if="!$vuetify.breakpoint.xs">
             <v-toolbar dense class="elevation-1 blue-grey lighten-5">
                 <v-row align="center" no-gutters style="height: 150px">
-                    <v-col cols="12" md="4" lg="3">
+                    <v-col>
                         <v-btn-toggle
                             id="levels"
                             v-model="levelToggle"
@@ -32,8 +32,9 @@
                                 <v-icon>mdi-numeric-5-circle-outline</v-icon>
                             </v-btn>
                         </v-btn-toggle>
+
                     </v-col>
-                    <v-col cols="12" md="4" lg="5">
+                    <v-col>
                         <v-text-field
                             v-model="searchInput"
                             :label="$t('filterBoxPlaceholder')"
@@ -51,7 +52,17 @@
                             </template>
                         </v-text-field>
                     </v-col>
-                    <v-col cols="12" md="4" lg="4" class="text-right" />
+                    <v-col class="text-right">
+                        <v-btn
+                            outlined
+                            :ripple="false"
+                            class="z-icon-btn mr-6"
+                            :title="$t('cmdRefresh')"
+                            @click="$emit('refresh')"
+                        >
+                            <v-icon>mdi-table-refresh</v-icon>
+                        </v-btn>
+                    </v-col>
                 </v-row>
             </v-toolbar>
         </div>
@@ -107,6 +118,26 @@ export default {
     &:not(.v-btn--active) {
         border-top-color: #bbb !important;
     }
+}
+/* buttons */
+.z-icon-btn.v-btn.v-size--default {
+    min-width: 0;
+    padding: 0 8px;
+    height: 37px;
+    margin-bottom: 2px;
+    background-color: #f7f7f7;
+    border-color: #bbb;
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 5%),
+                0 2px 2px 0 rgb(0 0 0 / 6%),
+                0 1px 5px 0 rgb(0 0 0 / 10%);
+}
+.z-icon-btn.v-btn.v-size--default:active {
+    box-shadow: inset 0 0 10px rgb(0 0 0 / 12%);
+}
+
+.z-icon-btn.v-btn:hover:before {
+    opacity: 0.02;
+    border-color: #666;
 }
 }
 </style>

@@ -65,6 +65,8 @@ const messages = {
         cancel: 'Cancel',
         // Button label
         ok: 'OK',
+        // Filter bar actions
+        cmdRefresh: 'Reload data',
 
         // Filters
         saveFilter: 'Save this filter',
@@ -165,6 +167,8 @@ const messages = {
         cancel: 'Annuler',
         // Button label
         ok: 'OK',
+        // Filter bar actions
+        cmdRefresh: 'Recharger les données',
 
         // Filters
         saveFilter: 'Enregistrer ce filtre',

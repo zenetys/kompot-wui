@@ -3,6 +3,7 @@
         <FilterBar
             v-if="!$vuetify.breakpoint.smAndDown"
             @filter="onFiltersChange"
+            @refresh="onCmdRefresh"
         />
 
         <v-progress-linear
@@ -304,6 +305,9 @@ export default {
         // filters update notification from filter bar
         onFiltersChange(payload) {
             this.filters = payload;
+        },
+        onCmdRefresh() {
+            this.restartFetchInterval();
         },
         onSelectedItems(item, newSelectedItems) {
             this.selectedItems = newSelectedItems;
