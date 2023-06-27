@@ -56,6 +56,18 @@
                         <v-btn
                             outlined
                             :ripple="false"
+                            class="z-icon-btn mr-2"
+                            :class="isPlayingRenderSpec.class"
+                            :title="$t(isPlayingRenderSpec.i18nTitle)"
+                            @click="$emit(isPlayingRenderSpec.event)"
+                        >
+                            <v-icon :color="isPlayingRenderSpec.iconColor">
+                                {{ isPlayingRenderSpec.icon }}
+                            </v-icon>
+                        </v-btn>
+                        <v-btn
+                            outlined
+                            :ripple="false"
                             class="z-icon-btn mr-6"
                             :title="$t('cmdRefresh')"
                             @click="$emit('refresh')"
@@ -72,14 +84,44 @@
 <script>
 import { gotoRoute } from '@/plugins/utils';
 
+const isPlayingRenderSpecs = [
+    // isPlaying false
+    {
+        icon: 'mdi-pause',
+        iconColor: 'red lighten-2',
+        event: 'play',
+        class: '',
+        i18nTitle: 'cmdPlay',
+    },
+    // isPlaying true
+    {
+        icon: 'mdi-play',
+        iconColor: 'green lighten-2',
+        event: 'pause',
+        class: 'z-on',
+        i18nTitle: 'cmdPause',
+    },
+];
+
 export default {
     name: 'FilterBar',
+    props: {
+        isPlaying: {
+            type: Boolean,
+            default: true,
+        },
+    },
     data() {
         return {
             levelToggle: null,
             searchInput: null,
             setFilterEventTimeout: null,
         };
+    },
+    computed: {
+        isPlayingRenderSpec() {
+            return isPlayingRenderSpecs[this.isPlaying + 0];
+        }
     },
     watch: {
         '$route.query': {
@@ -138,6 +180,9 @@ export default {
 .z-icon-btn.v-btn:hover:before {
     opacity: 0.02;
     border-color: #666;
+}
+.z-icon-btn.v-btn.v-size--default.z-on {
+    box-shadow: none;
 }
 }
 </style>

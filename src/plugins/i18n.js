@@ -66,6 +66,8 @@ const messages = {
         // Button label
         ok: 'OK',
         // Filter bar actions
+        cmdPause: 'Playing, click to pause',
+        cmdPlay: 'Paused, click to play',
         cmdRefresh: 'Reload data',
 
         // Filters
@@ -168,6 +170,8 @@ const messages = {
         // Button label
         ok: 'OK',
         // Filter bar actions
+        cmdPause: 'En lecture, cliquer pour mettre en pause',
+        cmdPlay: 'En pause, cliquer pour activer le rechargement automatique',
         cmdRefresh: 'Recharger les données',
 
         // Filters

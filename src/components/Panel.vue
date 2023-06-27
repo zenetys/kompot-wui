@@ -2,7 +2,10 @@
     <div>
         <FilterBar
             v-if="!$vuetify.breakpoint.smAndDown"
+            :is-playing="playOn"
             @filter="onFiltersChange"
+            @play="onCmdPlay"
+            @pause="onCmdPause"
             @refresh="onCmdRefresh"
         />
 
@@ -203,6 +206,8 @@ export default {
             // Progress bar data
             progressValue: 0,
             progressTimer: null,
+            playOn: true,
+            userExplicitPlayOn: undefined,
 
             filters: {},
             tableWrapperElement: undefined,
@@ -230,6 +235,22 @@ export default {
                     : Promise.resolve({ data: newData });
             }
         },
+        playOn: {
+            handler(value) {
+                if (value)
+                    this.restartFetchInterval();
+                else
+                    this.stopTimer();
+            }
+        },
+        selectedItems: {
+            handler(value) {
+                if (!isObjectEmpty(value))
+                    this.playOn = false;
+                else if (this.userExplicitPlayOn !== false)
+                    this.playOn = true;
+            }
+        }
     },
     mounted() {
         this.tableWrapperElement = this.$refs.autotable.$el.querySelector('.v-data-table__wrapper');
@@ -308,6 +329,14 @@ export default {
         },
         onCmdRefresh() {
             this.restartFetchInterval();
+        },
+        onCmdPlay() {
+            this.playOn = true;
+            this.userExplicitPlayOn = this.playOn;
+        },
+        onCmdPause() {
+            this.playOn = false;
+            this.userExplicitPlayOn = this.playOn;
         },
         onSelectedItems(item, newSelectedItems) {
             this.selectedItems = newSelectedItems;
