@@ -1,3 +1,5 @@
+<!-- FIXME: rewrite, remove Vuex -->
+
 <template>
     <div>
         <v-chip :title="$t('hostUp')" small class="mr-1 elevation-2" color="green lighten-2" label>
