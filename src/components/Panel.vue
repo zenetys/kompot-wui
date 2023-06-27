@@ -61,7 +61,7 @@ import { apiConfig } from '@/plugins/apis/api-manager';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
 import AutoTable from '@zenetys/ztable';
-import { compactFormat, frenchFormat } from '@/plugins/utils';
+import { compactFormat } from '@/plugins/utils';
 
 function getStatusText(status, item) {
     if (item.status === apiConfig.STATUS_PENDING)
@@ -170,7 +170,7 @@ export default {
                     },
                     last_state_change: {
                         label: i18n.t('duration'),
-                        formatText: frenchFormat,
+                        formatText: compactFormat,
                         order: 2,
                         copyable: false,
                     },

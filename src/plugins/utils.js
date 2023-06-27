@@ -8,11 +8,6 @@ export function axiosError2URL(e) {
         : (method + ' ' + axiosBuildFullPath(e.config.baseURL, axiosBuildURL(e.config.url, e.config.params)));
 }
 
-// Format: DD/MM/YYY (06/05/2021)
-export function frenchFormat(date) {
-    return new Date(date).toLocaleDateString('fr-FR') + ' ~ ' + new Date(date).toLocaleTimeString('fr-FR');
-}
-
 // Format: day hour minute second (1d5h45m78s)
 export function compactFormat(date) {
     let now = new Date();
