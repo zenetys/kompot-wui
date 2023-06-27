@@ -10,6 +10,7 @@ export const kConfig = {
     graphUrl: './monitoring-graph?device=%device%&indicator=%indicator%',
     graphDeviceIndicator: 'hostcheck',
     graphPopupOptions: 'directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=453',
+    perPage: 100,
     title: undefined,
     menu: [
         {

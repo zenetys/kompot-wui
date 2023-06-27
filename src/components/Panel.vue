@@ -70,6 +70,7 @@
 <script>
 import FilterBar from '@/components/FilterBar.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
+import { kConfig } from '@/plugins/config.js';
 import { apiConfig } from '@/plugins/apis/api-manager';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
@@ -148,7 +149,7 @@ export default {
                 height: 'auto',
                 paginated: true,
                 hideFooter: true,
-                footerProps: { 'items-per-page-options': [ 100 ] },
+                footerProps: { 'items-per-page-options': [ kConfig.perPage ] },
                 syncPagination: (specs) => this.onPaginationSync(specs),
                 selectable: (...args) => this.onSelectedItems(...args),
                 showSelect: true,
