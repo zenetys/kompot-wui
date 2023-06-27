@@ -53,8 +53,8 @@ import { apiConfig } from '@/plugins/apis/api-manager';
 export default {
     props: {
         elements: {
-            type: Array,
-            default: () => [],
+            type: Object,
+            default: () => ({}),
         },
     },
     data() {
@@ -104,8 +104,7 @@ export default {
     },
     computed: {
         orderData() {
-            return this.$props.elements.map(function (element) {
-                if (typeof element == 'undefined') return;
+            return Object.values(this.$props.elements).map(function (element) {
                 return {
                     name: element.device,
                     description: element.entry_kind === apiConfig.KIND_INDICATOR

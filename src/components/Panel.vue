@@ -18,8 +18,8 @@
         </div>
 
         <div ref="panelRow" class="panel-box" :style="seletedDetailsView()">
-            <div v-if="selectedItems.length > 0" class="send-selected">
-                <ActionButtons :elements="selectedItems" @sent="initializeSelected" />
+            <div v-if="!isObjectEmpty(selectedItems)" class="send-selected">
+                <ActionButtons :elements="selectedItems" @sent="onActionSent" />
             </div>
 
             <!-- Go to top of table -->
@@ -33,7 +33,7 @@
                 :config="config"
                 :search="apiConfig.useZTableSearch ? filters.search : ''"
                 :tableOptions="tableOptions"
-                :selectedItems="selectedItems"
+                :selected-items="selectedItems"
             >
                 <template #state_flag="{ item }">
                     <span>
@@ -120,6 +120,12 @@ function getRowColor(item) {
     return 'orange lighten-3'
 }
 
+function isObjectEmpty(o) {
+    for (const i in o)
+        return false;
+    return true;
+}
+
 export default {
     i18n: i18n,
     components: {
@@ -134,9 +140,8 @@ export default {
                 api: '',
                 height: 'auto',
                 paginated: false,
-                clickable: (item) => {
-                    this.selectOnClick(item);
-                },
+                selectable: (...args) => this.onSelectedItems(...args),
+                showSelect: true,
                 itemClass: (x) => this.getRowColor(x),
                 customHeadersComputation: (headers) => {
                     headers.unshift({ value: 'state_flag' });
@@ -189,7 +194,8 @@ export default {
                     },
                 }
             },
-            selectedItems: [],
+
+            selectedItems: {},
 
             normalizedData: undefined,
             filteredData: [],
@@ -370,26 +376,6 @@ export default {
                 this.filteredData = this.normalizedData;
             }
         },
-        /**
-         * Select or deselect a table item on row click
-         * @param {Object} item the item to select
-         */
-        selectOnClick(item) {
-            const foundIndex = this.selectedItems.findIndex((found) => found === item.id);
-
-            if (foundIndex === -1) {
-                this.selectedItems.push(item.id);
-            } else {
-                this.selectedItems.splice(foundIndex, 1);
-            }
-        },
-        /**
-         * Update the selected items array on an item checkbox click
-         * @param {Array} newSelectedItems the up-to-date selected items
-         */
-        updateSelectedItems(newSelectedItems) {
-            this.selectedItems = newSelectedItems;
-        },
         getInfo(item) {
             this.openInInfo.length == 0 ? this.openInInfo.push(item) : (this.openInInfo = [item]);
         },
@@ -398,10 +384,6 @@ export default {
                 this.openInInfo = [];
             }
             this.seletedDetailsView();
-        },
-        // execute after send data to api
-        initializeSelected() {
-            this.selectedItems = [];
         },
         // active / disable multi sort
         allowMultiSort() {
@@ -573,13 +555,20 @@ export default {
                 }
             });
         },
+        onSelectedItems(item, newSelectedItems) {
+            this.selectedItems = newSelectedItems;
+        },
         onClickGraphIcon(item) {
             apiConfig.getGraph(item).popup();
+        },
+        onActionSent() {
+            this.selectedItems = {};
         },
 
         getStatusText,
         getStatusColor,
         getRowColor,
+        isObjectEmpty,
     },
 };
 </script>
