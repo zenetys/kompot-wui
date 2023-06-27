@@ -265,7 +265,6 @@ export default {
                 this.filteredData = this.normalizedData;
             }
         },
-        getIcon,
         stopTimer() {
             clearInterval(this.progressTimer);
             this.progressTimer = null;
@@ -321,6 +320,7 @@ export default {
             this.selectedItems = {};
         },
 
+        getIcon,
         getStatusText,
         getStatusColor,
         getRowColor,
