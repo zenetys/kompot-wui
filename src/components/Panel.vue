@@ -18,7 +18,7 @@
             <!-- Go to top of table -->
             <div id="go-to-top" @click="goToTableTop()">
                 <v-btn class="mx-2" fab dark small color="blue-grey darken-1">
-                    <v-icon dark> mdi-chevron-up </v-icon>
+                    <v-icon dark>mdi-chevron-up</v-icon>
                 </v-btn>
             </div>
 
