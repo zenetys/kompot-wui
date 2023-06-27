@@ -52,7 +52,7 @@
                         <v-list-item-action>
                             <v-icon>{{ link.icon }}</v-icon>
                         </v-list-item-action>
-                        <v-list-item-title> {{ link.name }} </v-list-item-title>
+                        <v-list-item-title>{{ link.name }}</v-list-item-title>
                     </v-list-item>
 
                     <v-list-group
@@ -76,7 +76,7 @@
                             </v-list-item>
                         </template>
                         <v-list-item v-for="sublink in link.subMenus" :key="sublink.name" :to="sublink.url">
-                            <v-list-item-title> {{ sublink.name }} </v-list-item-title>
+                            <v-list-item-title>{{ sublink.name }}</v-list-item-title>
                         </v-list-item>
                     </v-list-group>
                 </div>
