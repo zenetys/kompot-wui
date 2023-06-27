@@ -11,7 +11,7 @@
         />
 
         <div>
-            <div v-if="!isObjectEmpty(selectedItems)" class="send-selected">
+            <div v-if="!isObjectEmpty(selectedItems)" class="action-panel">
                 <ActionButtons :elements="selectedItems" @sent="onActionSent" />
             </div>
 
@@ -381,10 +381,10 @@ export default {
 }
 
 // Position Action button after select a row
-.send-selected {
+.action-panel {
     position: absolute;
     bottom: 50px;
-    right: 50px;
+    right: 57px;
     z-index: 10;
 }
 
