@@ -419,4 +419,8 @@ td[data-col-name="data-table-select"] input {
 .col_data-table-select .resizeElement {
     display: none;
 }
+
+.col_state_flag .resizeElement {
+    display: none;
+}
 </style>
