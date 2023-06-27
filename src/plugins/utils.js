@@ -24,7 +24,7 @@ export function compactFormat(date) {
     if (outTime.minuteNumber > 0 && outTimeFormat.length < 2) outTimeFormat.push(outTime.minuteNumber + 'm');
     if (outTime.secondNumber > 0 && outTimeFormat.length < 2) outTimeFormat.push(outTime.secondNumber + 's');
 
-    return outTimeFormat.join('');
+    return outTimeFormat.join(String.fromCharCode(8201));
 }
 
 function formatDateWithMillisecond(second) {
