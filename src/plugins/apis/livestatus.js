@@ -1,50 +1,60 @@
 import axios from 'axios';
+import { kConfig } from '@/plugins/config';
 import { apiConfig } from '@/plugins/apis/api-manager';
 
-/**
- * Livestatus status texts and their respective values.
- */
-export const statusVariables = {
-    UP: 2,
-    HOST_PENDING: 1,
-    HOST_DOWN: 4,
-    HOST_UNREACHABLE: 8,
-    HARD_STATE: 1,
-    SOFT_STATE: 1,
-};
+import {
+    getQueryUrls as NagiosGetQueryUrls,
+    fetchRrd as NagiosFetchRrd,
+    getGraph as NagiosGetGraph,
+} from './nagios';
+
+export const useZTableSearch = false;
 
 /**
- * Format LiveStatus data for AutoTable.
- * @param {object} rawData - the raw data from the LiveStatus API
- * @param {array} headers - headers config to help format the data
- * @returns {array} the formatted data
+ * Get the query urls for the LiveStatus API.
+ * @returns {object} the query urls by type
+ * */
+export function getQueryUrls() {
+    return {
+        ...NagiosGetQueryUrls(),
+        COMBINED_LIST: `${kConfig.livestatusBaseUrl}/livestatus.cgi?action=combined`,
+    };
+}
+
+/**
+ * Fetch Livestatus data and normalize for Kompot.
+ * @param {Object|null} filters - Filters, in case the API can handle
+ *      it server side. FIXME: specs
+ * @returns {Promise} Promise resolving with normalized data,
+ *      it's up to the caller to handle the error.
  */
-export function fetchAndFormatData(headers, filters) {
-    const level = filters ? filterStatus(filters.level) : 5;
-    let url = `${getQueryUrls().COMBINED_LIST}&level=${level}`;
-    if (filters && filters.box) {
-        url += `&query=${filters.box}`;
+export function fetchAndNormalizeData(filters) {
+    let url = getQueryUrls().COMBINED_LIST + '&limit=0&order=-priority&track=1';
+    if (filters) {
+        if (filters.level)
+            url += '&level=' + encodeURIComponent(livestatusLevel(filters.level));
+        if (filters.search)
+            url += '&query=' + encodeURIComponent(filters.search);
     }
     return axios
         .get(url)
         .then((result) => {
             const rawData = result.data;
             // oraganise raw Nagios data and format it for the table
-            return formatData(rawData, headers);
+            return formatData(rawData);
         })
-        .catch(() => {});
+        // let the caller handle the error
 }
 
-function getNagiosState(type, state) {
-    if (type == 1 && state == 0) return 2;  // Host UP
-    if (type == 1 && state == 1) return 4;  // Host DOWN
-    if (type == 1 && state == 2) return 8;  // Host UNREACHABLE
-    if (type == 0 && state == 0) return 2;  // Service UP
-    if (type == 0 && state == 1) return 4;  // Service WARNING
-    if (type == 0 && state == 2) return 16; // Service CRITICAL
-    if (type == 0 && state == 3) return 8;  // Service UNKNOWN
-    return 8;
+export function fetchRrd(database, start, datasources) {
+    return NagiosFetchRrd(database, start, datasources);
 }
+
+export function getGraph(normalizedEntry) {
+    return NagiosGetGraph(normalizedEntry);
+}
+
+// internals
 
 /**
  * Format LiveStatus data for AutoTable.
@@ -52,109 +62,70 @@ function getNagiosState(type, state) {
  * @param {array} headers - headers config to help format the data
  * @returns {array} the formatted data
  */
-export function formatData(rawData, headers) {
-    const formattedData = [];
+function formatData(rawData) {
+    const normalizedData = [];
 
-    // formatting loop
-    for (const [key, value] of Object.entries(rawData)) {
-        const element = value;
-
-        // add priority column
-        const time_indice = element.last_check / new Date();
-        const priority_indice = getPriorityIndice(element);
-        const priority = time_indice + priority_indice;
-
-        const data = {
-            id: key,
-            name: element.host_name,
-            display_name: element.description === "-" ? "PING" : element.description,
-            priority,
-            problem_has_been_acknowledged: element.acknowledged,
-            outage: element.state === statusVariables.HOST_UNREACHABLE,
-            TYPE: element.custom_variables ? element.custom_variables.TYPE : '',
-            state_type: element.state_type,
-            auto_track: element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : typeof(element.__AUTOTRACK)!="undefined",
-            track: element.__TRACK === '0;' || element.__TRACK === '1;0' ? false : typeof(element.__TRACK)!="undefined",
-            status: getNagiosState(element.description === "-", element.state),
-            accept_passive_checks: true,
-            address: element.host_address,
-        };
-
-        // apply formatting loop from each header
-        formatDataPerHeader(headers, element, data);
-
-        formatDate(data, ["last_state_change", "last_check"]);
-
-        formattedData.push(data);
-    }
-
-    return formattedData;
-}
-
-/**
- * Format date to javascript format (seconds to milliseconds).
- */
-function formatDate(data, keys) {
-    keys.forEach((key) => {
-        data[key] = data[key] * 1000;
-    });
-}
-
-/**
- * Compute the priority indice of an element.
- * @param {object} element - the element to compute the priority indice
- * @returns {number} the priority indice
- */
-function getPriorityIndice(element) {
-    if (element.notifications_enabled == false) return 0;
-    if (element.display_name != 'PING' && element.state == 1) return 1;
-    if (element.display_name == 'PING' && element.state == 1) return 2;
-    if (element.display_name != 'PING' && element.state == 2) return 3;
-    if (element.display_name == 'PING' && element.state == 2) return 4;
-    if (element.display_name != 'PING' && element.state == 4) return 5;
-    if (element.display_name == 'PING' && element.state == 8) return 6;
-    if (element.display_name != 'PING' && element.state == 8) return 7;
-    if (element.display_name == 'PING' && element.state == 4) return 8;
-    if (element.display_name != 'PING' && element.state == 16) return 9;
-}
-
-/**
- * Format data per header.
- * @param {array} headers - headers config to help format the data
- * @param {object} element - the element to format
- * @param {object} data - the data to format
- */
-function formatDataPerHeader(headers, element, data) {
-    headers.forEach((h) => {
-        const elem = h.value.split('.').reduce((obj, i) => {
-            return typeof obj == 'undefined' ? undefined : obj[i];
-        }, element);
-        if (typeof elem !== 'undefined') {
-            data[h.value] = elem;
+    for (const id in rawData) {
+        const rawElement = rawData[id];
+        const normalized = {
+            id,
+            device: rawElement.host_name,
+            ...(rawElement.description === undefined || rawElement.description === '-'
+                ? { indicator: apiConfig.DEFAULT_DEVICE_INDICATOR,
+                    entry_kind: apiConfig.KIND_DEVICE }
+                : { indicator: rawElement.description,
+                    entry_kind: apiConfig.KIND_INDICATOR }
+            ),
+            status: rawElement.has_been_checked === 1 ? rawElement.state : apiConfig.STATUS_PENDING,
+            priority: rawElement.priority,
+            device_address: rawElement.host_address,
+            device_type: rawElement.icon_image, /* kind of */
+            last_state_change: rawElement.last_state_change * 1000,
+            last_check: rawElement.last_check * 1000,
+            check_information: rawElement.plugin_output,
+            is_hard_state: rawElement.state_type === LIVESTATUS_CODES.STATE_TYPE_HARD,
+            has_notifications_enabled: rawElement.notifications_enabled === 1,
+            is_acknowledged: rawElement.acknowledged === 1,
+            is_passive_check: rawElement.check_type === LIVESTATUS_CODES.CHECK_TYPE_PASSIVE,
+            is_outage: rawElement.host_state === LIVESTATUS_CODES.HOST_UNREACHABLE ||
+                       rawElement.host_state === LIVESTATUS_CODES.HOST_DOWN,
+            /* kompot specific custom variables */
+            has_track: rawElement._TRACK === '' ||
+                       rawElement._TRACK === '0' ? false : true,
+            has_auto_track: rawElement._AUTOTRACK === '' ||
+                            rawElement._AUTOTRACK === '0' ? false : true,
+            /* extra from standard norm */
+            groups: rawElement.groups,
+            notes: rawElement.notes,
+            is_flapping: rawElement.is_flapping,
         }
-    });
-}
-
-/** 
- * Get the query urls for the LiveStatus API.
- * @returns {object} the query urls by type
- * */
-export function getQueryUrls() {
-    return { COMBINED_LIST: `${apiConfig.livestatusBaseUrl}action=combined` };
-}
-
-function filterStatus(level) {
-    switch(level) {
-        case 'critical':
-            return 1;
-        case 'recent':
-            return 2;
-        case 'known':
-            return 3;
-        case 'all-problems':
-            return 4;
-        case 'any':
-            return 5;
+        normalizedData.push(normalized);
     }
-    return -1;
+
+    return normalizedData;
+}
+
+const LIVESTATUS_CODES = {
+    HOST_UP: 0,
+    HOST_DOWN: 1,
+    HOST_UNREACHABLE: 2,
+    SERVICE_OK: 0,
+    SERVICE_WARNING: 1,
+    SERVICE_CRITICAL: 2,
+    SERVICE_UNKNOWN: 3,
+    STATE_TYPE_SOFT: 0,
+    STATE_TYPE_HARD: 1,
+    CHECK_TYPE_ACTIVE: 0,
+    CHECK_TYPE_PASSIVE: 1,
+};
+
+function livestatusLevel(kompotLevel) {
+    switch (kompotLevel) {
+        case 'critical': return 1;
+        case 'recent': return 2;
+        case 'known': return 3;
+        case 'all-problems': return 4;
+        case 'any': return 5;
+    }
+    return 1;
 }

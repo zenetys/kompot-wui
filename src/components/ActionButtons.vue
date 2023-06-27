@@ -48,6 +48,7 @@
 
 <script>
 import axios from 'axios';
+import { apiConfig } from '@/plugins/apis/api-manager';
 
 export default {
     props: {
@@ -106,8 +107,9 @@ export default {
             return this.$props.elements.map(function (element) {
                 if (typeof element == 'undefined') return;
                 return {
-                    name: element.name,
-                    description: element.description,
+                    name: element.device,
+                    description: element.entry_kind === apiConfig.KIND_INDICATOR
+                        ? element.indicator : undefined,
                 };
             });
         },

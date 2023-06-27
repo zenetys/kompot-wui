@@ -86,13 +86,10 @@ export default {
     },
     methods: {
         setFilterEvent() {
-            this.$emit('set-filter-event', this.setFilter());
-        },
-        setFilter() {
-            return {
+            this.$emit('filter', {
                 level: this.toggleFilter,
-                box: this.searchBox,
-            };
+                search: this.searchBox,
+            });
         },
         setFilterLevel() {
             this.setFilterEvent();

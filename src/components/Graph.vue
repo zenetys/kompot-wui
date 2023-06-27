@@ -30,8 +30,7 @@
 // @ is an alias to /src
 import LineChart from '../library/chartjs/LineChart.js';
 import { data } from '../plugins/chart-data';
-import { getQueryUrls, apiConfig } from '@/plugins/apis/api-manager';
-import axios from 'axios';
+import { apiConfig } from '@/plugins/apis/api-manager';
 
 export default {
     name: 'Graph',
@@ -50,9 +49,7 @@ export default {
             timeSelected: 2,
             dataCollection: null,
             data: [],
-            config: {},
             queryUrls: null,
-            apiConfig,
         };
     },
     computed: {
@@ -131,45 +128,26 @@ export default {
         },
     },
     watch: {
-        $route(to) {
-            this.site = to.params.site;
-            this.getGraphData(this.site, this.timeValue);
-            this.$forceUpdate();
-        },
-        apiConfig: {
-            immediate: true,
-            handler(newConfig) {
-                if (newConfig.apiType) {
-                    this.queryUrls = getQueryUrls();
-                }
+        '$route': {
+            handler(to) {
+                this.site = to.params.site;
+                this.getGraphData(this.site, this.timeValue);
+                this.$forceUpdate();
             },
-        },
+            immediate: true,
+        }
     },
     mounted() {
         this.fillData();
-        this.setConfig();
     },
     methods: {
-        setConfig() {
-            axios({
-                url: 'static/config.json',
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                responseType: 'json',
-            }).then((response) => {
-                this.config = response.data;
-                this.getGraphData(this.site, this.timeValue);
-            });
-        },
         /**
          * This getGraphData() method get the chart data.
          */
         getGraphData(database, start) {
             let timeInterval = '-1' + start;
             let datasources = [];
-            this.config.menu.forEach((element1) => {
+            this.$kConfig.menu.forEach((element1) => {
                 if (element1.name == 'IPSLA') {
                     element1.subMenus.forEach((element2) => {
                         if (element2.database == database) {
@@ -178,16 +156,9 @@ export default {
                     });
                 }
             });
-            axios({
-                url: this.queryUrls.setGraphUri(database, timeInterval, datasources.join(',')),
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                responseType: 'json',
-            }).then((response) => {
-                this.data = response.data.data;
-            });
+            apiConfig.fetchRrd(database, timeInterval, datasources)
+                .then((data) => { this.data = data; })
+                .catch(() => { /* FIXME */ });
         },
         getDurationData() {
             var tab = [];

@@ -10,10 +10,11 @@ const messages = {
         priority: 'Priority',
         device: 'Device',
         duration: 'Duration',
+        lastCheck: 'Last check',
         ipAddress: 'IP Address',
         indicator: 'Indicator',
         description: 'Description',
-        state: 'State*',
+        state: 'State',
         output: 'Output',
         sla: 'SLA',
         site: 'Site',
@@ -97,19 +98,22 @@ const messages = {
 
         // Errors
         earlyErrorsTitle: 'Found early error, the application could not initialize properly!',
+        dataFetchError: 'Failed to retrieve data!',
     },
     fr: {
         // Table Panel Headers
-        stateFlag: 'Etat',
+        stateFlag: 'État',
         priority: 'Priorité',
-        device: 'Equipement',
+        device: 'Équipement',
+        duration: 'Durée',
+        lastCheck: 'Dernier test',
         durationLastStateChange: "Durée changement d'état",
         durationLastUpdate: "Durée depuis dernier changement d'état",
         lastEv: "Date du dernier changement d'état",
         ipAddress: 'Adresse IP',
         indicator: 'Indicateur',
         description: 'Description',
-        state: 'Etat*',
+        state: 'État',
         output: 'Sortie',
         sla: 'SLA',
         site: 'Localisation',
@@ -194,6 +198,7 @@ const messages = {
 
         // Errors
         earlyErrorsTitle: 'Erreur détectée, l\'application n\'a pas pu s\'initialiser correctement !',
+        dataFetchError: 'La récupération des données a échoué !',
     },
 };
 

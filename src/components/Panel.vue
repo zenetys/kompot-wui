@@ -4,7 +4,7 @@
             v-if="!$vuetify.breakpoint.smAndDown"
             id="filter-bar"
             ref="filterBar"
-            @set-filter-event="getFilters"
+            @filter="onFiltersChange"
         />
 
         <div ref="progressBar" style="height: 2px">
@@ -31,33 +31,31 @@
 
             <AutoTable
                 :config="config"
-                :search="apiConfig.apiType === 'nagios' ? filters.box : ''"
+                :search="apiConfig.useZTableSearch ? filters.search : ''"
                 :tableOptions="tableOptions"
                 :selectedItems="selectedItems"
             >
                 <template #state_flag="{ item }">
                     <span>
-                        <v-icon size="13" :color="setStatusIconColor(item)" :title="$t('stateFlag')">mdi-circle</v-icon>
+                        <v-icon size="13" :color="getStatusColor(item)" :title="$t('stateFlag')"
+                        >mdi-circle</v-icon>
                         <v-icon
-                            :title="$t('openGraphLabel')"
-                            size="13"
-                            class="openGraphIcon"
+                            size="13" class="openGraphIcon" :title="$t('openGraphLabel')"
                             @click.stop="onClickGraphIcon(item)"
                         >mdi-chart-areaspline-variant</v-icon>
-                        <v-icon v-if="item.auto_track === true" size="13" :title="$t('recentChange')"
+                        <v-icon v-if="item.has_auto_track" size="13" :title="$t('recentChange')"
                         >mdi-alert-box-outline</v-icon>
-                        <v-icon v-else />
-                        <v-icon v-if="item.track === true" size="13" :title="$t('trackLabel')">mdi-eye</v-icon
-                        ><v-icon v-else />
-                        <v-icon v-if="item.checks_enabled === false" size="13" :title="$t('passiveEnabled')"
+                        <v-icon v-if="item.has_track" size="13" :title="$t('trackLabel')"
+                        >mdi-eye</v-icon>
+                        <v-icon v-if="item.is_passive_check" size="13" :title="$t('passiveEnabled')"
                         >mdi-parking</v-icon>
-                        <v-icon v-else />
-                        <v-icon
-                            v-if="item.problem_has_been_acknowledged === false"
-                            size="13"
-                            :title="$t('noAckLabel')"
-                        /><v-icon v-else size="13" :title="$t('ackLabel')">mdi-traffic-cone</v-icon>
+                        <v-icon v-if="item.is_acknowledged" size="13" :title="$t('noAckLabel')"
+                        >mdi-traffic-cone</v-icon>
                     </span>
+                </template>
+                <template #device="{ item }">
+                    <v-icon size="13">{{ getIcon(item.device_type) }}</v-icon>
+                    <span>{{ item.device }}</span>
                 </template>
             </AutoTable>
         </div>
@@ -65,28 +63,61 @@
 </template>
 
 <script>
-import { fetchAndFormatData, getStatusTexts, apiConfig } from '@/plugins/apis/api-manager';
 import FilterBar from '@/components/FilterBar.vue';
 import ActionButtons from '@/components/ActionButtons.vue';
-import { getRowColor } from '@/plugins/status/row-color';
-import { getCellColor } from '@/plugins/status/cell-color';
+import { apiConfig } from '@/plugins/apis/api-manager';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
-import { getHeaders } from '@/plugins/header';
 import AutoTable from '@zenetys/ztable';
 import { compactFormat, frenchFormat } from '@/plugins/utils';
 
-const getStateText = (status, item) => {
-    // HOST
-    if (status == 2) return i18n.t('hostUp');
-    if (status == 4 && item.display_name == 'PING') return i18n.t('hostDown');
-    if (status == 4 && item.display_name != 'PING') return i18n.t('serviceWarning');
-    if (status == 8 && item.display_name == 'PING') return i18n.t('hostUnreachable');
-    if (item.status == 8 && item.display_name != 'PING') {
-        return i18n.t('serviceUnknown');
+function getStatusText(status, item) {
+    if (item.status === apiConfig.STATUS_PENDING)
+        return i18n.t('pending');
+    if (item.entry_kind === apiConfig.KIND_DEVICE) {
+        switch (item.status) {
+            case apiConfig.STATUS_OK: return i18n.t('hostUp');
+            case apiConfig.STATUS_CRITICAL: return i18n.t('hostDown');
+            case apiConfig.STATUS_UNKNOWN: return i18n.t('hostUnreachable');
+        }
     }
-    if (status == 1) return i18n.t('pending');
-    if (status == 16) return i18n.t('serviceCritical');
+    switch (item.status) {
+        case apiConfig.STATUS_OK: return i18n.t('serviceOk');
+        case apiConfig.STATUS_WARNING: return i18n.t('serviceWarning');
+        case apiConfig.STATUS_CRITICAL: return i18n.t('serviceCritical');
+    }
+    return i18n.t('serviceUnknown');
+}
+
+function getStatusColor(item) {
+    if (item.status === apiConfig.STATUS_OK)
+        return 'green';
+    if (item.status === apiConfig.STATUS_PENDING)
+        return 'light-blue accent-1';
+    if (item.status === apiConfig.STATUS_WARNING)
+        return 'yellow accent-4';
+    if (item.status === apiConfig.STATUS_CRITICAL)
+        return 'red darken-1';
+    return 'orange darken-2';
+}
+
+function getRowColor(item) {
+    if (item.has_notifications_enabled === false)
+        return 'grey lighten-1';
+    if (item.has_track === true) {
+        if (item.status > apiConfig.STATUS_OK)
+            return 'blue lighten-4';
+        return 'teal lighten-3';
+    }
+    if (item.status == apiConfig.STATUS_PENDING)
+        return 'light-blue accent-1';
+    if (item.status == apiConfig.STATUS_OK)
+        return 'green lighten-4';
+    if (item.status == apiConfig.STATUS_WARNING)
+        return 'yellow lighten-4';
+    if (item.status == apiConfig.STATUS_CRITICAL)
+        return 'red lighten-3';
+    return 'orange lighten-3'
 }
 
 export default {
@@ -106,7 +137,7 @@ export default {
                 clickable: (item) => {
                     this.selectOnClick(item);
                 },
-                itemClass: this.getRowBackgroundClass,
+                itemClass: (x) => this.getRowColor(x),
                 customHeadersComputation: (headers) => {
                     headers.unshift({ value: 'state_flag' });
                 },
@@ -115,103 +146,54 @@ export default {
                         slotName: 'state_flag',
                         label: '',
                         sortable: false,
-                        enabled: true,
                         order: 1,
+                        truncable: false,
+                        /* Explicitly disable copy icon. Anyway it would not
+                         * show-up, since there is no text content here. */
+                        copyable: false,
                     },
                     status: {
-                        label: 'Etat',
-                        enabled: true,
-                        formatText: getStateText,
-                        cssClass: this.setStatusIconColor,
-                        order: 2,
-                    },
-                    name: {
-                        label: 'Equipement',
-                        enabled: true,
+                        label: i18n.t('state'),
+                        formatText: (x, y) => getStatusText(x, y),
+                        cssClass: (x) => this.getStatusColor(x),
                         order: 3,
                     },
-                    address: {
-                        label: 'Adresse IP',
-                        //align: ' d-none',
-                        enabled: true,
+                    device: {
+                        slotName: 'device',
+                        label: i18n.t('device'),
                         order: 4,
                     },
-                    display_name: {
-                        label: 'Indicateur',
-                        enabled: true,
+                    device_address: {
+                        label: i18n.t('ipAddress'),
                         order: 5,
                     },
-                    priority: {
-                        label: 'Priorite',
-                        enabled: false,
-                    },
-                    description: {
-                        label: 'Description',
-                        enabled: false,
-                    },
-                    last_state_change: {
-                        label: 'Dernier changement',
-                        enabled: true,
-                        formatText: frenchFormat,
+                    indicator: {
+                        label: i18n.t('indicator'),
                         order: 6,
                     },
-                    last_check: {
-                        label: 'Durée',
-                        enabled: true,
-                        formatText: compactFormat,
+                    last_state_change: {
+                        label: i18n.t('duration'),
+                        formatText: frenchFormat,
+                        order: 2,
+                        copyable: false,
+                    },
+                    check_information: {
+                        label: i18n.t('output'),
                         order: 7,
                     },
-                    plugin_output: {
-                        label: 'Sortie',
-                        enabled: true,
+                    last_check: {
+                        label: i18n.t('lastCheck'),
+                        formatText: compactFormat,
                         order: 8,
-                    },
-
-                    id: {
-                        enabled: false,
-                    },
-                    TYPE: {
-                        enabled: false,
-                    },
-                    notifications_enabled: {
-                        label: 'notificationsEnabled',
-                        enabled: false,
-                    },
-                    check_type: {
-                        label: 'checkType',
-                        enabled: false,
-                    },
-                    accept_passive_checks: {
-                        label: 'passiveEnabled',
-                        enabled: false,
-                    },
-                    checks_enabled: {
-                        label: 'checksEnabled',
-                        enabled: false,
-                    },
-                    problem_has_been_acknowledged: {
-                        label: 'ack',
-                        enabled: false,
-                    },
-                    outage: {
-                        label: 'outage',
-                        enabled: false,
-                    },
-                    state_type: {
-                        label: 'stateType',
-                        enabled: false,
-                    },
-                    auto_track: {
-                        label:'autoTrack',
-                        enabled: false,
-                    },
-                    track: {
-                        label: 'track',
-                        enabled: false,
+                        copyable: false,
                     },
                 }
             },
             selectedItems: [],
+
+            normalizedData: undefined,
+            filteredData: [],
+
             openInInfo: [],
             singleSelect: false,
             selectedId: -1,
@@ -225,10 +207,10 @@ export default {
             fromValue: 0,
 
             // Progress bar data
-            progressValue: 100,
+            progressValue: 0,
             progressQuery: false,
             progressShow: true,
-            progressInterval: 0,
+            progressTimer: null,
 
             languages: ['en', 'fr'],
             shiftKeyOn: false,
@@ -290,137 +272,37 @@ export default {
 
             return slots;
         },
-        /**
-         * Returns the computed headers for the AutoTable component, with a custom cell formatting callback.
-         * @returns {Array}
-         */
-        headers() {
-            return getHeaders(apiConfig?.apiType);
-        },
         filterBarHeight() {
             return this.$refs?.filterBar?.clientHeight || this.$refs?.filterBar?.$el.clientHeight;
         },
         progressBarHeight() {
             return this.$refs?.progressBar?.clientHeight || this.$refs?.progressBar?.$el.clientHeight;
         },
-        formattedItems: {
-            get: function () {
-                var returnData = [];
-                if (apiConfig.apiType === "livestatus-cgi") {
-                    returnData = this.tempData.filter(() => true)
-                    return returnData;
-                }
-                switch (this.filters.level) {
-                    case 'critical':
-                        returnData = this.tempData.filter((element) => {
-                            if (
-                                ((element.status != this.UP &&
-                                    element.state_type == this.HARD_STATE &&
-                                    element.problem_has_been_acknowledged == false &&
-                                    element.outage == false) ||
-                                    element.auto_track) &&
-                                element.status != this.HOST_PENDING &&
-                                element.notifications_enabled == true
-                            ) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        break;
-
-                    case 'recent':
-                        returnData = this.tempData.filter((element) => {
-                            if (
-                                ((element.status != this.UP &&
-                                    element.problem_has_been_acknowledged == false &&
-                                    element.outage == false) ||
-                                    element.auto_track) &&
-                                element.status != this.HOST_PENDING &&
-                                element.notifications_enabled == true
-                            ) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        break;
-
-                    case 'known':
-                        returnData = this.tempData.filter((element) => {
-                            if (
-                                ((element.status != this.UP && element.outage == false) || element.auto_track) &&
-                                element.status != this.HOST_PENDING &&
-                                element.notifications_enabled == true
-                            ) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        break;
-
-                    case 'all-problems':
-                        returnData = this.tempData.filter((element) => {
-                            if (
-                                (element.status != this.UP || element.auto_track) &&
-                                element.status != this.HOST_PENDING &&
-                                element.notifications_enabled == true
-                            ) {
-                                return true;
-                            }
-                            return false;
-                        });
-                        break;
-
-                    default:
-                        returnData = this.tempData;
-                        break;
-                }
-                return returnData.sort((a, b) => {
-                    if (a.priority < b.priority) {
-                        return 1;
-                    }
-                    if (a.priority > b.priority) {
-                        return -1;
-                    }
-                    // a must be equal to b
-                    return 0;
-                });
-            },
-            set: function () {},
-        },
     },
     watch: {
-        formattedItems: {
-            handler(data) {
-                const promise = new Promise((resolve)=>{
-                    const res = {
-                        data
-                    }
-                    resolve(res);
-                });
-                this.config = { ...this.config, api: promise };
-            },
-            immediate: true
+        filters: {
+            handler(cur, prev) {
+                this.handleStateChange( cur !== prev);
+            }
+        },
+        normalizedData: {
+            handler() {
+                this.handleStateChange(false);
+            }
+        },
+        filteredData: {
+            handler(newData) {
+                this.selectedItems = {};
+                this.config.api = newData instanceof Error
+                    ? Promise.reject(Error(this.$t('dataFetchError')))
+                    : Promise.resolve({ data: newData });
+            }
         },
         options: {
             handler() {
                 this.selectedItems = [];
             },
             deep: true,
-        },
-        filters: {
-            handler(filters) {
-                this.startFetchInterval();
-                this.updateFromServer();
-
-                this.$router
-                    .push({
-                        query: {
-                            level: filters.level,
-                            filter: filters.box,
-                        },
-                    })
-                    .catch(() => {});
-            }
         },
         loading: function () {
             if (this.loading) {
@@ -433,18 +315,9 @@ export default {
                 });
             }
         },
-        apiConfig: {
-            immediate: true,
-            handler(newConfig) {
-                if (newConfig.apiType) {
-                    this.startFetchInterval();
-                    this.statusTexts = getStatusTexts(this.apiType);
-                }
-            }
-        },
     },
     beforeDestroy() {
-        clearInterval(this.progressInterval);
+        clearInterval(this.progressTimer);
         window.removeEventListener('keydown', this.keyDownHandler);
         window.removeEventListener('keyup', this.keyUpHandler);
     },
@@ -466,6 +339,37 @@ export default {
         this.topButtonDisplay();
     },
     methods: {
+        handleStateChange(filtersHaveChanged) {
+            /* The component should preselect a default level, another event should
+             * come later. Ignore this one assuming it's an unfinished transition. */
+            if (this.filters.level === undefined) {
+                console.log('Panel: handleStateChange: this.filters.level === undefined, skip');
+                return;
+            }
+            /* Don't have data yet?
+             * Need to fetch it from the server and wait for next run. */
+            if (this.normalizedData === undefined) {
+                console.log('Panel: handleStateChange: this.normalizedData === undefined, fetch');
+                this.restartFetchInterval();
+                return;
+            }
+            /* Case where filtering is done server-side and filters have changed.
+             * Need to fetch it from the server and wait for next run. */
+            if (filtersHaveChanged && !apiConfig.filterAndSortNormalizedData) {
+                console.log('Panel: handleStateChange: filters have changed and filtering is server-side, fetch');
+                this.restartFetchInterval();
+                return;
+            }
+            /* Otherwise, rebuild filteredData if API implements it client-side,
+             * or pass it through to refresh rendering. */
+            console.log('Panel: handleStateChange: update filteredData');
+            if (apiConfig.filterAndSortNormalizedData) {
+                this.filteredData = this.apiConfig.filterAndSortNormalizedData(this.normalizedData, this.filters);
+            }
+            else {
+                this.filteredData = this.normalizedData;
+            }
+        },
         /**
          * Select or deselect a table item on row click
          * @param {Object} item the item to select
@@ -495,17 +399,6 @@ export default {
             }
             this.seletedDetailsView();
         },
-        // get all filters from filter bar
-        getFilters(payload) {
-            this.filters = payload;
-            this.selectedItems = [];
-            this.options.page = 1;
-            // this.formattedItems = [];
-            // this.data_by_id = [];
-            // this.dataLength = 0;
-            // this.fromValue = 0;
-            // this.startFetchInterval();
-        },
         // execute after send data to api
         initializeSelected() {
             this.selectedItems = [];
@@ -518,23 +411,7 @@ export default {
         allowSelect() {
             return true;
         },
-        // return state cell color background
-        getRowBackgroundClass(item) {
-            return getRowColor(apiConfig?.apiType, item);
-        },
         getIcon,
-        // return state color for statusIconColor
-        setStatusIconColor(item) {
-            return getCellColor(apiConfig?.apiType, item);
-        },
-        // return cell background
-        cellClass(item, attr, index) {
-            if (typeof this.headers[index].shape == 'function') {
-                return this.headers[index].shape(apiConfig?.apiType, item);
-            }
-            var returnClass = 'cell-' + this.headers[index].value;
-            return returnClass.replace('.', '-');
-        },
         /** @TODO deprecated, to remove */
         // // fonction to make header visible or not
         // headerToShow(indexField) {
@@ -628,58 +505,38 @@ export default {
             // }
             return link;
         },
-        getPriorityIndice(element) {
-            if (element.notifications_enabled == false) return 0;
-            if (element.display_name != 'PING' && element.status == 1) return 1;
-            if (element.display_name == 'PING' && element.status == 1) return 2;
-            if (element.display_name != 'PING' && element.status == 2) return 3;
-            if (element.display_name == 'PING' && element.status == 2) return 4;
-            if (element.display_name != 'PING' && element.status == 4) return 5;
-            if (element.display_name == 'PING' && element.status == 8) return 6;
-            if (element.display_name != 'PING' && element.status == 8) return 7;
-            if (element.display_name == 'PING' && element.status == 4) return 8;
-            if (element.display_name != 'PING' && element.status == 16) return 9;
-            // return priority_value[status];
+        stopTimer() {
+            clearInterval(this.progressTimer);
+            this.progressTimer = null;
         },
-        updateFromServer() {
-            // Fetch all data from API
-            fetchAndFormatData(this.headers, this.filters).then(formattedApiData => {
-                this.tempData = formattedApiData;
-
-                this.loading = false;
-                this.scrollEnd = false;
-
-                if (this.dataLength < this.formattedItems.length) {
-                    this.dataLength = this.formattedItems.length;
-                    const scrollDiv = this.$el.querySelector('.v-data-table__wrapper');
-                    scrollDiv.addEventListener('scroll', this.infiniteScroll);
-                }
-            }).catch(() => {
-                this.loading = false;
-                this.scrollEnd = false;
-            });
-            this.$forceUpdate();
-        },
-
         // send the request
-        startFetchInterval() {
-            this.progressQuery = true;
-            this.progressShow = true;
-            this.progressValue = 0;
-            clearInterval(this.progressInterval);
+        restartFetchInterval() {
+            const scheduleNext = () => {
+                this.stopTimer();
+                this.progressValue = 0;
+                if (!this.playOn)
+                    return;
 
-            this.loading = true;
+                this.progressTimer = setInterval(() => {
+                    if (this.progressValue >= 100) {
+                        this.progressValue = 0;
+                        this.stopTimer();
+                        this.restartFetchInterval();
+                        return;
+                    }
+                    this.progressValue += 10;
+                }, 1000);
+            };
 
-            this.progressQuery = false;
-            this.progressInterval = setInterval(() => {
-                if (this.progressValue === 100) {
-                    clearInterval(this.progressInterval);
-                    this.updateFromServer();
-                    this.progressShow = true;
-                    return setTimeout(this.startFetchInterval, 2000);
-                }
-                this.progressValue += 10;
-            }, 1000);
+            this.apiConfig.fetchAndNormalizeData(this.filters)
+                .then((formattedApiData) => { this.normalizedData = formattedApiData; })
+                .catch((error) => { this.normalizedData = error; })
+                .finally(() => { scheduleNext(); });
+        },
+
+        // filters update notification from filter bar
+        onFiltersChange(payload) {
+            this.filters = payload;
         },
         // reorder the headers keys
         sortTheHeadersAndUpdateTheKey(evt) {
@@ -717,20 +574,12 @@ export default {
             });
         },
         onClickGraphIcon(item) {
-            /* this should be in config.json but some refactoring is needed! */
-            const GRAPH_URL = './monitoring-graph?device=%device%&indicator=%indicator%';
-            const GRAPH_DEVICE_INDICATOR = 'hostcheck';
-            const GRAPH_POPUP_OPTIONS =
-                'directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=453';
-
-            const indicator = item.description ?? GRAPH_DEVICE_INDICATOR;
-            const name = `${item.name}:${indicator}:graph`;
-            const url = GRAPH_URL.replace('%device%', encodeURIComponent(item.name)).replace(
-                '%indicator%',
-                encodeURIComponent(indicator)
-            );
-            window.open(url, name, GRAPH_POPUP_OPTIONS);
+            apiConfig.getGraph(item).popup();
         },
+
+        getStatusText,
+        getStatusColor,
+        getRowColor,
     },
 };
 </script>
@@ -746,38 +595,54 @@ table {
     position: relative;
 }
 
-/* ZTable personnalizable column width */
+/* ZTable column width constraints */
 .sizable {
-    /* default max column width */
+    /* default */
     .v-data-table__divider {
+        width: 4%;
         max-width: 100px;
     }
 
-    /* column specific constraints */
+    /* column specific */
     .col_state_flag {
         width: 75px;
+        max-width: 75px;
     }
 
-    .col_status,
-    .col_name {
-        max-width: 130px;
-        width: 130px;
-    }
-
-    .col_display_name,
     .col_last_state_change {
-        max-width: 65px;
+        width: 100px;
+        max-width: 100px;
+    }
+
+    .col_status {
+        width: 130px;
+        max-width: 130px;
+    }
+
+    .col_device {
+        min-width: 140px;
+        width: 170px;
+        max-width: 240px;
+    }
+
+    .col_device_address {
+        width: 130px;
+        max-width: 160px;
+    }
+
+    .col_indicator {
+        width: 200px;
+        max-width: 230px;
+    }
+
+    .col_check_information {
+        width: auto;
     }
 
     .col_last_check {
-        width: 50px;
+        width: 100px;
+        max-width: 100px;
     }
-
-    .col_plugin_output {
-        width: 450px;
-        max-width: 500px;
-    }
-
 }
 
 // Position Action button after select a row
@@ -825,27 +690,5 @@ td[data-col-name="data-table-select"] input {
 /* make columns not resizable, this option is not available in ztable */
 .col_data-table-select .resizeElement {
     display: none;
-}
-.sizable .col_address {
-    width: 130px;
-    max-width: 130px;
-}
-.sizable .col_display_name {
-    width: 150px;
-    max-width: 150px;
-}
-
-.sizable .col_last_state_change {
-    width: 150px;
-    max-width: 150px;
-}
-
-.sizable .col_last_check {
-    width: 100px;
-    max-width: 100px;
-}
-.sizable .col_status {
-    width: 100px;
-    max-width: 100px;
 }
 </style>

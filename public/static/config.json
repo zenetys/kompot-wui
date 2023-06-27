@@ -1,7 +1,8 @@
 {
     "apiType": "livestatus",
-    "livestatusBaseUrl": "./livestatus.cgi?",
+    "livestatusBaseUrl": ".",
     "nagiosBaseUrl": "./nagios",
+    "graphBaseUrl": ".",
     "menu": [
         {
             "i18nName": "menuEvents",

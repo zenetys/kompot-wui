@@ -25,7 +25,7 @@
 
 <script>
 import axios from 'axios';
-import { getQueryUrls, apiConfig } from '@/plugins/apis/api-manager';
+import { apiConfig } from '@/plugins/apis/api-manager';
 import { mapActions } from 'vuex';
 import i18n from '../plugins/i18n';
 
@@ -62,7 +62,7 @@ export default {
             immediate: true,
             handler(newConfig) {
                 if (newConfig.apiType) {
-                    this.queryUrls = getQueryUrls();
+                    this.queryUrls = apiConfig.getQueryUrls();
                     this.refresh();
                 }
             }

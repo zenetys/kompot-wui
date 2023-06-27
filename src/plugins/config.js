@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setApiConfig } from '@/plugins/apis/api-manager';
+import { setApiType } from '@/plugins/apis/api-manager';
 
 export const kConfig = {
     apiType: 'nagios',
@@ -49,5 +49,5 @@ export async function init() {
     if (kConfig.apiTimeout)
         axios.defaults.timeout = kConfig.apiTimeout;
 
-    setApiConfig(kConfig);
+    setApiType(kConfig.apiType);
 }

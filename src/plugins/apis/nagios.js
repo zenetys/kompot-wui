@@ -1,218 +1,32 @@
 import axios from 'axios';
+import { kConfig } from '@/plugins/config';
 import { apiConfig } from '@/plugins/apis/api-manager';
 
-/**
- * Format Nagios data for AutoTable.
- * @param {object} rawData - the raw data from the Nagios API
- * @param {array} headers - headers config to help format the data
- * @returns {array} the formatted data
- */
-export function formatData(rawData, headers) {
-    const organisedData = organiseRawData(rawData);
-    const [hostData, serviceData] = [organisedData.hosts, organisedData.services];
-
-    const data_hosts = [];
-    const data_services = [];
-    const data_by_id_hosts = [];
-    const data_by_id_services = [];
-    const data_by_id_final_data = [];
-
-    // hostData formatting loop
-    for (const [key, value] of Object.entries(hostData)) {
-        const element = value;
-        const id = `${key}:PING`;
-
-        // add priority column
-        const time_indice = element.last_update / new Date();
-        const priority_indice = getPriorityIndice(element);
-        const priority = time_indice + priority_indice;
-
-        const data = {
-            id,
-            name: element.name,
-            priority,
-            problem_has_been_acknowledged: element.problem_has_been_acknowledged,
-            outage: element.status === statusVariables.HOST_UNREACHABLE,
-            TYPE: element.custom_variables ? element.custom_variables.TYPE : '',
-            state_type: element.state_type,
-            auto_track: element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : true,
-            track: element.__TRACK === '0;' || element.__TRACK === '1;0' ? false : true,
-        };
-
-        // apply formatting loop from each header
-        formatDataPerHeader(headers, element, data);
-
-        data['display_name'] = 'PING';
-
-        if (typeof data_by_id_hosts[id] === 'undefined') {
-            data_hosts.push(data);
-            data_by_id_hosts[id] = data_hosts.length - 1;
-        } else {
-            const idx = data_by_id_hosts[id];
-            data_hosts[idx] = Object.assign({}, data_hosts[idx], data);
-        }
-    }
-
-    // serviceData formatting loop
-    for (const [key, value] of Object.entries(serviceData)) {
-        for (let i = 0; i < Object.keys(value).length; i++) {
-            const element = value[Object.keys(value)[i]];
-
-            // look for each service parent (host)
-            const foundHostElement = data_hosts.find((hostElement) => {
-                return hostElement['name'] === key;
-            });
-
-            const id = `${key}:${element.description}`;
-
-            // add priority column
-            const time_indice = element.last_update / new Date();
-            const priority_indice = getPriorityIndice(element);
-            const priority = time_indice + priority_indice;
-
-            const data2 = {
-                id,
-                name: element.host_name,
-                priority,
-                problem_has_been_acknowledged: element.problem_has_been_acknowledged,
-                outage: foundHostElement
-                    ? foundHostElement.status === statusVariables.HOST_DOWN ||
-                      foundHostElement.status === statusVariables.HOST_UNREACHABLE
-                    : '',
-                TYPE: element.custom_variables?.TYPE || '',
-                state_type: element.state_type,
-                auto_track: element.__AUTOTRACK === '0;' || element.__AUTOTRACK === '1;0' ? false : true,
-                track: element.__TRACK === '0;' || element.__TRACK === '1;0' ? false : true,
-            };
-
-            // apply formatting loop from each header
-            formatDataPerHeader(headers, element, data2);
-
-            if (typeof data_by_id_services[id] === 'undefined') {
-                data_services.push(data2);
-                data_by_id_services[id] = data_services.length - 1;
-            } else {
-                const idx = data_by_id_services[id];
-                data_services[idx] = Object.assign({}, data_services[idx], data2);
-            }
-        }
-    }
-
-    // merge all hosts & services
-    const concatData = data_hosts.concat(data_services);
-    const finalData = [];
-
-    concatData.forEach((element) => {
-        const data3 = { id: element.id, name: element.name };
-
-        // apply formatting loop from each header
-        formatDataPerHeader(headers, element, data3);
-
-        if (typeof data_by_id_final_data[element.id] === 'undefined') {
-            finalData.push(data3);
-            data_by_id_final_data[element.id] = finalData.length - 1;
-        } else {
-            const idx = data_by_id_final_data[element.id];
-            finalData[idx] = Object.assign({}, finalData[idx], data3);
-        }
-    });
-
-    return finalData;
-}
+export const useZTableSearch = true;
 
 /**
- * Nagios status texts and their respective values.
+ * Compute Nagios query urls
+ * @returns {object} the Nagios query urls by type
  */
-export const statusVariables = {
-    UP: 2,
-    HOST_PENDING: 1,
-    HOST_DOWN: 4,
-    HOST_UNREACHABLE: 8,
-    HARD_STATE: 1,
-    SOFT_STATE: 1,
-};
-
-/**
- * Compute the priority indice of an element.
- * @param {object} element - the element to compute the priority indice
- * @returns {number} the priority indice
- */
-function getPriorityIndice(element) {
-    if (element.notifications_enabled == false) return 0;
-    if (element.display_name != 'PING' && element.status == 1) return 1;
-    if (element.display_name == 'PING' && element.status == 1) return 2;
-    if (element.display_name != 'PING' && element.status == 2) return 3;
-    if (element.display_name == 'PING' && element.status == 2) return 4;
-    if (element.display_name != 'PING' && element.status == 4) return 5;
-    if (element.display_name == 'PING' && element.status == 8) return 6;
-    if (element.display_name != 'PING' && element.status == 8) return 7;
-    if (element.display_name == 'PING' && element.status == 4) return 8;
-    if (element.display_name != 'PING' && element.status == 16) return 9;
-}
-
-/**
- * Format data per header.
- * @param {array} headers - headers config to help format the data
- * @param {object} element - the element to format
- * @param {object} data - the data to format
- */
-function formatDataPerHeader(headers, element, data) {
-    headers.forEach((h) => {
-        const elem = h.value.split('.').reduce((obj, i) => {
-            return typeof obj == 'undefined' ? undefined : obj[i];
-        }, element);
-        if (typeof elem !== 'undefined') {
-            data[h.value] = elem;
-        }
-    });
-}
-
-/**
- * Organise raw Nagios data.
- * @param {object} rawData - the raw data from Nagios
- * @returns {object} the organised Nagios data
- */
-function organiseRawData(rawData) {
-    // merge HOST status data and object data
-    for (const key in rawData.hostStatusData) {
-        for (const key2 in rawData.hostObjectData) {
-            if (rawData.hostStatusData[key]['name'] === rawData.hostObjectData[key2]['name']) {
-                rawData.hostObjectData[key2] = Object.assign(rawData.hostObjectData[key2], rawData.hostStatusData[key]);
-            }
-        }
-    }
-    // merge SERVICE status data and object data
-    for (const [key, value] of Object.entries(rawData.serviceStatusData)) {
-        key;
-        for (let i = 0; i < Object.keys(value).length; i++) {
-            const statusElement = value[Object.keys(value)[i]];
-            // loop on object data
-            for (const [key, value2] of Object.entries(rawData.serviceObjectData)) {
-                key;
-                for (let j = 0; j < Object.keys(value2).length; j++) {
-                    const objectElement = value2[Object.keys(value2)[j]];
-                    if (
-                        statusElement['host_name'] === objectElement['host_name'] &&
-                        statusElement['description'] === objectElement['description']
-                    ) {
-                        value2[Object.keys(value2)[j]] = Object.assign(objectElement, statusElement);
-                    }
-                }
-            }
-        }
-    }
+export function getQueryUrls() {
     return {
-        hosts: rawData.hostObjectData,
-        services: rawData.serviceObjectData,
+        OBJECT_HOST_LIST: `${kConfig.nagiosBaseUrl}/objectjson.cgi?query=hostlist&details=true`,
+        STATUS_HOST_LIST: `${kConfig.nagiosBaseUrl}/statusjson.cgi?query=hostlist&details=true`,
+        HOST_DETAILS: `${kConfig.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true&hostname=`,
+        OBJECT_SERVICE_LIST: `${kConfig.nagiosBaseUrl}/objectjson.cgi?query=servicelist&details=true`,
+        STATUS_SERVICE_LIST: `${kConfig.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true`,
+        HOST_COUNT: `${kConfig.nagiosBaseUrl}/statusjson.cgi?query=hostcount`,
+        SERVICE_COUNT: `${kConfig.nagiosBaseUrl}/statusjson.cgi?query=servicecount`,
+        RRD: `${kConfig.graphBaseUrl}/r`,
     };
 }
 
 /**
- * Fetch & format Nagios data.
- * @param {array} headers - headers config to help format the data
- * @returns {array} the formatted data
+ * Fetch Nagios data and normalize for Kompot.
+ * @returns {Promise} Promise resolving with normalized data, it's up to
+ *      the caller to handle the error.
  */
-export function fetchAndFormatData(headers) {
+export function fetchAndNormalizeData() {
     return axios
         .all([
             axios.get(getQueryUrls().OBJECT_HOST_LIST),
@@ -230,33 +44,258 @@ export function fetchAndFormatData(headers) {
                 };
 
                 // oraganise raw Nagios data and format it for the table
-                return formatData(rawApiData, headers);
+                return formatData(rawApiData);
             })
         )
-        .catch(() => {});
+        // let the caller handle the error
 }
 
 /**
- * The following constants for set the query url to get data for chart.
+ * Filter and sort normalized data client side.
+ * @param {Array} normalizedData - Data returned by fetchAndNormalizeData().
+ * @param {Object|null} filters - Kompot filters FIXME: specs
+ * @returns {Array} New filtered array sorted by descending priority.
  */
-const GRAPH_URI = './r';
+export function filterAndSortNormalizedData(normalizedData, filters) {
+    let filteredData = [];
+
+    switch (filters?.level) {
+        case 'critical':
+            filteredData = normalizedData.filter((element) => {
+                return (
+                    (element.status !== apiConfig.STATUS_OK &&
+                     element.is_hard_state &&
+                     !element.is_acknowledged &&
+                     !element.is_outage &&
+                     element.status !== apiConfig.STATUS_PENDING &&
+                     element.has_notifications_enabled) ||
+                    element.has_track ||
+                    element.has_auto_track
+                );
+            });
+            break;
+
+        case 'recent':
+            filteredData = normalizedData.filter((element) => {
+                return (
+                    (element.status !== apiConfig.STATUS_OK &&
+                     !element.is_acknowledged &&
+                     !element.is_outage &&
+                     element.status !== apiConfig.STATUS_PENDING &&
+                     element.has_notifications_enabled) ||
+                    element.has_track ||
+                    element.has_auto_track
+                );
+            });
+            break;
+
+        case 'known':
+            filteredData = normalizedData.filter((element) => {
+                return (
+                    (element.status !== apiConfig.STATUS_OK &&
+                     !element.is_outage &&
+                     element.status !== apiConfig.STATUS_PENDING) ||
+                    element.has_track ||
+                    element.has_auto_track
+                );
+            });
+            break;
+
+        case 'all-problems':
+            filteredData = normalizedData.filter((element) => {
+                return (
+                    (element.status !== apiConfig.STATUS_OK &&
+                     element.status !== apiConfig.STATUS_PENDING) ||
+                    element.has_track ||
+                    element.has_auto_track
+                );
+            });
+            break;
+
+        default:
+            filteredData = normalizedData.filter(() => true);
+            break;
+    }
+
+    filteredData.sort((a, b) => {
+        if (a.priority < b.priority)
+            return 1;
+        if (a.priority > b.priority)
+            return -1;
+        return 0;
+    });
+
+    return filteredData;
+}
+
+export function fetchRrd(database, start, datasources) {
+    if (Array.isArray(datasources))
+        datasources = datasources.join(',');
+    let url = kConfig.rrdBaseUrl + '/r' +
+        '?db=' + encodeURIComponent(database.replace(':', '/')) +
+        '&start=' + encodeURIComponent(start) +
+        '&ds=' + encodeURIComponent(datasources);
+    return axios
+        .get(url)
+        .then((result) => result.data)
+        // let the caller handle the error
+}
+
+export function getGraph(normalizedEntry) {
+    const indicator = normalizedEntry.entry_kind === apiConfig.KIND_INDICATOR
+        ? normalizedEntry.indicator : kConfig.graphDeviceIndicator;
+    const name = `${normalizedEntry.device}:${indicator}:graph`;
+    const url = kConfig.graphUrl
+        .replace('%device%', encodeURIComponent(normalizedEntry.device))
+        .replace('%indicator%', encodeURIComponent(indicator));
+    return {
+        device: normalizedEntry.device,
+        indicator,
+        url,
+        popup: () => window.open(url, name, kConfig.graphPopupOptions),
+    };
+}
+
+// internals
+
+const NAGIOS_CODES = {
+    HOST_PENDING: 1,
+    HOST_UP: 2,
+    HOST_DOWN: 4,
+    HOST_UNREACHABLE: 8,
+    SERVICE_PENDING: 1,
+    SERVICE_OK: 2,
+    SERVICE_WARNING: 4,
+    SERVICE_UNKNOWN: 8,
+    SERVICE_CRITICAL: 16,
+    STATE_TYPE_SOFT: 0,
+    STATE_TYPE_HARD: 1,
+    CHECK_TYPE_ACTIVE: 0,
+    CHECK_TYPE_PASSIVE: 1,
+    CHECK_TYPE_PARENT: 2,
+    CHECK_TYPE_FILE: 3,
+    CHECK_TYPE_OTHER: 4,
+};
 
 /**
- * Compute Nagios query urls
- * @returns {object} the Nagios query urls by type
+ * Format Nagios data for AutoTable.
+ * @param {object} rawData - the raw data from the Nagios API
+ * @returns {array} the formatted data
  */
-export function getQueryUrls() {
-    return {
-        OBJECT_HOST_LIST: `${apiConfig.nagiosBaseUrl}/objectjson.cgi?query=hostlist&details=true`,
-        STATUS_HOST_LIST: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=hostlist&details=true`,
-        HOST_DETAILS: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true&hostname=`,
-        OBJECT_SERVICE_LIST: `${apiConfig.nagiosBaseUrl}/objectjson.cgi?query=servicelist&details=true`,
-        STATUS_SERVICE_LIST: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=servicelist&details=true`,
-        HOST_COUNT: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=hostcount`,
-        SERVICE_COUNT: `${apiConfig.nagiosBaseUrl}/statusjson.cgi?query=servicecount`,
-        // This function set the url for get data to populate the graph
-        setGraphUri: (database, start, datasources) => {
-            return GRAPH_URI + '?db=' + database.replace(':', '/') + '&start=' + start + '&ds=' + datasources;
-        },
-    };
+function formatData(rawData) {
+    const normalizedData = [];
+    const nowMs = Date.now();
+
+    for (const kH in rawData.hostStatusData) {
+        const hostStatus = rawData.hostStatusData[kH];
+        const hostObject = rawData.hostObjectData[kH];
+        const normalized = {
+            id: hostStatus.name + ':',
+            device: hostStatus.name,
+            indicator: apiConfig.DEFAULT_DEVICE_INDICATOR,
+            entry_kind: apiConfig.KIND_DEVICE,
+            status: getNormalizedStatus(hostStatus),
+            priority: getPriorityIndice(hostStatus) + (hostStatus.last_state_change / nowMs),
+            device_address: hostObject.address,
+            device_type: hostObject?.custom_variables?.TYPE,
+            last_state_change: hostStatus.last_state_change,
+            last_check: hostStatus.last_check,
+            check_information: hostStatus.plugin_output,
+            is_hard_state: hostStatus.state_type === NAGIOS_CODES.STATE_TYPE_HARD,
+            has_notifications_enabled: hostStatus.notifications_enabled === true,
+            is_acknowledged: hostStatus.problem_has_been_acknowledged === true,
+            is_passive_check: hostStatus.check_type === NAGIOS_CODES.CHECK_TYPE_PASSIVE,
+            is_outage: hostStatus.status === NAGIOS_CODES.HOST_UNREACHABLE,
+            /* custom variables are unsupported with nagios vanilla status cgis */
+            has_track: hostStatus.__TRACK === '0;' ||
+                       hostStatus.__TRACK === '1;0' ? false : true,
+            has_auto_track: hostStatus.__AUTOTRACK === '0;' ||
+                            hostStatus.__AUTOTRACK === '1;0' ? false : true,
+        }
+        normalizedData.push(normalized);
+    }
+
+    for (const kH in rawData.serviceStatusData) {
+        for (const kS in rawData.serviceStatusData[kH]) {
+            const serviceStatus = rawData.serviceStatusData[kH][kS];
+            const hostStatus = rawData.hostStatusData?.[kH] ?? {};
+            const hostObject = rawData.hostObjectData?.[kH] ?? {};
+
+            const normalized = {
+                id: serviceStatus.host_name + ':' + serviceStatus.description,
+                device: serviceStatus.host_name,
+                indicator: serviceStatus.description,
+                entry_kind: apiConfig.KIND_INDICATOR,
+                status: getNormalizedStatus(serviceStatus),
+                priority: getPriorityIndice(serviceStatus) + (serviceStatus.last_state_change / nowMs),
+                device_address: hostObject.address,
+                device_type: hostObject?.custom_variables?.TYPE,
+                last_state_change: serviceStatus.last_state_change,
+                last_check: serviceStatus.last_check,
+                check_information: serviceStatus.plugin_output,
+                is_hard_state: serviceStatus.state_type === NAGIOS_CODES.STATE_TYPE_HARD,
+                has_notifications_enabled: serviceStatus.notifications_enabled === true,
+                is_acknowledged: serviceStatus.problem_has_been_acknowledged === true,
+                is_passive_check: serviceStatus.check_type === NAGIOS_CODES.CHECK_TYPE_PASSIVE,
+                is_outage: hostStatus.status === NAGIOS_CODES.HOST_UNREACHABLE ||
+                           hostStatus.status === NAGIOS_CODES.HOST_DOWN,
+                /* custom variables are unsupported with nagios vanilla status cgis */
+                has_track: serviceStatus.__TRACK === '0;' ||
+                           serviceStatus.__TRACK === '1;0' ? false : true,
+                has_auto_track: serviceStatus.__AUTOTRACK === '0;' ||
+                                serviceStatus.__AUTOTRACK === '1;0' ? false : true,
+            }
+            normalizedData.push(normalized);
+        }
+    }
+
+    return normalizedData;
+}
+
+function getNormalizedStatus(nagiosStatusElement) {
+    if (nagiosStatusElement.description === undefined) {
+        switch (nagiosStatusElement.status) {
+            case NAGIOS_CODES.HOST_PENDING: return apiConfig.STATUS_PENDING;
+            case NAGIOS_CODES.HOST_UP: return apiConfig.STATUS_OK;
+            case NAGIOS_CODES.HOST_DOWN: return apiConfig.STATUS_CRITICAL;
+        }
+    }
+    else {
+        switch (nagiosStatusElement.status) {
+            case NAGIOS_CODES.SERVICE_PENDING: return apiConfig.STATUS_PENDING;
+            case NAGIOS_CODES.SERVICE_OK: return apiConfig.STATUS_OK;
+            case NAGIOS_CODES.SERVICE_WARNING: return apiConfig.STATUS_WARNING;
+            case NAGIOS_CODES.SERVICE_CRITICAL: return apiConfig.STATUS_CRITICAL;
+        }
+    }
+    return apiConfig.STATUS_UNKNOWN;
+}
+
+/**
+ * Compute the priority indice of an element.
+ * @param {Object} nagiosStatusElement - Nagios status object for the element.
+ * @returns {number} The priority indice. The highest should go up in the table,
+ *      most critical entries first.
+ */
+function getPriorityIndice(nagiosStatusElement) {
+    if (nagiosStatusElement.notifications_enabled === false)
+        return 0;
+    if (nagiosStatusElement.description === undefined) {
+        switch (nagiosStatusElement.status) {
+            case NAGIOS_CODES.HOST_PENDING: return 2;
+            case NAGIOS_CODES.HOST_UP: return 4;
+            case NAGIOS_CODES.HOST_UNREACHABLE: return 7;
+            case NAGIOS_CODES.HOST_DOWN: return 9;
+        }
+    }
+    else {
+        switch (nagiosStatusElement.status) {
+            case NAGIOS_CODES.SERVICE_PENDING: return 1;
+            case NAGIOS_CODES.SERVICE_OK: return 4;
+            case NAGIOS_CODES.SERVICE_WARNING: return 5;
+            case NAGIOS_CODES.SERVICE_UNKNOWN: return 6;
+            case NAGIOS_CODES.SERVICE_CRITICAL: return 8;
+        }
+    }
+    return -1;
 }
