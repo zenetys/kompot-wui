@@ -118,6 +118,8 @@ function isObjectEmpty(o) {
     return true;
 }
 
+const { cmpInt } = AutoTable.utils;
+
 export default {
     i18n: i18n,
     components: {
@@ -153,6 +155,7 @@ export default {
                         label: i18n.t('state'),
                         formatText: (x, y) => getStatusText(x, y),
                         cssClass: (x) => this.getStatusColor(x),
+                        sortable: (a, b) => cmpInt(a.priority, b.priority),
                         order: 3,
                     },
                     device: {
@@ -162,6 +165,7 @@ export default {
                     },
                     device_address: {
                         label: i18n.t('ipAddress'),
+                        sortable: (a, b) => cmpInt(a.device_address, b.device_address),
                         order: 5,
                     },
                     indicator: {
@@ -171,6 +175,7 @@ export default {
                     last_state_change: {
                         label: i18n.t('duration'),
                         formatText: compactFormat,
+                        sortable: (a, b) => cmpInt(a.last_state_change, b.last_state_change),
                         order: 2,
                         copyable: false,
                     },
@@ -181,6 +186,7 @@ export default {
                     last_check: {
                         label: i18n.t('lastCheck'),
                         formatText: compactFormat,
+                        sortable: (a, b) => cmpInt(a.last_check, b.last_check),
                         order: 8,
                         copyable: false,
                     },
