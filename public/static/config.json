@@ -1,8 +1,13 @@
 {
     "apiType": "livestatus",
+    "apiTimeout": 20000,
     "livestatusBaseUrl": ".",
     "nagiosBaseUrl": "./nagios",
-    "graphBaseUrl": ".",
+    "rrdBaseUrl": ".",
+    "graphUrl": "./monitoring-graph?device=%device%&indicator=%indicator%",
+    "graphDeviceIndicator": "hostcheck",
+    "graphPopupOptions": "directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=453",
+    "title": "Kompot",
     "menu": [
         {
             "i18nName": "menuEvents",
