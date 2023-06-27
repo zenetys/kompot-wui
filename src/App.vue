@@ -113,6 +113,7 @@ import vuetify from '../src/plugins/vuetify';
 import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
 import { mapGetters } from 'vuex';
+import i18n from '@/plugins/i18n';
 
 export default {
     name: 'App',
@@ -146,6 +147,10 @@ export default {
 
             // Set the side menu from static config.json
             this.menuSide = this.$kConfig.menu;
+            this.menuSide.forEach((entry) => {
+                if (!entry.name && entry.i18nName)
+                    entry.name = i18n.t(entry.i18nName);
+            });
 
             // Set the IPSLA submenu from config.json
             this.menuSide.forEach((element1) => {

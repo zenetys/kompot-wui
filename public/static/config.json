@@ -4,7 +4,7 @@
     "nagiosBaseUrl": "./nagios",
     "menu": [
         {
-            "name": "Bac à état",
+            "i18nName": "menuEvents",
             "url": "/panel",
             "icon": "mdi-table",
             "type": "div"

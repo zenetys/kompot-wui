@@ -91,6 +91,9 @@ const messages = {
         noTrackLabel: 'Not tracked',
         noAckLabel: 'Not ack',
         openGraphLabel: 'Open graph',
+
+        // Menu
+        menuEvents: 'Events',
     },
     fr: {
         // Table Panel Headers
@@ -182,6 +185,9 @@ const messages = {
         noTrackLabel: 'Non tracké',
         noAckLabel: 'Non acquitté',
         openGraphLabel: 'Ouvrir le graphe',
+
+        // Menu
+        menuEvents: 'Bac à état',
     },
 };
 
