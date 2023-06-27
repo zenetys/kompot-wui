@@ -2,22 +2,15 @@
     <div>
         <FilterBar
             v-if="!$vuetify.breakpoint.smAndDown"
-            id="filter-bar"
-            ref="filterBar"
             @filter="onFiltersChange"
         />
 
-        <div ref="progressBar" style="height: 2px">
-            <v-progress-linear
-                v-model="progressValue"
-                :active="progressShow"
-                :indeterminate="progressQuery"
-                :query="true"
-                height="2"
-            />
-        </div>
+        <v-progress-linear
+            v-model="progressValue"
+            height="2"
+        />
 
-        <div ref="panelRow" class="panel-box" :style="seletedDetailsView()">
+        <div>
             <div v-if="!isObjectEmpty(selectedItems)" class="send-selected">
                 <ActionButtons :elements="selectedItems" @sent="onActionSent" />
             </div>
@@ -32,7 +25,6 @@
             <AutoTable
                 :config="config"
                 :search="apiConfig.useZTableSearch ? filters.search : ''"
-                :tableOptions="tableOptions"
                 :selected-items="selectedItems"
             >
                 <template #state_flag="{ item }">
@@ -200,90 +192,14 @@ export default {
             normalizedData: undefined,
             filteredData: [],
 
-            openInInfo: [],
-            singleSelect: false,
-            selectedId: -1,
-            bottom: false,
-            tempData: [],
-            sortFields: { field: null, sort: null },
-            tab: [],
-            loading: true,
-            options: {},
-            dataLength: 0,
-            fromValue: 0,
-
             // Progress bar data
             progressValue: 0,
-            progressQuery: false,
-            progressShow: true,
             progressTimer: null,
 
-            languages: ['en', 'fr'],
-            shiftKeyOn: false,
-            lastRowCheck: null,
-            selectedStartIndex: 0,
-            selectedEndIndex: 0,
-            selectedIndexArray: [],
-            showSelectTooltip: false,
-            anIncreasingNumber: 1,
-            floatingPanel: false,
             filters: {},
 
-            // status variables
-            statusTexts: null,
-            UP: this.statusTexts?.UP,
-            HOST_PENDING: this.statusTexts?.HOST_PENDING,
-            HOST_DOWN: this.statusTexts?.HOST_DOWN,
-            HOST_UNREACHABLE: this.statusTexts?.HOST_UNREACHABLE,
-            HARD_STATE: this.statusTexts?.HARD_STATE,
-            SOFT_STATE: this.statusTexts?.SOFT_STATE,
-
-            scrollEnd: false,
-            tableTopOffset: 0,
-            /**
-             * An object used to pass custom options to the AutoTable component.
-             */
-            tableOptions: {
-                showSelect: true,
-                singleSelect: false,
-                footerProps: {
-                    itemsPerPageOptions: [50, 100, 150, -1],
-                },
-                mobileBreakpoint: 0,
-                handlers: {
-                    handleItemSelect: (item) => { this.selectOnClick(item) },
-                },
-                vDataTableProps: {
-                    noDataText: this.$t('noDataText'),
-                    'options.sync': this.options,
-                },
-            },
             apiConfig,
         };
-    },
-    computed: {
-        customSlots() {
-            const slots = [];
-
-            this.headers.forEach((header) => {
-                this.formattedItems.forEach((item) => {
-                    if (header.getCellContent(header, item)?.html) {
-                        slots.push({
-                            name: `item.${header.value}`,
-                            content: header.getCellContent(header, item).value,
-                        });
-                    }
-                });
-            });
-
-            return slots;
-        },
-        filterBarHeight() {
-            return this.$refs?.filterBar?.clientHeight || this.$refs?.filterBar?.$el.clientHeight;
-        },
-        progressBarHeight() {
-            return this.$refs?.progressBar?.clientHeight || this.$refs?.progressBar?.$el.clientHeight;
-        },
     },
     watch: {
         filters: {
@@ -304,44 +220,11 @@ export default {
                     : Promise.resolve({ data: newData });
             }
         },
-        options: {
-            handler() {
-                this.selectedItems = [];
-            },
-            deep: true,
-        },
-        loading: function () {
-            if (this.loading) {
-                document.querySelectorAll('.data-loading').forEach((element) => {
-                    element.style['display'] = 'block';
-                });
-            } else {
-                document.querySelectorAll('.data-loading').forEach((element) => {
-                    element.style['display'] = 'none';
-                });
-            }
-        },
     },
     beforeDestroy() {
         clearInterval(this.progressTimer);
-        window.removeEventListener('keydown', this.keyDownHandler);
-        window.removeEventListener('keyup', this.keyUpHandler);
-    },
-
-    created() {
-        const self = this;
-        self.keyDownHandler = function ({ key }) {
-            if (key == 'Shift') self.shiftKeyOn = true;
-        };
-        self.keyUpHandler = function ({ key }) {
-            if (key == 'Shift') self.shiftKeyOn = false;
-        };
-        window.addEventListener('keydown', this.keyDownHandler);
-        window.addEventListener('keyup', this.keyUpHandler);
     },
     mounted() {
-        const navBarHeight = document.getElementById('navbar').clientHeight;
-        this.tableTopOffset = navBarHeight + this.progressBarHeight + this.filterBarHeight + 2;
         this.topButtonDisplay();
     },
     methods: {
@@ -376,117 +259,7 @@ export default {
                 this.filteredData = this.normalizedData;
             }
         },
-        getInfo(item) {
-            this.openInInfo.length == 0 ? this.openInInfo.push(item) : (this.openInInfo = [item]);
-        },
-        getInfoEvent(payload) {
-            if (payload.elements == 0) {
-                this.openInInfo = [];
-            }
-            this.seletedDetailsView();
-        },
-        // active / disable multi sort
-        allowMultiSort() {
-            return false;
-        },
-        // to active/disable select checkboxes
-        allowSelect() {
-            return true;
-        },
         getIcon,
-        /** @TODO deprecated, to remove */
-        // // fonction to make header visible or not
-        // headerToShow(indexField) {
-        //     if (this.headers[indexField].show == false) {
-        //         this.headers[indexField].align = ' d-none';
-        //     } else {
-        //         this.headers[indexField].align = '';
-        //     }
-        // },
-        // function to make all rows selected
-        /** @TODO deprecated, to remove */
-        // selectAllRows(elements) {
-        //     if (elements.length == this.formattedItems.length) {
-        //         for (let i = 0; i < this.formattedItems.length; i++) {
-        //             this.$set(this.formattedItems[i], 'selected', true);
-        //         }
-        //     } else if (elements.length == 0) {
-        //         for (let i = 0; i < this.formattedItems.length; i++) {
-        //             this.$set(this.formattedItems[i], 'selected', false);
-        //         }
-        //     }
-        // },
-        // function to apply user scroll in the table panel
-        infiniteScroll() {
-            // console.log('>>> ', this.scrollEnd);
-            if (this.scrollEnd) return;
-            this.scrollEnd = true;
-
-            var scrollDiv = this.$el.querySelector('.v-data-table__wrapper');
-            var divOffset = scrollDiv.scrollTop;
-            var divVisibleSize = scrollDiv.clientHeight;
-            var divTotalSize = scrollDiv.scrollHeight;
-
-            if (divOffset + 2 * divVisibleSize > divTotalSize) {
-                scrollDiv.removeEventListener('scroll', this.infiniteScroll);
-                this.fromValue = this.formattedItems.length;
-                this.startFetchInterval();
-            } else this.scrollEnd = false;
-        },
-
-        // get sort options
-        getSortPartOfLink() {
-            var sortString = [];
-            this.sortFields.field = null;
-            this.sortFields.sort = null;
-            if (this.options.sortBy) {
-                for (let i = 0; i < this.options.sortBy.length; i++) {
-                    if (this.options.sortDesc[i] == true) {
-                        sortString.push('-' + this.options.sortBy[i]);
-                        this.sortFields.field = this.options.sortBy[i];
-                        this.sortFields.sort = true;
-                    } else {
-                        sortString.push(this.options.sortBy[i]);
-                        this.sortFields.field = this.options.sortBy[i];
-                        this.sortFields.sort = false;
-                    }
-                }
-                return sortString.join(',');
-            }
-            return null;
-        },
-        // get from number for the request
-        getFromPartOfLink() {
-            // this.fromValue = this.formattedItems.length;
-            return '&offset=' + this.fromValue;
-        },
-        getLink(host_type = '') {
-            var defaultLink = this.$props.api;
-
-            if (host_type == 'host') {
-                defaultLink += 'query=hostlist&details=true';
-            } else {
-                defaultLink += 'query=servicelist&details=true';
-            }
-
-            // var sortArray = (this.getSortPartOfLink()) ? "sort="+this.getSortPartOfLink() : "";
-
-            // limit and from values
-            // var limit = "limit=" + 100 + this.getFromPartOfLink();
-
-            // provisory link
-            var link = defaultLink;
-            // + "?" +
-            // sortArray + "&" +
-            // limit + "&" +
-            // this.filters;
-
-            // format filters
-            // if (host_type=="services" && this.filters.search("name")!=-1 && this.filters.search("_name")==-1) {
-            //     return link.replace("name", "host_name");
-            // }
-            return link;
-        },
         stopTimer() {
             clearInterval(this.progressTimer);
             this.progressTimer = null;
@@ -520,29 +293,6 @@ export default {
         onFiltersChange(payload) {
             this.filters = payload;
         },
-        // reorder the headers keys
-        sortTheHeadersAndUpdateTheKey(evt) {
-            const headersTmp = this.headers;
-            const oldIndex = evt.oldIndex - 1;
-            const newIndex = evt.newIndex - 1;
-            if (newIndex >= headersTmp.length) {
-                let k = newIndex - headersTmp.length + 1;
-                while (k--) {
-                    headersTmp.push(undefined);
-                }
-            }
-            headersTmp.splice(newIndex, 0, headersTmp.splice(oldIndex, 1)[0]);
-            this.table = headersTmp;
-            this.anIncreasingNumber += 1;
-        },
-        // function to manage panel grid to show/hide info panel
-        seletedDetailsView() {
-            if (this.openInInfo.length == 0) {
-                return 'display:grid;grid-template-columns:100%';
-            } else if (this.openInInfo.length == 1) {
-                return 'display:grid;grid-template-columns:80% 20%';
-            }
-        },
         goToTableTop() {
             document.querySelector('.v-data-table__wrapper').scrollTop = 0;
         },
@@ -574,16 +324,6 @@ export default {
 </script>
 
 <style lang="scss">
-table {
-    width: 100%;
-    table-layout: auto;
-    position: relative;
-}
-
-.panel-box {
-    position: relative;
-}
-
 /* ZTable column width constraints */
 .sizable {
     /* default */
@@ -646,14 +386,7 @@ table {
     position: absolute;
     bottom: 50px;
     right: 0;
-    display: none;
     z-index: 10;
-}
-
-// Color on hover each table tr
-.v-data-table tbody tr:hover:not(.v-data-table__expanded__content) {
-    filter: grayscale(10%) brightness(95%);
-    -webkit-filter: grayscale(10%) brightness(95%);
 }
 
 .v-icon.openGraphIcon {
