@@ -105,6 +105,13 @@ const messages = {
         // Errors
         earlyErrorsTitle: 'Found early error, the application could not initialize properly!',
         dataFetchError: 'Failed to retrieve data!',
+
+        // Messages from ztable
+        ztableNoData: 'No data',
+        ztableLoading: 'Loading...',
+        ztableCopied: 'Copied!',
+        ztableError: 'An error has occurred!',
+        ztableNoRender: 'No render',
     },
     fr: {
         // Table Panel Headers
@@ -211,6 +218,13 @@ const messages = {
         // Errors
         earlyErrorsTitle: 'Erreur détectée, l\'application n\'a pas pu s\'initialiser correctement !',
         dataFetchError: 'La récupération des données a échoué !',
+
+        // Messages from ztable
+        ztableNoData: 'Aucun résultat',
+        ztableLoading: 'Chargement...',
+        ztableCopied: 'Copié !',
+        ztableError: 'Une erreur s\'est produite !',
+        ztableNoRender: 'Pas de rendu',
     },
 };
 

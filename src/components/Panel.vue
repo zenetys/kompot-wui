@@ -206,7 +206,14 @@ export default {
                         order: 8,
                         copyable: false,
                     },
-                }
+                },
+                text: {
+                    noData: i18n.t('ztableNoData'),
+                    loading: i18n.t('ztableLoading'),
+                    copied: i18n.t('ztableCopied'),
+                    error: i18n.t('ztableError'),
+                    noRender: i18n.t('ztableNoRender'),
+                },
             },
 
             selectedItems: {},
