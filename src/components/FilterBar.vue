@@ -6,9 +6,10 @@
                 <v-row align="center" no-gutters style="height: 150px">
                     <v-col cols="12" md="4" lg="3">
                         <v-btn-toggle
+                            id="levels"
                             v-model="levelToggle"
                             color="white"
-                            class="mr-1 mb-1 elevation-2"
+                            class="mr-1 mb-1 mt-1 elevation-1"
                             mandatory
                         >
                             <v-btn value="critical" active-class="red lighten-1" :title="$t('filters.critical')">
@@ -34,7 +35,6 @@
                     </v-col>
                     <v-col cols="12" md="4" lg="5">
                         <v-text-field
-                            id="id"
                             v-model="searchInput"
                             :label="$t('filterBoxPlaceholder')"
                             solo
@@ -101,9 +101,14 @@ export default {
 </script>
 
 <style lang="scss">
-.v-btn-toggle:not(.v-btn-toggle--dense) .v-btn.v-btn.v-size--default {
-    height: 39px !important;
+/* levels */
+#levels.v-btn-toggle .v-btn.v-btn.v-size--default {
+    height: 38px !important;
     min-height: 0;
-    min-width: 40px;
+    width: 38px;
+    &:not(.v-btn--active) {
+        border-top-color: #bbb !important;
+    }
+}
 }
 </style>
