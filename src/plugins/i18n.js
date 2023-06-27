@@ -84,7 +84,7 @@ const messages = {
             allProblems: 'All problems',
             any: 'All elements',
         },
-        helpFilterQueryFormat: 'Enter here your query. \n' + "Ex: 'down'",
+        helpFilterQueryFormat: 'Enter here your query. \n' + "Ex: 'server42'",
 
         // Columns icons
         trackLabel: 'Tracked',
@@ -184,7 +184,7 @@ const messages = {
             allProblems: 'Tous les problèmes',
             any: 'Tous les éléments',
         },
-        helpFilterQueryFormat: 'Saisissez dans ce champ votre requette. \n' + "Ex: 'down'",
+        helpFilterQueryFormat: 'Saisissez dans ce champ votre requette. \n' + "Ex: 'serveur42'",
 
         // Columns icons
         trackLabel: 'Tracké',
