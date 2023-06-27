@@ -79,8 +79,8 @@ const messages = {
 
             // Nagios filters description
             critical: 'Critical',
-            recent: 'Recent',
-            known: 'Known',
+            recent: '+ Recent',
+            known: '+ Known',
             allProblems: 'All problems',
             any: 'All elements',
         },
@@ -179,8 +179,8 @@ const messages = {
 
             // Nagios filters description
             critical: 'Critique',
-            recent: 'Récent',
-            known: 'Connu',
+            recent: '+ Récent',
+            known: '+ Connu',
             allProblems: 'Tous les problèmes',
             any: 'Tous les éléments',
         },
