@@ -1,6 +1,6 @@
-# ztable
+# kompot-wui
 
-Ztable is a table panel to represent data from elastic API
+Web interface for Kompot.
 
 ## Project setup
 
