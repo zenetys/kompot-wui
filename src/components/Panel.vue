@@ -58,9 +58,14 @@
                         >mdi-traffic-cone</v-icon>
                     </span>
                 </template>
-                <template #device="{ item }">
-                    <v-icon size="13" class="mr-1">{{ getIcon(item.device_type) }}</v-icon>
-                    <span>{{ item.device }}</span>
+                <template #search_link="{ header, item }">
+                    <v-icon v-if="header.value === 'device'" size="13" class="mr-1">
+                        {{ getIcon(item.device_type) }}
+                    </v-icon>
+                    <router-link v-slot="{ navigate, href }" :to="getSearchRoute(item[header.value])" custom>
+                        <!-- stop is important to avoid row click event -->
+                        <a :href="href" @click.stop="navigate">{{ item[header.value] }}</a>
+                    </router-link>
                 </template>
             </AutoTable>
         </div>
@@ -75,7 +80,7 @@ import { apiConfig } from '@/plugins/apis/api-manager';
 import { getIcon } from '@/plugins/device-icons';
 import i18n from '@/plugins/i18n';
 import AutoTable from '@zenetys/ztable';
-import { compactFormat } from '@/plugins/utils';
+import { compactFormat, deriveRoute } from '@/plugins/utils';
 
 function getStatusText(status, item) {
     if (item.status === apiConfig.STATUS_PENDING)
@@ -176,16 +181,18 @@ export default {
                         order: 3,
                     },
                     device: {
-                        slotName: 'device',
+                        slotName: 'search_link',
                         label: i18n.t('device'),
                         order: 4,
                     },
                     device_address: {
+                        slotName: 'search_link',
                         label: i18n.t('ipAddress'),
                         sortable: (a, b) => cmpInt(a.device_address, b.device_address),
                         order: 5,
                     },
                     indicator: {
+                        slotName: 'search_link',
                         label: i18n.t('indicator'),
                         order: 6,
                     },
@@ -390,6 +397,10 @@ export default {
             this.pageSpecs = pageSpecs;
         },
 
+        getSearchRoute(search) {
+            return deriveRoute({ query: { search } }, this.$route);
+        },
+
         getIcon,
         getStatusText,
         getStatusColor,
@@ -484,6 +495,13 @@ export default {
     .col_device .v-icon {
         vertical-align: baseline;
         margin-right: 2px;
+    }
+
+    a {
+        color: #00219f;
+    }
+    a:hover {
+        text-decoration: underline;
     }
 }
 
