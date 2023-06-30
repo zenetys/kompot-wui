@@ -132,7 +132,7 @@ function isObjectEmpty(o) {
     return true;
 }
 
-const { cmpInt } = AutoTable.utils;
+const { cmpFloat, cmpInt } = AutoTable.utils;
 
 export default {
     i18n: i18n,
@@ -206,6 +206,11 @@ export default {
                         sortable: (a, b) => cmpInt(a.last_check, b.last_check),
                         order: 8,
                         copyable: false,
+                    },
+
+                    priority: {
+                        sortable: (a, b) => cmpFloat(a.priority, b.priority),
+                        enabled: false,
                     },
                 },
                 text: {
