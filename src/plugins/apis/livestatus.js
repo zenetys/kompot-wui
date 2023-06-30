@@ -75,13 +75,13 @@ function formatData(rawData) {
         const normalized = {
             id,
             device: rawElement.host_name,
-            ...(rawElement.description === undefined || rawElement.description === '-'
+            ...(isDevice(rawElement)
                 ? { indicator: apiConfig.DEFAULT_DEVICE_INDICATOR,
                     entry_kind: apiConfig.KIND_DEVICE }
                 : { indicator: rawElement.description,
                     entry_kind: apiConfig.KIND_INDICATOR }
             ),
-            status: rawElement.has_been_checked === 1 ? rawElement.state : apiConfig.STATUS_PENDING,
+            status: getNormalizedStatus(rawElement),
             priority: rawElement.priority,
             device_address: rawElement.host_address,
             device_type: rawElement.icon_image, /* kind of */
@@ -108,6 +108,19 @@ function formatData(rawData) {
     }
 
     return normalizedData;
+}
+
+function isDevice(rawElement) {
+    return rawElement.description === undefined ||
+        rawElement.description === '-';
+}
+
+function getNormalizedStatus(rawElement) {
+    if (rawElement.has_been_checked === 0)
+        return apiConfig.STATUS_PENDING;
+    if (isDevice(rawElement) && rawElement.state > 0)
+        return rawElement.state + 1;
+    return rawElement.state;
 }
 
 const LIVESTATUS_CODES = {
