@@ -10,6 +10,9 @@ export function axiosError2URL(e) {
 
 // Format: day hour minute second (1d5h45m78s)
 export function compactFormat(date) {
+    if (isNaN(date) || date <= 0)
+        return String.fromCharCode(8212);
+
     let now = new Date();
     let outTime = formatDateWithMillisecond((now.getTime() - new Date(date).getTime()) / 1000);
 
