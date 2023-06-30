@@ -96,9 +96,9 @@ function formatData(rawData) {
                        rawElement.host_state === LIVESTATUS_CODES.HOST_DOWN,
             /* kompot specific custom variables */
             has_track: rawElement._TRACK === '' ||
-                       rawElement._TRACK === '0' ? false : true,
+                       rawElement._TRACK === 0 ? false : true,
             has_auto_track: rawElement._AUTOTRACK === '' ||
-                            rawElement._AUTOTRACK === '0' ? false : true,
+                            rawElement._AUTOTRACK === 0 ? false : true,
             /* extra from standard norm */
             groups: rawElement.groups,
             notes: rawElement.notes,
