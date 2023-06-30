@@ -401,52 +401,89 @@ export default {
 
 <style lang="scss">
 /* ZTable column width constraints */
-.sizable {
-    /* default */
-    .v-data-table__divider {
-        width: 4%;
-        max-width: 100px;
+#kompot-table-events {
+    &.sizable {
+        /* default */
+        .v-data-table__divider {
+            width: 4%;
+            max-width: 100px;
+        }
+
+        /* column specific */
+        .col_state_flag {
+            width: 75px;
+            max-width: 75px;
+        }
+
+        .col_last_state_change {
+            width: 100px;
+            max-width: 100px;
+        }
+
+        .col_status {
+            width: 130px;
+            max-width: 130px;
+        }
+
+        .col_device {
+            min-width: 140px;
+            width: 170px;
+            max-width: 240px;
+        }
+
+        .col_device_address {
+            width: 130px;
+            max-width: 160px;
+        }
+
+        .col_indicator {
+            width: 200px;
+            max-width: 230px;
+        }
+
+        .col_check_information {
+            width: auto;
+        }
+
+        .col_last_check {
+            width: 100px;
+            max-width: 100px;
+        }
     }
 
-    /* column specific */
-    .col_state_flag {
-        width: 75px;
-        max-width: 75px;
+    .v-icon.openGraphIcon {
+        margin-left: 1px;
+    }
+    .v-icon.openGraphIcon::after {
+        /* no round background on active */
+        background-color: transparent;
+    }
+    .v-icon.openGraphIcon:active {
+        color: #63b5f7;
     }
 
-    .col_last_state_change {
-        width: 100px;
-        max-width: 100px;
+    th[data-col-name="data-table-select"],
+    td[data-col-name="data-table-select"] {
+        width: 25px !important;
+        max-width: 25px !important;
+    }
+    td[data-col-name="data-table-select"] input {
+        vertical-align: middle;
+        position: relative;
+        top: -0.5px;
+    }
+    /* make columns not resizable, this option is not available in ztable */
+    .col_data-table-select .resizeElement {
+        display: none;
     }
 
-    .col_status {
-        width: 130px;
-        max-width: 130px;
+    .col_state_flag .resizeElement {
+        display: none;
     }
 
-    .col_device {
-        min-width: 140px;
-        width: 170px;
-        max-width: 240px;
-    }
-
-    .col_device_address {
-        width: 130px;
-        max-width: 160px;
-    }
-
-    .col_indicator {
-        width: 200px;
-        max-width: 230px;
-    }
-
-    .col_check_information {
-        width: auto;
-    }
-
-    .col_last_check {
-        width: 100px;
-        max-width: 100px;
+    .col_device .v-icon {
+        vertical-align: baseline;
+        margin-right: 2px;
     }
 }
 
@@ -469,38 +506,4 @@ export default {
     z-index: 10;
 }
 
-.v-icon.openGraphIcon {
-    margin-left: 1px;
-}
-.v-icon.openGraphIcon::after {
-    /* no round background on active */
-    background-color: transparent;
-}
-.v-icon.openGraphIcon:active {
-    color: #63b5f7;
-}
-
-th[data-col-name="data-table-select"],
-td[data-col-name="data-table-select"] {
-    width: 25px !important;
-    max-width: 25px !important;
-}
-td[data-col-name="data-table-select"] input {
-    vertical-align: middle;
-    position: relative;
-    top: -0.5px;
-}
-/* make columns not resizable, this option is not available in ztable */
-.col_data-table-select .resizeElement {
-    display: none;
-}
-
-.col_state_flag .resizeElement {
-    display: none;
-}
-
-.col_device .v-icon {
-    vertical-align: baseline;
-    margin-right: 2px;
-}
 </style>
