@@ -94,9 +94,9 @@ const messages = {
 
         // Columns icons
         trackLabel: 'Tracked',
-        ackLabel: 'Ack',
+        ackLabel: 'Acknowledged',
         noTrackLabel: 'Not tracked',
-        noAckLabel: 'Not ack',
+        noAckLabel: 'Not acknowledged',
         openGraphLabel: 'Open graph',
 
         // Menu
