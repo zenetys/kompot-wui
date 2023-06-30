@@ -52,7 +52,7 @@
                         >mdi-alert-box-outline</v-icon>
                         <v-icon v-if="item.has_track" size="13" :title="$t('trackLabel')"
                         >mdi-eye</v-icon>
-                        <v-icon v-if="item.is_passive_check" size="13" :title="$t('passiveEnabled')"
+                        <v-icon v-if="item.is_passive_check" size="12" :title="$t('passiveEnabled')"
                         >mdi-parking</v-icon>
                         <v-icon v-if="item.is_acknowledged" size="13" :title="$t('ackLabel')"
                         >mdi-traffic-cone</v-icon>
