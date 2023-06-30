@@ -42,7 +42,7 @@
             >
                 <template #state_flag="{ item }">
                     <span>
-                        <v-icon size="13" :color="getStatusColor(item)" :title="$t('stateFlag')"
+                        <v-icon size="13" class="saturated text" :title="$t('stateFlag')"
                         >mdi-circle</v-icon>
                         <v-icon
                             size="13" class="openGraphIcon" :title="$t('openGraphLabel')"
@@ -102,37 +102,6 @@ function getStatusText(status, item) {
     return i18n.t('serviceUnknown');
 }
 
-function getStatusColor(item) {
-    if (item.status === apiConfig.STATUS_OK)
-        return 'green';
-    if (item.status === apiConfig.STATUS_PENDING)
-        return 'light-blue accent-1';
-    if (item.status === apiConfig.STATUS_WARNING)
-        return 'yellow accent-4';
-    if (item.status === apiConfig.STATUS_CRITICAL)
-        return 'red darken-1';
-    return 'orange darken-2';
-}
-
-function getRowColor(item) {
-    if (item.has_notifications_enabled === false)
-        return 'grey lighten-1';
-    if (item.has_track === true) {
-        if (item.status > apiConfig.STATUS_OK)
-            return 'blue lighten-4';
-        return 'teal lighten-3';
-    }
-    if (item.status == apiConfig.STATUS_PENDING)
-        return 'light-blue accent-1';
-    if (item.status == apiConfig.STATUS_OK)
-        return 'green lighten-4';
-    if (item.status == apiConfig.STATUS_WARNING)
-        return 'yellow lighten-4';
-    if (item.status == apiConfig.STATUS_CRITICAL)
-        return 'red lighten-3';
-    return 'orange lighten-3'
-}
-
 function isObjectEmpty(o) {
     for (const i in o)
         return false;
@@ -160,7 +129,10 @@ export default {
                 syncPagination: (specs) => this.onPaginationSync(specs),
                 selectable: (...args) => this.onSelectedItems(...args),
                 showSelect: true,
-                itemClass: (x) => this.getRowColor(x),
+                itemClass: (x) => 'status-' + x.status +
+                    ' is-hard-state-' + x.is_hard_state +
+                    ' has-notifications-enabled-' + x.has_notifications_enabled +
+                    ' has-track-' + x.has_track,
                 customHeadersComputation: (headers) => {
                     headers.unshift({ value: 'state_flag' });
                 },
@@ -177,8 +149,8 @@ export default {
                     },
                     status: {
                         label: i18n.t('state'),
-                        formatText: (x, y) => getStatusText(x, y),
-                        cssClass: (x) => this.getStatusColor(x),
+                        formatText: getStatusText,
+                        cssClass: () => 'saturated background border',
                         sortable: (a, b) => cmpInt(a.priority, b.priority),
                         order: 3,
                     },
@@ -405,8 +377,6 @@ export default {
 
         getIcon,
         getStatusText,
-        getStatusColor,
-        getRowColor,
         isObjectEmpty,
     },
 };
@@ -504,6 +474,65 @@ export default {
     }
     a:hover {
         text-decoration: underline;
+    }
+
+    tbody {
+        .status--1 {
+            background-color: #b3e5fc;
+            .saturated {
+                &.text { color: #80d8ff; }
+                &.background { background-color: #80d8ff; }
+                &.border { border-color: #7bcff5; }
+            }
+        }
+        .status-0 {
+            background-color: #c8e6c9;
+            .saturated {
+                &.text { color: #4caf50; }
+                &.background { background-color: #4caf50; }
+                &.border { border-color: #47a34b; }
+            }
+        }
+        .status-1 {
+            background-color: #fff59d;
+            .saturated {
+                &.text { color: #ffc400; }
+                &.background { background-color: #ffc400; }
+                &.border { border-color: #f2cb00; }
+            }
+        }
+        .status-2 {
+            background-color: #ef9a9a;
+            .saturated {
+                &.text { color: #e53935; }
+                &.background { background-color: #e53935; }
+                &.border { border-color: #d93632; }
+            }
+        }
+        .status-3 {
+            background-color: #ffcc80;
+            .saturated {
+                &.text { color: #f57c00; }
+                &.background { background-color: #f57c00; }
+                &.border { border-color: #e87500; }
+            }
+        }
+        .has-track-true {
+            background-color: #a2e8d2;
+        }
+        .has-track-true:not(.status--1,.status-0) {
+            background-color: #add0ff;
+        }
+        .has-notifications-enabled-false {
+            background-color: #e0e0e0;
+        }
+        .is-hard-state-false {
+            color: #5d5d5d;
+            font-style: italic;
+            a {
+                color: #3857ce;
+            }
+        }
     }
 }
 
