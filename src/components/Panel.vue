@@ -56,6 +56,8 @@
                         >mdi-parking</v-icon>
                         <v-icon v-if="item.is_acknowledged" size="13" :title="$t('ackLabel')"
                         >mdi-traffic-cone</v-icon>
+                        <v-icon v-if="!item.has_notifications_enabled" size="13" :title="$t('disabledNotificationsLabel')"
+                        >mdi-bell-off</v-icon>
                     </span>
                 </template>
                 <template #search_link="{ header, item }">

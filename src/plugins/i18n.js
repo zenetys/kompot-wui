@@ -97,6 +97,7 @@ const messages = {
         ackLabel: 'Acknowledged',
         noTrackLabel: 'Not tracked',
         noAckLabel: 'Not acknowledged',
+        disabledNotificationsLabel: 'Disabled notifications',
         openGraphLabel: 'Open graph',
 
         // Menu
@@ -210,6 +211,7 @@ const messages = {
         ackLabel: 'Acquitté',
         noTrackLabel: 'Non tracké',
         noAckLabel: 'Non acquitté',
+        disabledNotificationsLabel: 'Notifications désactivées',
         openGraphLabel: 'Ouvrir le graphe',
 
         // Menu
