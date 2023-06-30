@@ -54,7 +54,7 @@
                         >mdi-eye</v-icon>
                         <v-icon v-if="item.is_passive_check" size="13" :title="$t('passiveEnabled')"
                         >mdi-parking</v-icon>
-                        <v-icon v-if="item.is_acknowledged" size="13" :title="$t('noAckLabel')"
+                        <v-icon v-if="item.is_acknowledged" size="13" :title="$t('ackLabel')"
                         >mdi-traffic-cone</v-icon>
                     </span>
                 </template>
