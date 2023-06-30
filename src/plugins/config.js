@@ -6,6 +6,7 @@ export const kConfig = {
     apiTimeout: 20000,
     livestatusBaseUrl: '.',
     nagiosBaseUrl: './nagios',
+    actionsBaseUrl: '.',
     rrdBaseUrl: '.',
     graphUrl: './monitoring-graph?device=%device%&indicator=%indicator%',
     graphDeviceIndicator: 'hostcheck',

@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { apiConfig } from '@/plugins/apis/api-manager';
 
 export default {
@@ -103,20 +102,8 @@ export default {
         validForm() {
             this.dialog = false;
             this.$emit('sent');
-            // Here the request to the web services
-            // The elements to give in the POST request is "this.elements" variables
-            axios({
-                method: 'POST',
-                url: './send-data',
-                responseType: 'json',
-                data: {
-                    order: this.orderCommand,
-                    data: this.orderData,
-                    comment: '',
-                },
-            }).then((response) => {
-                response;
-            }).catch(() => { /* FIXME */ });
+            apiConfig.postActions(this.orderCommand, this.orderData, '')
+                .catch(() => { /* FIXME */ });
         },
     },
 };

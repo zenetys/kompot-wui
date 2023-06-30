@@ -13,6 +13,7 @@ const API_INTERFACE = [
     'useZTableSearch',
     'fetchRrd',
     'getGraph',
+    'postActions',
 ];
 
 export const apiConfig = {

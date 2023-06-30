@@ -156,6 +156,17 @@ export function getGraph(normalizedEntry) {
     };
 }
 
+export function postActions(order, data, comment = '') {
+    return axios({
+        method: 'POST',
+        url: kConfig.actionsBaseUrl + '/send-data',
+        responseType: 'json',
+        data: { order, data, comment },
+    })
+        .then((result) => result.data)
+        // let the caller handle the error;
+}
+
 // internals
 
 const NAGIOS_CODES = {
