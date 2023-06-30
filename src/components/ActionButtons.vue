@@ -57,7 +57,7 @@ export default {
                     order: 'ack',
                 },
                 {
-                    icon: 'mdi-eight-track',
+                    icon: 'mdi-eye',
                     text: this.$t('track'),
                     color: 'cyan darken-3',
                     order: 'track',
