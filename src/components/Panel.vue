@@ -59,7 +59,7 @@
                     </span>
                 </template>
                 <template #device="{ item }">
-                    <v-icon size="13">{{ getIcon(item.device_type) }}</v-icon>
+                    <v-icon size="13" class="mr-1">{{ getIcon(item.device_type) }}</v-icon>
                     <span>{{ item.device }}</span>
                 </template>
             </AutoTable>
