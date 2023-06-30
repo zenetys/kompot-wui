@@ -144,7 +144,7 @@ export default {
     data() {
         return {
             config: {
-                id: 'table-network',
+                id: 'kompot-table-events',
                 api: '',
                 height: 'auto',
                 paginated: true,
