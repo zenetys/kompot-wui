@@ -523,7 +523,7 @@ export default {
         .has-track-true:not(.status--1,.status-0) {
             background-color: #add0ff;
         }
-        .has-notifications-enabled-false {
+        .has-notifications-enabled-false /* increase specificity */[class] {
             background-color: #e0e0e0;
         }
         .is-hard-state-false {
