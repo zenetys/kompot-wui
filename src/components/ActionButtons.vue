@@ -63,7 +63,7 @@ export default {
                     order: 'track',
                 },
                 {
-                    icon: 'mdi-lock-reset',
+                    icon: 'mdi-restore-alert',
                     text: this.$t('resetState'),
                     color: 'pink',
                     order: 'reset-state',
