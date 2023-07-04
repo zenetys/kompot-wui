@@ -69,7 +69,7 @@ export default {
                     order: 'reset-state',
                 },
                 {
-                    icon: 'mdi-alarm-off',
+                    icon: 'mdi-bell-off',
                     text: this.$t('deactiveAlarm'),
                     color: 'indigo',
                     order: 'alarm-off',
