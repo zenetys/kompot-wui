@@ -14,6 +14,7 @@ const API_INTERFACE = [
     'fetchRrd',
     'getGraph',
     'postActions',
+    'fetchServerState',
 ];
 
 export const apiConfig = {

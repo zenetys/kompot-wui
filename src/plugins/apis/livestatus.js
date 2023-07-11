@@ -7,6 +7,7 @@ import {
     fetchRrd as NagiosFetchRrd,
     getGraph as NagiosGetGraph,
     postActions as NagiosPostActions,
+    fetchServerState as NagiosFetchServerState,
 } from './nagios';
 
 export const useZTableSearch = false;
@@ -57,6 +58,10 @@ export function getGraph(normalizedEntry) {
 
 export function postActions(order, data, comment = '') {
     return NagiosPostActions(order, data, comment);
+}
+
+export function fetchServerState() {
+    return NagiosFetchServerState();
 }
 
 // internals

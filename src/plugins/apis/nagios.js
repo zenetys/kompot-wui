@@ -167,6 +167,28 @@ export function postActions(order, data, comment = '') {
         // let the caller handle the error;
 }
 
+export function fetchServerState() {
+    const queryUrls = getQueryUrls();
+    return Promise.all([
+        axios({
+            url: queryUrls.HOST_COUNT,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            responseType: 'json',
+        }),
+        axios({
+            url: queryUrls.SERVICE_COUNT,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            responseType: 'json',
+        }),
+    ]);
+}
+
 // internals
 
 const NAGIOS_CODES = {
