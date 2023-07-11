@@ -1,6 +1,6 @@
-const axiosBuildFullPath = require('axios/lib/core/buildFullPath');
-const axiosBuildURL = require('axios/lib/helpers/buildURL');
-export const axiosIsAxiosError = require('axios/lib/helpers/isAxiosError');
+import { default as axiosBuildFullPath } from 'axios/lib/core/buildFullPath';
+import { default as axiosBuildURL } from 'axios/lib/helpers/buildURL';
+export { default as axiosIsAxiosError } from 'axios/lib/helpers/isAxiosError';
 export function axiosError2URL(e) {
     const method = e.config.method.toUpperCase();
     return (method === 'POST' || method === 'PUT' || method === 'PATCH')

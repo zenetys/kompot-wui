@@ -10,7 +10,7 @@
         >
             <v-app-bar-nav-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer" />
             <v-col cols="2">
-                <v-img id="img-logo" src="./../public/kompot.png" width="30" />
+                <v-img id="img-logo" src="kompot.png" width="30" />
             </v-col>
             <v-toolbar-title :class="$vuetify.breakpoint.xs ? 'text-caption' : 'text-breakpoint-subtitle-1'">
                 {{ appTitle ? appTitle + ' - ' : '' }}{{ $route.name }}
@@ -159,8 +159,8 @@ export default {
             group: null,
             drawer: true,
             appTitle: null,
-            appVersion: process.env.VUE_APP_VERSION,
-            appName: process.env.VUE_APP_NAME,
+            appVersion: import.meta.env.VITE_APP_VERSION,
+            appName: import.meta.env.VITE_APP_NAME,
 
             /* expose these to template */
             axiosIsAxiosError,
