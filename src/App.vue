@@ -3,7 +3,7 @@
         <v-app-bar
             id="navbar"
             app
-            :class="{ 'red lighten-2': serverState == 1, 'blue-grey darken-1': serverState == 0 }"
+            :class="$store.data.serverHealthy === false ? 'red lighten-2' : 'blue-grey darken-1'"
             dark
             dense
             clipped-left
@@ -135,7 +135,6 @@
 import vuetify from '../src/plugins/vuetify';
 import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
-import { mapGetters } from 'vuex';
 import i18n from '@/plugins/i18n';
 import { axiosIsAxiosError, axiosError2URL } from '@/plugins/utils';
 
@@ -167,9 +166,6 @@ export default {
             axiosIsAxiosError,
             axiosError2URL,
         };
-    },
-    computed: {
-        ...mapGetters(['serverState']),
     },
     mounted() {
         this.initApp();
