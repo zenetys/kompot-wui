@@ -7,7 +7,7 @@ if (process.env.VUE_APP_VERSION === undefined && pkg.version !== undefined)
     process.env.VUE_APP_VERSION = pkg.version;
 
 module.exports = {
-    transpileDependencies: ['vuetify'],
+    transpileDependencies: ['vuetify', '@zenetys/ztable'],
     publicPath: '',
     css: {
         extract: false,
