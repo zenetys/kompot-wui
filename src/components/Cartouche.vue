@@ -41,21 +41,19 @@ import i18n from '../plugins/i18n';
 export default {
     i18n: i18n,
     name: 'Cartouche',
+    data() {
+        return {
+            timer: null,
+        }
+    },
     mounted() {
-        this.refresh();
+        this.updateServerLoop();
     },
     methods: {
-        refresh() {
-            this.progressValue = 0;
-            clearInterval(this.progressInterval);
-            this.$store.updateServer();
-            this.progressInterval = setInterval(() => {
-                if (this.progressValue === 100) {
-                    clearInterval(this.progressInterval);
-                    return setTimeout(this.refresh, 2000);
-                }
-                this.progressValue += 10;
-            }, 1000);
+        async updateServerLoop() {
+            clearTimeout(this.timer);
+            await this.$store.updateServer();
+            this.timer = setTimeout(this.updateServerLoop, 10000);
         },
     },
 };
