@@ -7,7 +7,6 @@ import * as Config from './plugins/config';
 import * as Store from '@/plugins/store';
 import i18n from './plugins/i18n';
 import VueSession from 'vue-session';
-import { store } from './store';
 
 Vue.config.productionTip = false;
 Vue.prototype.$kConfig = Config.kConfig;
@@ -25,7 +24,6 @@ Vue.use(VueSession);
         vuetify,
         axios,
         i18n,
-        store,
         render: (h) => h(App, {
             props: {
                 earlyErrors,
