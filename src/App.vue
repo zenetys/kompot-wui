@@ -16,7 +16,7 @@
                 {{ appTitle ? appTitle + ' - ' : '' }}{{ $route.name }}
             </v-toolbar-title>
             <v-spacer />
-            <div v-if="!$vuetify.breakpoint.smAndDown">
+            <div v-if="!$vuetify.breakpoint.smAndDown && earlyErrors.length === 0">
                 <Cartouche />
             </div>
             <Clock class="ml-4" />
