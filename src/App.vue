@@ -50,6 +50,9 @@
                         :target="link.target"
                         active-class="deep-cyan--text text--accent-4"
                         class="v-list-item"
+                        @mouseup="onMenuItemClicked"
+                        @dragend="onMenuItemClicked"
+                        @contextmenu="onMenuItemClicked"
                     >
                         <v-list-item-action>
                             <v-icon>{{ link.icon }}</v-icon>
@@ -179,6 +182,11 @@ export default {
         this.initApp();
     },
     methods: {
+        onMenuItemClicked(ev) {
+            let item = ev.target.closest('.v-list-item');
+            if (item)
+                item.blur();
+        },
         initApp() {
             document.title = (this.$kConfig.title ? this.$kConfig.title + ' - ' : '') + 'Supervision';
             this.appTitle = this.$kConfig.title;
