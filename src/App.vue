@@ -45,7 +45,9 @@
                     <v-list-item
                         v-if="!link.subMenus"
                         :key="i"
-                        :to="link.url"
+                        :to="link.to || link.url"
+                        :href="link.href"
+                        :target="link.target"
                         active-class="deep-cyan--text text--accent-4"
                         class="v-list-item"
                     >
@@ -75,7 +77,13 @@
                                 </v-list-item-content>
                             </v-list-item>
                         </template>
-                        <v-list-item v-for="sublink in link.subMenus" :key="sublink.name" :to="sublink.url">
+                        <v-list-item
+                            v-for="sublink in link.subMenus"
+                            :key="sublink.name"
+                            :to="sublink.to || sublink.url"
+                            :href="sublink.href"
+                            :target="sublink.target"
+                        >
                             <v-list-item-title>{{ sublink.name }}</v-list-item-title>
                         </v-list-item>
                     </v-list-group>
