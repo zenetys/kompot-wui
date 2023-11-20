@@ -520,7 +520,8 @@ export default {
         .has-track-true {
             background-color: #a2e8d2;
         }
-        .has-track-true:not(.status--1,.status-0) {
+        /* :not(.status--1,.status-0) not working on FF 76 */
+        .has-track-true:not(.status--1):not(.status-0) {
             background-color: #add0ff;
         }
         .has-notifications-enabled-false /* increase specificity */[class] {
