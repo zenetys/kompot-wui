@@ -14,8 +14,7 @@
         {
             "i18nName": "menuEvents",
             "url": "/panel",
-            "icon": "mdi-table",
-            "type": "div"
+            "icon": "mdi-table"
         }
     ]
 }
