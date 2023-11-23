@@ -477,46 +477,6 @@ export default {
     }
 
     tbody {
-        .status--1 {
-            background-color: #b3e5fc;
-            .saturated {
-                &.text { color: #80d8ff; }
-                &.background { background-color: #80d8ff; }
-                &.border { border-color: #7bcff5; }
-            }
-        }
-        .status-0 {
-            background-color: #c8e6c9;
-            .saturated {
-                &.text { color: #4caf50; }
-                &.background { background-color: #4caf50; }
-                &.border { border-color: #47a34b; }
-            }
-        }
-        .status-1 {
-            background-color: #fff59d;
-            .saturated {
-                &.text { color: #ffc400; }
-                &.background { background-color: #ffc400; }
-                &.border { border-color: #f2cb00; }
-            }
-        }
-        .status-2 {
-            background-color: #ef9a9a;
-            .saturated {
-                &.text { color: #e53935; }
-                &.background { background-color: #e53935; }
-                &.border { border-color: #d93632; }
-            }
-        }
-        .status-3 {
-            background-color: #ffcc80;
-            .saturated {
-                &.text { color: #f57c00; }
-                &.background { background-color: #f57c00; }
-                &.border { border-color: #e87500; }
-            }
-        }
         .has-track-true {
             background-color: #a2e8d2;
         }
@@ -526,13 +486,6 @@ export default {
         }
         .has-notifications-enabled-false /* increase specificity */[class] {
             background-color: #e0e0e0;
-        }
-        .is-hard-state-false {
-            color: #5d5d5d;
-            font-style: italic;
-            a {
-                color: #3857ce;
-            }
         }
     }
 }

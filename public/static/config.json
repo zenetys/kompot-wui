@@ -15,6 +15,49 @@
             "i18nName": "menuEvents",
             "url": "/panel",
             "icon": "mdi-table"
+        },
+        {
+            "i18nName": "logViewer",
+            "url": "/history",
+            "icon": "mdi-history",
+            "configUrl": "*TO BE DEFINED*"
         }
-    ]
+    ],
+    "historyConfig": {
+        "id": "kompot-history",
+        "height": "auto",
+        "columns": {
+            "object_type": {
+                "label": "Type d'objet",
+                "formatHtml": "{ return '<span class=\"mdi mdi-' + (value == 1 ? 'desktop-classic' : 'cog') + '\"></span> ' + (value == 1 ? 'Machine' : 'Indicateur'); }",
+                "order": 1
+            },
+            "host_name": {
+                "label": "Nom hôte",
+                "order": 2
+            },
+            "name": {
+                "label": "Nom machine",
+                "order": 3
+            },
+            "timestamp": {
+                "label": "Date",
+                "formatText": "{ return new Date(value).toLocaleString(); }"
+            },
+            "state_type": {
+                "label": "Type d'état",
+                "formatText": "{ return value == 1 ? 'SOFT' : 'HARD'; }"
+            },
+            "state": {
+                "label": "Etat",
+                "cssClass": "saturated background border"
+            },
+            "plugin_output": {
+                "label": "Sortie"
+            }
+        },
+        "path": "data.alertlist",
+        "api": "https://tools.zenetys.com/kompot/history.cgi?query=alertlist&starttime=1699217511&endtime=1700480711",
+        "itemClass": "{ return 'status-' + item.state + ' is-hard-state-' + (item.state_type == 1 ? 'false' : 'true');}"
+    }
 }
