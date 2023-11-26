@@ -193,6 +193,11 @@ export default {
                         sortable: (a, b) => cmpFloat(a.priority, b.priority),
                         enabled: false,
                     },
+                    groups: {
+                        label: i18n.t('groups'),
+                        formatText: (v) => v.join(', '),
+                        enabled: false,
+                    },
                 },
                 text: {
                     noData: i18n.t('ztableNoData'),

@@ -105,7 +105,7 @@ function formatData(rawData) {
             has_auto_track: rawElement._AUTOTRACK === '' ||
                             rawElement._AUTOTRACK === 0 ? false : true,
             /* extra from standard norm */
-            groups: rawElement.groups,
+            groups: rawElement.groups || [],
             notes: rawElement.notes,
             is_flapping: rawElement.is_flapping,
         }
