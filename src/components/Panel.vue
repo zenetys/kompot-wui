@@ -69,6 +69,17 @@
                         <a :href="href" @click.stop="navigate">{{ item[header.value] }}</a>
                     </router-link>
                 </template>
+                <template #array_links="{ header, item }">
+                    <span v-if="item[header.value].length === 0">&mdash;</span>
+                    <router-link
+                        v-else
+                        v-for="(tag, i) in item[header.value]" :key="i"
+                        v-slot="{ navigate, href }" :to="getSearchRoute(tag)" custom
+                    >
+                        <!-- stop is important to avoid row click event -->
+                        <a :href="href" @click.stop="navigate">{{ tag }}</a>
+                    </router-link>
+                </template>
             </AutoTable>
         </div>
     </div>
@@ -181,11 +192,17 @@ export default {
                         label: i18n.t('output'),
                         order: 7,
                     },
+                    tags: {
+                        slotName: 'array_links',
+                        label: i18n.t('tags'),
+                        order: 8,
+                        copyable: false,
+                    },
                     last_check: {
                         label: i18n.t('lastCheck'),
                         formatText: compactFormat,
                         sortable: (a, b) => cmpInt(a.last_check, b.last_check),
-                        order: 8,
+                        order: 9,
                         copyable: false,
                     },
 
@@ -433,6 +450,12 @@ export default {
             width: auto;
         }
 
+        .col_tags {
+            min-width: 80px;
+            width: 80px;
+            max-width: 150px;
+        }
+
         .col_last_check {
             width: 100px;
             max-width: 100px;
@@ -472,6 +495,10 @@ export default {
     .col_device .v-icon {
         vertical-align: baseline;
         margin-right: 2px;
+    }
+
+    .col_tags a + a {
+        margin-left: 5px;
     }
 
     a {
