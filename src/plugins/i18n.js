@@ -216,6 +216,7 @@ const messages = {
 
         // Menu
         menuEvents: 'Bac à état',
+        logViewer: 'Historique',
 
         // Errors
         earlyErrorsTitle: 'Erreur détectée, l\'application n\'a pas pu s\'initialiser correctement !',

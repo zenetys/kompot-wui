@@ -30,6 +30,11 @@ const routes = [
         name: 'IPSLA',
         component: Graph,
     },
+    {
+        path: '/history',
+        name: 'Historique',
+        component: LogViewer,
+    },
 ];
 
 const router = new VueRouter({
