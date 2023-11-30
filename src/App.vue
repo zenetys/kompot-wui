@@ -8,7 +8,10 @@
             dense
             clipped-left
         >
-            <v-app-bar-nav-icon v-if="$vuetify.breakpoint.mdAndDown" @click.stop="drawer = !drawer" />
+            <v-app-bar-nav-icon
+                v-if="!$store.data.isMonitor && $vuetify.breakpoint.mdAndDown"
+                @click.stop="drawer = !drawer"
+            />
             <v-col cols="2">
                 <v-img id="img-logo" src="kompot.png" width="30" />
             </v-col>
@@ -36,7 +39,13 @@
                 </div>
             </template>
         </v-app-bar>
-        <v-navigation-drawer v-model="drawer" class="aside-navigation" app clipped>
+        <v-navigation-drawer
+            v-model="drawer"
+            :disable-resize-watcher="$store.data.isMonitor"
+            class="aside-navigation"
+            app
+            clipped
+        >
             <v-img id="img-logo" src="" width="140" />
             <v-divider />
 
@@ -168,7 +177,7 @@ export default {
             api: '/_search',
             menuSide: [],
             group: null,
-            drawer: true,
+            drawer: undefined,
             appTitle: null,
             appVersion: import.meta.env.VITE_APP_VERSION,
             appName: import.meta.env.VITE_APP_NAME,
@@ -177,6 +186,21 @@ export default {
             axiosIsAxiosError,
             axiosError2URL,
         };
+    },
+    watch: {
+        '$route.query': {
+            immediate: true,
+            handler(cur, prev) {
+                /* Set option flags in the store until another value gets
+                 * given in query parameters, meaning flags will persit
+                 * even if the corresponding parameter gets removed from
+                 * the query string. */
+                if (!prev || cur.monitor !== undefined) {
+                    this.$store.data.isMonitor = (cur.monitor === '1');
+                    this.drawer = this.$store.data.isMonitor ? false : undefined;
+                }
+            }
+        }
     },
     mounted() {
         this.initApp();

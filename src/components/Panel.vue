@@ -1,6 +1,7 @@
 <template>
     <div>
         <FilterBar
+            v-show="!$store.data.isMonitor"
             :is-playing="playOn"
             :page-current="pageSpecs.page || 1"
             :page-count="pageSpecs.pageCount || 1"

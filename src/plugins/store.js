@@ -21,6 +21,7 @@ export const data = new Vue.observable({
             critical: undefined,
         },
     },
+    isMonitor: false,
 });
 
 export function updateServer() {
