@@ -72,7 +72,7 @@
                             :title="$t('cmdRefresh')"
                             @click="$emit('refresh')"
                         >
-                            <v-icon>mdi-table-refresh</v-icon>
+                            <v-icon>mdi-refresh</v-icon>
                         </v-btn>
                         <span
                             id="page-specs"
