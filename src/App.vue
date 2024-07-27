@@ -26,7 +26,7 @@
 
             <template v-if="$vuetify.breakpoint.smAndDown">
                 <div class="text-center ml-1">
-                    <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
+                    <v-menu :nudge-width="200" offset-x>
                         <template #activator="{ on, attrs }">
                             <v-btn color="blue-grey lighten-1" dark v-bind="attrs" fab x-small text v-on="on">
                                 <v-icon>mdi-filter</v-icon>
