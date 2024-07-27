@@ -1,7 +1,6 @@
 <template>
     <div>
         <FilterBar
-            v-if="!$vuetify.breakpoint.smAndDown"
             :is-playing="playOn"
             :page-current="pageSpecs.page || 1"
             :page-count="pageSpecs.pageCount || 1"
