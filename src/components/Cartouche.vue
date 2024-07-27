@@ -12,11 +12,11 @@
             id="khost_unreachable" :title="$t('hostUnreachable')"
             small label class="mr-1 elevation-2" color="orange accent-3"
         >{{ $store.data.counters.hosts.unreachable }}</v-chip>
-        <span v-if="!$vuetify.breakpoint.smAndDown">|</span>
+        <span v-if="!$vuetify.breakpoint.smAndDown" class="mr-1">|</span>
         <span v-else><v-divider class="mt-2 mb-2" /></span>
         <v-chip
             id="ksvc_ok" :title="$t('serviceOk')"
-            small label class="mr-1 ml-1 elevation-2" color="green lighten-2"
+            small label class="mr-1 elevation-2" color="green lighten-2"
         >{{ ($store.data.counters.services.ok + $store.data.counters.services.pending) || '' }}</v-chip>
         <v-chip
             id="ksvc_warning" :title="$t('serviceWarning')"
