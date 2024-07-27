@@ -1,5 +1,3 @@
-<!-- FIXME: rewrite, remove Vuex -->
-
 <template>
     <div>
         <v-chip
