@@ -11,12 +11,6 @@
 <script>
 export default {
     name: 'Drawio',
-    props: {
-        url: {
-            type: String,
-            required: true,
-        },
-    },
     methods: {
         getDrawUrl() {
             return this.$route.fullPath.split('/drawio/')[1];
