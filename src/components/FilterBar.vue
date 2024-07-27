@@ -45,15 +45,19 @@
                             clearable
                         >
                             <!-- Help icon -->
-                            <template slot="append-outer">
+                            <template
+                                slot="append-outer"
+                                v-if="!$vuetify.breakpoint.smAndDown"
+                            >
                                 <v-icon class="mr-1" :title="$t('helpFilterQueryFormat')">
                                     mdi-help-circle-outline
                                 </v-icon>
                             </template>
                         </v-text-field>
                     </v-col>
-                    <v-col class="text-right">
+                    <v-col class="text-right" md="4" sm="2">
                         <v-btn
+                            v-if="!$vuetify.breakpoint.smAndDown"
                             outlined
                             :ripple="false"
                             class="z-icon-btn mr-2"
@@ -66,6 +70,7 @@
                             </v-icon>
                         </v-btn>
                         <v-btn
+                            v-if="!$vuetify.breakpoint.smAndDown"
                             outlined
                             :ripple="false"
                             class="z-icon-btn mr-6"
@@ -75,6 +80,7 @@
                             <v-icon>mdi-refresh</v-icon>
                         </v-btn>
                         <span
+                            v-if="!$vuetify.breakpoint.smAndDown"
                             id="page-specs"
                             class="ml-2 mr-3 d-inline-block"
                             :class="totalRows > 0 ? '' : 'visibility-hidden'"
@@ -241,7 +247,6 @@ export default {
     position: relative;
     top: 1px;
     font-size: 0.7rem;
-    min-width: 126px;
 }
 .visibility-hidden {
     visibility: hidden;
