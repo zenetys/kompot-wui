@@ -22,6 +22,7 @@ export const data = new Vue.observable({
         },
     },
     isMonitor: false,
+    isAnim: true,
 });
 
 export function updateServer() {

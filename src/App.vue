@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <v-app :class="$store.data.isAnim ? '' : 'z-no-anim'">
         <v-app-bar
             id="navbar"
             app
@@ -199,6 +199,9 @@ export default {
                     this.$store.data.isMonitor = (cur.monitor === '1');
                     this.drawer = this.$store.data.isMonitor ? false : undefined;
                 }
+                if (!prev || cur.anim !== undefined) {
+                    this.$store.data.isAnim = (cur.anim !== '0');
+                }
             }
         }
     },
@@ -281,5 +284,16 @@ a:link {
     cursor: pointer;
     z-index: 99;
     background-color: white;
+}
+
+.z-no-anim * {
+    animation: none !important;
+    transition: none !important;
+}
+.z-no-anim .v-dialog {
+    box-shadow: none !important;
+}
+.z-no-anim .v-tooltip__content {
+    transform: none !important;
 }
 </style>
