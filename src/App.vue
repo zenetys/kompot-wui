@@ -103,14 +103,6 @@
             </v-list>
             <div class="restart-option">
                 <v-list dense>
-                    <v-list-item @click="reloadServer()">
-                        <v-list-item-icon class="side-menu-icon">
-                            <v-icon class="menu-icon"> mdi-restart </v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title class="side-menu-title">
-                            <span style="font-size: large">Recharger</span>
-                        </v-list-item-title>
-                    </v-list-item>
                     <v-list-item>
                         <v-list-item-icon class="side-menu-icon" />
                         <v-list-item-title>
@@ -233,26 +225,6 @@ export default {
                     });
                 }
             });
-        },
-        reloadServer() {
-            /*
-            axios({
-                url: './reload',
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                responseType: 'json',
-            }).then((response) => {
-                console.log(response);
-                setTimeout(() => {
-                    location.reload();
-                }, 5000);
-            }).catch((error) => {
-                console.log(error);
-            });
-            */
-            this.$router.go();
         },
         getDataSources() {
             this.menuSide.forEach((element1) => {
