@@ -247,7 +247,7 @@ export default {
     watch: {
         filters: {
             handler(cur, prev) {
-                this.handleStateChange( cur !== prev);
+                this.handleStateChange(cur !== prev);
             }
         },
         normalizedData: {
