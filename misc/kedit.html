@@ -2,180 +2,180 @@
     <head>
         <link rel="icon" href="./favicon.ico" />
         <style type="text/css">
-iframe {
-    border: 0;
-    background-color: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-}
+            iframe {
+                border: 0;
+                background-color: #fff;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100%;
+            }
         </style>
         <script type="text/javascript">
-const APP_NAME = 'kedit';
-const LOAD_URL = './load';
-const SAVE_URL = './save';
-const TARGET_ORIGIN = window.location.origin;
-const SAVE_DONE_DURATION_MS = 1000;
+            const APP_NAME = 'kedit';
+            const LOAD_URL = './load';
+            const SAVE_URL = './save';
+            const TARGET_ORIGIN = window.location.origin;
+            const SAVE_DONE_DURATION_MS = 1000;
 
-var drawioUrl = './?embed=1&proto=json&spin=1&noExitBtn=1';
-var drawioReady = false;
-var drawioIframe = null;
-var diagramLoaded = null;
-var diagramLoading = null;
-var statusTimer = null;
+            var drawioUrl = './?embed=1&proto=json&spin=1&noExitBtn=1';
+            var drawioReady = false;
+            var drawioIframe = null;
+            var diagramLoaded = null;
+            var diagramLoading = null;
+            var statusTimer = null;
 
-function kinfo(...args) { console.log('[kdrawio]', ...args); }
-function kerr(...args) { console.log('[kdrawio]', ...args); }
+            function kinfo(...args) { console.log('[kdrawio]', ...args); }
+            function kerr(...args) { console.log('[kdrawio]', ...args); }
 
-function createDrawioIframe() {
-    drawioIframe = document.createElement('iframe');
-    drawioIframe.setAttribute('frameborder', '0');
-    drawioIframe.setAttribute('src', drawioUrl);
+            function createDrawioIframe() {
+                drawioIframe = document.createElement('iframe');
+                drawioIframe.setAttribute('frameborder', '0');
+                drawioIframe.setAttribute('src', drawioUrl);
 
-    var body = document.getElementById('drawio-embed-body');
-    if (body) {
-        kinfo('createDrawioIframe: Drawio iframe attached to body');
-        body.appendChild(drawioIframe);
-    }
-    else
-        kerr('createDrawioIframe: Page body not found, cannot attach iframe');
-}
+                var body = document.getElementById('drawio-embed-body');
+                if (body) {
+                    kinfo('createDrawioIframe: Drawio iframe attached to body');
+                    body.appendChild(drawioIframe);
+                }
+                else
+                    kerr('createDrawioIframe: Page body not found, cannot attach iframe');
+            }
 
-function sendToDrawio(data, onError) {
-    kinfo('sendToDrawio: Sending data:', data);
-    try {
-        if (drawioIframe === null)
-            throw new Error('Wrong state, drawioIframe is null, cannot send message');
-        data = JSON.stringify(data);
-        drawioIframe.contentWindow.postMessage(data, TARGET_ORIGIN);
-    }
-    catch(e) {
-        kerr('sendToDrawio: ' + e.toString());
-        if (onError)
-            onError(e);
-    }
-}
+            function sendToDrawio(data, onError) {
+                kinfo('sendToDrawio: Sending data:', data);
+                try {
+                    if (drawioIframe === null)
+                        throw new Error('Wrong state, drawioIframe is null, cannot send message');
+                    data = JSON.stringify(data);
+                    drawioIframe.contentWindow.postMessage(data, TARGET_ORIGIN);
+                }
+                catch(e) {
+                    kerr('sendToDrawio: ' + e.toString());
+                    if (onError)
+                        onError(e);
+                }
+            }
 
-async function load() {
-    if (!drawioReady) {
-        kinfo('load: Draw.io not ready');
-        return;
-    }
-    if (diagramLoading !== null) {
-        kinfo('load: Diagram ' + diagramLoading + ' already loading');
-        return;
-    }
-    if (window.location.hash.length < 2) {
-        kinfo('load: Diagram to load must be passed as URL hash');
-        return;
-    }
+            async function load() {
+                if (!drawioReady) {
+                    kinfo('load: Draw.io not ready');
+                    return;
+                }
+                if (diagramLoading !== null) {
+                    kinfo('load: Diagram ' + diagramLoading + ' already loading');
+                    return;
+                }
+                if (window.location.hash.length < 2) {
+                    kinfo('load: Diagram to load must be passed as URL hash');
+                    return;
+                }
 
-    diagramLoaded = null;
-    diagramLoading = window.location.hash.substring(1);
-    updateDocumentTitle();
-    kinfo('load: Loading diagram ' + diagramLoading);
+                diagramLoaded = null;
+                diagramLoading = window.location.hash.substring(1);
+                updateDocumentTitle();
+                kinfo('load: Loading diagram ' + diagramLoading);
 
-    var xmlData = null;
+                var xmlData = null;
 
-    try {
-        let httpResponse = await fetch(LOAD_URL + '/' + diagramLoading);
-        if (httpResponse.ok)
-            xmlData = await httpResponse.text();
-        else if (httpResponse.status == 404)
-            xmlData = '';
-        else
-            throw new Error('HTTP status ' + r.status + ' ' + r.statusText);
-    }
-    catch (e) {
-        kerr('load: Load failed: ' + e.toString());
-        diagramLoading = null;
-        return;
-    }
+                try {
+                    let httpResponse = await fetch(LOAD_URL + '/' + diagramLoading);
+                    if (httpResponse.ok)
+                        xmlData = await httpResponse.text();
+                    else if (httpResponse.status == 404)
+                        xmlData = '';
+                    else
+                        throw new Error('HTTP status ' + r.status + ' ' + r.statusText);
+                }
+                catch (e) {
+                    kerr('load: Load failed: ' + e.toString());
+                    diagramLoading = null;
+                    return;
+                }
 
-    sendToDrawio({ action: 'load', autosave: 1, xml: xmlData, title: diagramLoading });
-}
+                sendToDrawio({ action: 'load', autosave: 1, xml: xmlData, title: diagramLoading });
+            }
 
-function onDrawioMessage(ev) {
-    if (ev.source !== drawioIframe.contentWindow)
-        return;
+            function onDrawioMessage(ev) {
+                if (ev.source !== drawioIframe.contentWindow)
+                    return;
 
-    kinfo('onDrawioMessage: Received event:', ev);
+                kinfo('onDrawioMessage: Received event:', ev);
 
-    try { var data = JSON.parse(ev.data); }
-    catch (e) {
-        kerr('onDrawioMessage: Failed to parse message: ' + e.toString());
-        return;
-    }
+                try { var data = JSON.parse(ev.data); }
+                catch (e) {
+                    kerr('onDrawioMessage: Failed to parse message: ' + e.toString());
+                    return;
+                }
 
-    if (typeof data.event !== 'string') {
-        kerr('onDrawioMessage: Invalid event field in drawio message');
-        return;
-    }
+                if (typeof data.event !== 'string') {
+                    kerr('onDrawioMessage: Invalid event field in drawio message');
+                    return;
+                }
 
-    var fn = window['onDrawioMessage__' + data.event];
-    if (typeof fn === 'function')
-        fn(ev, data);
-}
+                var fn = window['onDrawioMessage__' + data.event];
+                if (typeof fn === 'function')
+                    fn(ev, data);
+            }
 
-function onDrawioMessage__init(ev, data) {
-    drawioReady = true;
-    load();
-}
+            function onDrawioMessage__init(ev, data) {
+                drawioReady = true;
+                load();
+            }
 
-function onDrawioMessage__load(ev, data) {
-    diagramLoaded = diagramLoading;
-    diagramLoading = null;
-    updateDocumentTitle(diagramLoaded);
-}
+            function onDrawioMessage__load(ev, data) {
+                diagramLoaded = diagramLoading;
+                diagramLoading = null;
+                updateDocumentTitle(diagramLoaded);
+            }
 
-function onDrawioMessage__save(ev, data) {
-    if (diagramLoaded === null) {
-        kinfo('onDrawioMessage/save: BUG: Wrong state, diagramLoaded is null')
-        return;
-    }
+            function onDrawioMessage__save(ev, data) {
+                if (diagramLoaded === null) {
+                    kinfo('onDrawioMessage/save: BUG: Wrong state, diagramLoaded is null')
+                    return;
+                }
 
-    clearTimeout(statusTimer);
-    sendToDrawio({ action: 'status', messageKey: 'saving', modified: false });
+                clearTimeout(statusTimer);
+                sendToDrawio({ action: 'status', messageKey: 'saving', modified: false });
 
-    fetch(SAVE_URL + '/' + diagramLoaded, { method: 'PUT', body: data.xml })
-        .then((r) => {
-            if (!r.ok)
-                return Promise.reject(r.status + ' ' + r.statusText)
-            sendToDrawio({ action: 'status', messageKey: 'allChangesSaved' });
-            statusTimer = setTimeout(() => sendToDrawio({ action: 'status', message: '' }), SAVE_DONE_DURATION_MS);
-            return r;
-        })
-        .catch((e) => {
-            kerr('Save failed: ' + e.toString());
-            sendToDrawio({ action: 'status', messageKey: 'errorSavingFile', modified: true });
-        })
-}
+                fetch(SAVE_URL + '/' + diagramLoaded, { method: 'PUT', body: data.xml })
+                    .then((r) => {
+                        if (!r.ok)
+                            return Promise.reject(r.status + ' ' + r.statusText)
+                        sendToDrawio({ action: 'status', messageKey: 'allChangesSaved' });
+                        statusTimer = setTimeout(() => sendToDrawio({ action: 'status', message: '' }), SAVE_DONE_DURATION_MS);
+                        return r;
+                    })
+                    .catch((e) => {
+                        kerr('Save failed: ' + e.toString());
+                        sendToDrawio({ action: 'status', messageKey: 'errorSavingFile', modified: true });
+                    })
+            }
 
-function onDrawioMessage__autosave(ev, data) {
-    return onDrawioMessage__save(ev, data);
-}
+            function onDrawioMessage__autosave(ev, data) {
+                return onDrawioMessage__save(ev, data);
+            }
 
-function onError(err) {
-    kerr('onError:', err);
-    if (drawioIframe) {
-        let toDrawio = { action: 'dialog', title: 'Error', message: err.message ?? err.toString() };
-        sendToDrawio(toDrawio);
-    }
-}
+            function onError(err) {
+                kerr('onError:', err);
+                if (drawioIframe) {
+                    let toDrawio = { action: 'dialog', title: 'Error', message: err.message ?? err.toString() };
+                    sendToDrawio(toDrawio);
+                }
+            }
 
-function updateDocumentTitle(value) {
-    document.title = '[' + APP_NAME + '] ' + (value ?? '');
-}
+            function updateDocumentTitle(value) {
+                document.title = '[' + APP_NAME + '] ' + (value ?? '');
+            }
 
-updateDocumentTitle();
-window.addEventListener('error', onError);
-window.addEventListener('message', onDrawioMessage);
-window.addEventListener('hashchange', load);
-document.addEventListener('DOMContentLoaded', createDrawioIframe);
+            updateDocumentTitle();
+            window.addEventListener('error', onError);
+            window.addEventListener('message', onDrawioMessage);
+            window.addEventListener('hashchange', load);
+            document.addEventListener('DOMContentLoaded', createDrawioIframe);
         </script>
     </head>
     <body id="drawio-embed-body">
