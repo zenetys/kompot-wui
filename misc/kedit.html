@@ -27,6 +27,7 @@
             var diagramLoaded = null;
             var diagramLoading = null;
             var statusTimer = null;
+            var saveTimer = null;
 
             function kinfo(...args) { console.log('[kdrawio]', ...args); }
             function kerr(...args) { console.log('[kdrawio]', ...args); }
@@ -139,20 +140,24 @@
                 }
 
                 clearTimeout(statusTimer);
-                sendToDrawio({ action: 'status', messageKey: 'saving', modified: false });
+                clearTimeout(saveTimer);
 
-                fetch(SAVE_URL + '/' + diagramLoaded, { method: 'PUT', body: data.xml })
-                    .then((r) => {
-                        if (!r.ok)
-                            return Promise.reject(r.status + ' ' + r.statusText)
-                        sendToDrawio({ action: 'status', messageKey: 'allChangesSaved' });
-                        statusTimer = setTimeout(() => sendToDrawio({ action: 'status', message: '' }), SAVE_DONE_DURATION_MS);
-                        return r;
-                    })
-                    .catch((e) => {
-                        kerr('Save failed: ' + e.toString());
-                        sendToDrawio({ action: 'status', messageKey: 'errorSavingFile', modified: true });
-                    })
+                saveTimer = setTimeout(() => {
+                    sendToDrawio({ action: 'status', messageKey: 'saving', modified: false });
+
+                    fetch(SAVE_URL + '/' + diagramLoaded, { method: 'PUT', body: data.xml })
+                        .then((r) => {
+                            if (!r.ok)
+                                return Promise.reject(r.status + ' ' + r.statusText)
+                            sendToDrawio({ action: 'status', messageKey: 'allChangesSaved' });
+                            statusTimer = setTimeout(() => sendToDrawio({ action: 'status', message: '' }), SAVE_DONE_DURATION_MS);
+                            return r;
+                        })
+                        .catch((e) => {
+                            kerr('Save failed: ' + e.toString());
+                            sendToDrawio({ action: 'status', messageKey: 'errorSavingFile', modified: true });
+                        })
+                }, 5000);
             }
 
             function onDrawioMessage__autosave(ev, data) {
