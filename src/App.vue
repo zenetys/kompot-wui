@@ -101,7 +101,7 @@
                     </v-list-group>
                 </div>
             </v-list>
-            <div class="restart-option">
+            <div class="z-bottom">
                 <v-list dense>
                     <v-list-item>
                         <v-list-item-icon class="side-menu-icon" />
@@ -247,8 +247,7 @@ a:link {
     text-decoration: none;
 }
 
-// restart menu option on the bottom
-.restart-option {
+.z-bottom {
     position: absolute;
     bottom: 0;
     width: 99%;
