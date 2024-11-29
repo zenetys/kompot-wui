@@ -27,7 +27,7 @@ const messages = {
         site: 'Site',
         sla: 'SLA',
         state: 'State',
-        stateFlag: 'Etat',
+        stateFlag: 'State',
         stateType: 'State Type',
         tags: 'Tags',
         track: 'Track',
@@ -205,7 +205,7 @@ const messages = {
             known: '+ Connu',
             recent: '+ Récent',
         },
-        helpFilterQueryFormat: 'Saisissez dans ce champ votre requette. \n' + "Ex: 'serveur42'",
+        helpFilterQueryFormat: 'Saisissez dans ce champ votre requête. \n' + "Ex: 'serveur42'",
         saveFilter: 'Enregistrer ce filtre',
 
         // Columns icons
