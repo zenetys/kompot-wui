@@ -67,6 +67,19 @@
                             <v-icon>{{ link.icon }}</v-icon>
                         </v-list-item-action>
                         <v-list-item-title>{{ link.name }}</v-list-item-title>
+                        <v-list-item-action>
+                            <a
+                                v-if="link.edit_icon"
+                                :href="link.editUrl"
+                                :style="{ color: hovered ? 'gray' : 'lightgray' }"
+                                target="_blank"
+                                @click.stop
+                                @mouseenter="hovered = true"
+                                @mouseleave="hovered = false"
+                            >
+                                <v-icon>{{ link.edit_icon }}</v-icon>
+                            </a>
+                        </v-list-item-action>
                     </v-list-item>
 
                     <v-list-group
@@ -171,6 +184,7 @@ export default {
             group: null,
             drawer: undefined,
             appTitle: null,
+            hovered: false,
             appVersion: import.meta.env.VITE_APP_VERSION,
             appName: import.meta.env.VITE_APP_NAME,
 
@@ -215,6 +229,9 @@ export default {
             this.menuSide.forEach((entry) => {
                 if (!entry.name && entry.i18nName)
                     entry.name = i18n.t(entry.i18nName);
+                if (entry.type === 'drawio')
+                    entry.url = '/drawio/' + this.$kConfig.drawioViewUrl.replace('%schema%', encodeURIComponent(entry.schema));
+                    entry.editUrl = this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema));
             });
 
             // Set the IPSLA submenu from config.json
