@@ -66,7 +66,9 @@
                         <v-list-item-action>
                             <v-icon>{{ link.icon }}</v-icon>
                         </v-list-item-action>
-                        <v-list-item-title>{{ link.name }}</v-list-item-title>
+                        <v-list-item-title class="z-item-title">
+                            {{ link.name }}
+                        </v-list-item-title>
                         <v-list-item-action>
                             <a
                                 v-if="link.edit_icon"
@@ -263,6 +265,10 @@ export default {
 <style lang="scss">
 a:link {
     text-decoration: none;
+}
+
+.z-item-title {
+    margin-left: -15px;
 }
 
 .z-bottom {
