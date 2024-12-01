@@ -69,15 +69,12 @@
                         <v-list-item-title class="z-item-title">
                             {{ link.name }}
                         </v-list-item-title>
-                        <v-list-item-action>
+                        <v-list-item-action class="z-item-action">
                             <a
                                 v-if="link.edit_icon"
                                 :href="link.editUrl"
-                                :style="{ color: hovered ? 'gray' : 'lightgray' }"
                                 target="_blank"
                                 @click.stop
-                                @mouseenter="hovered = true"
-                                @mouseleave="hovered = false"
                             >
                                 <v-icon>{{ link.edit_icon }}</v-icon>
                             </a>
@@ -186,7 +183,6 @@ export default {
             group: null,
             drawer: undefined,
             appTitle: null,
-            hovered: false,
             appVersion: import.meta.env.VITE_APP_VERSION,
             appName: import.meta.env.VITE_APP_NAME,
 
@@ -269,6 +265,15 @@ a:link {
 
 .z-item-title {
     margin-left: -15px;
+}
+
+.v-application .z-item-action {
+    .v-icon {
+        color: lightgray;
+    }
+    &:hover .v-icon {
+        color: gray;
+    }
 }
 
 .z-bottom {
