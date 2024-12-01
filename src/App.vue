@@ -72,17 +72,18 @@
                             {{ link.name }}
                         </v-list-item-title>
                         <v-list-item-action class="z-item-action">
-                            <a
-                                v-if="link.edit_icon"
-                                :href="link.editHref"
-                                target="_blank"
-                                @click.stop
+                            <z-link
+                                v-if="link.actions"
+                                v-for="(action, a) in link.actions"
+                                :key="`${i}.${a}`"
+                                :to="action.to"
+                                :href="action.href"
+                                :target="action.target"
                             >
-                                <v-icon>{{ link.edit_icon }}</v-icon>
-                            </a>
+                                <v-icon small>{{ action.icon }}</v-icon>
+                            </z-link>
                         </v-list-item-action>
                     </v-list-item>
-
                     <v-list-group
                         v-else
                         :key="link.name"
@@ -161,6 +162,7 @@
 import vuetify from '../src/plugins/vuetify';
 import Clock from '../src/components/Clock.vue';
 import Cartouche from './components/Cartouche.vue';
+import ZLink from './components/ZLink.vue';
 import i18n from '@/plugins/i18n';
 import { axiosIsAxiosError, axiosError2URL } from '@/plugins/utils';
 
@@ -171,6 +173,7 @@ export default {
     components: {
         Clock,
         Cartouche,
+        ZLink,
     },
     props: {
         earlyErrors: {
@@ -252,9 +255,16 @@ export default {
             this.menuSide.forEach((entry) => {
                 if (!entry.name && entry.i18nName)
                     entry.name = i18n.t(entry.i18nName);
+
                 if (entry.type === 'drawio') {
-                    entry.to = '/drawio/view/' + encodeURIComponent(entry.schema);
-                    entry.editHref = this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema));
+                    // assume entry.schema is set
+                    entry.icon ||= 'mdi-graph-outline';
+                    entry.to ||= '/drawio/view/' + encodeURIComponent(entry.schema);
+                    entry.actions ??= [{
+                        href: this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema)),
+                        target: '_blank',
+                        icon: 'mdi-pencil',
+                    }];
                 }
             });
 
@@ -298,11 +308,12 @@ a:link {
 }
 
 .v-application .z-item-action {
+    flex-direction: row;
     .v-icon {
         color: lightgray;
-    }
-    &:hover .v-icon {
-        color: gray;
+        &:hover {
+            color: gray;
+        }
     }
 }
 
