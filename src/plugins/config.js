@@ -12,6 +12,8 @@ export const kConfig = {
     graphDeviceIndicator: 'hostcheck',
     graphPopupOptions: 'directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=453',
     perPage: 100,
+    drawioViewUrl: './drawio-app/?offline=1&lightbox=1&splash=0&toolbar=0#U%schema%',
+    drawioEditUrl: './drawio-app/kedit.html#%schema%',
     title: undefined,
     menu: [
         {

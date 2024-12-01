@@ -8,6 +8,8 @@
     "graphUrl": "./monitoring-graph?device=%device%&indicator=%indicator%",
     "graphDeviceIndicator": "hostcheck",
     "graphPopupOptions": "directories=no,menubar=no,status=no,location=yes,scrollbars=no,resizable=yes,width=900,height=453",
+    "drawioViewUrl": "./drawio-app/?offline=1&lightbox=1&splash=0&toolbar=0#U%schema%",
+    "drawioEditUrl": "./drawio-app/kedit.html#%schema%",
     "perPage": 100,
     "title": "Kompot",
     "menu": [
