@@ -229,9 +229,10 @@ export default {
             this.menuSide.forEach((entry) => {
                 if (!entry.name && entry.i18nName)
                     entry.name = i18n.t(entry.i18nName);
-                if (entry.type === 'drawio')
+                if (entry.type === 'drawio') {
                     entry.url = '/drawio/' + this.$kConfig.drawioViewUrl.replace('%schema%', encodeURIComponent(entry.schema));
                     entry.editUrl = this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema));
+                }
             });
 
             // Set the IPSLA submenu from config.json
