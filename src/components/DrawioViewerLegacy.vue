@@ -10,7 +10,7 @@
 
 <script>
 export default {
-    name: 'Drawio',
+    name: 'DrawioViewerLegacy',
     methods: {
         getDrawUrl() {
             return this.$route.fullPath.split('/drawio/')[1];

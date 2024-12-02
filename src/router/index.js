@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Panel from '@/components/Panel.vue';
-import Drawio from '@/components/DrawIo.vue';
+import DrawioViewerLegacy from '@/components/DrawioViewerLegacy.vue';
 import Graph from '@/components/Graph.vue';
 
 Vue.use(VueRouter);
@@ -19,8 +19,8 @@ const routes = [
     },
     {
         path: '/drawio/*',
-        name: 'Schéma de baie',
-        component: Drawio,
+        name: 'DrawioViewerLegacy',
+        component: DrawioViewerLegacy,
     },
     {
         path: '/graph/:site',
