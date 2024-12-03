@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import Home from '@/views/Home.vue';
 import Panel from '@/components/Panel.vue';
 import Drawio from '@/components/DrawIo.vue';
 import Graph from '@/components/Graph.vue';
@@ -11,8 +10,6 @@ Vue.use(VueRouter);
 const routes = [
     {
         path: '/',
-        name: 'Home',
-        component: Home,
         redirect: '/panel',
     },
     {
