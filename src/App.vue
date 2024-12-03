@@ -253,7 +253,7 @@ export default {
                 if (!entry.name && entry.i18nName)
                     entry.name = i18n.t(entry.i18nName);
                 if (entry.type === 'drawio') {
-                    entry.to = '/drawio/' + this.$kConfig.drawioViewUrl.replace('%schema%', encodeURIComponent(entry.schema));
+                    entry.to = '/drawio/view/' + encodeURIComponent(entry.schema);
                     entry.editHref = this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema));
                 }
             });

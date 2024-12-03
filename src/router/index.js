@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 
 import Panel from '@/components/Panel.vue';
 import DrawioViewerLegacy from '@/components/DrawioViewerLegacy.vue';
+import DrawioViewer from '@/components/DrawioViewer.vue';
 import Graph from '@/components/Graph.vue';
 
 Vue.use(VueRouter);
@@ -18,6 +19,13 @@ const routes = [
         component: Panel,
     },
     {
+        path: '/drawio/view/:schema',
+        name: 'DrawioViewer',
+        component: DrawioViewer,
+    },
+    {
+        /* Keep this route and component for now to preserve
+         * compatibility with old drawio menu items. */
         path: '/drawio/*',
         name: 'DrawioViewerLegacy',
         component: DrawioViewerLegacy,
