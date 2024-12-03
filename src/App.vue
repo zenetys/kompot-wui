@@ -16,7 +16,7 @@
                 <v-img id="img-logo" src="kompot.png" width="30" />
             </v-col>
             <v-toolbar-title :class="$vuetify.breakpoint.xs ? 'text-caption' : 'text-breakpoint-subtitle-1'">
-                {{ appTitle ? appTitle + ' - ' : '' }}{{ $route.name }}
+                {{ appTitle ? appTitle + ' - ' : '' }}{{ activeMenuItem?.name }}
             </v-toolbar-title>
             <v-spacer />
             <div v-if="!$vuetify.breakpoint.smAndDown && earlyErrors.length === 0">
@@ -50,15 +50,17 @@
             <v-divider />
 
             <v-list>
-                <div v-for="(link, i) in menuSide" :key="i">
+                <v-list-item-group :value="activeMenuItem">
                     <v-list-item
                         v-if="!link.subMenus"
+                        v-for="(link, i) in menuSide"
                         :key="i"
                         :to="link.to || link.url"
                         :href="link.href"
                         :target="link.target"
                         active-class="deep-cyan--text text--accent-4"
                         class="v-list-item"
+                        @change="activeMenuItem = link"
                         @mouseup="onMenuItemClicked"
                         @dragend="onMenuItemClicked"
                         @contextmenu="onMenuItemClicked"
@@ -111,7 +113,7 @@
                             <v-list-item-title>{{ sublink.name }}</v-list-item-title>
                         </v-list-item>
                     </v-list-group>
-                </div>
+                </v-list-item-group>
             </v-list>
             <div class="z-bottom">
                 <v-list dense>
@@ -180,6 +182,7 @@ export default {
         return {
             api: '/_search',
             menuSide: [],
+            activeMenuItem: undefined,
             group: null,
             drawer: undefined,
             appTitle: null,
