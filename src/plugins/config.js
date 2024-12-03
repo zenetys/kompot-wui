@@ -20,7 +20,6 @@ export const kConfig = {
             i18nName: 'menuEvents',
             to: '/panel',
             icon: 'mdi-table',
-            type: 'div',
         }
     ],
 };
