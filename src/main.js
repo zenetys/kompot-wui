@@ -5,8 +5,10 @@ import vuetify from './plugins/vuetify'
 import * as Config from './plugins/config';
 import * as Store from '@/plugins/store';
 import i18n from './plugins/i18n';
+import Ev from '@/plugins/evbus';
 
 Vue.prototype.$kConfig = Config.kConfig;
+Vue.prototype.$ev = Ev;
 Vue.prototype.$store = Store;
 
 (async function init() {
