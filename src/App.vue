@@ -55,7 +55,7 @@
                         v-if="!link.subMenus"
                         v-for="(link, i) in menuSide"
                         :key="i"
-                        :to="link.to || link.url"
+                        :to="link.to || /* backwards-compatibility */ link.url"
                         :href="link.href"
                         :target="link.target"
                         active-class="deep-cyan--text text--accent-4"
@@ -74,7 +74,7 @@
                         <v-list-item-action class="z-item-action">
                             <a
                                 v-if="link.edit_icon"
-                                :href="link.editUrl"
+                                :href="link.editHref"
                                 target="_blank"
                                 @click.stop
                             >
@@ -106,7 +106,7 @@
                         <v-list-item
                             v-for="sublink in link.subMenus"
                             :key="sublink.name"
-                            :to="sublink.to || sublink.url"
+                            :to="sublink.to || /* backwards-compatibility */ sublink.url"
                             :href="sublink.href"
                             :target="sublink.target"
                         >
@@ -231,8 +231,8 @@ export default {
                 if (!entry.name && entry.i18nName)
                     entry.name = i18n.t(entry.i18nName);
                 if (entry.type === 'drawio') {
-                    entry.url = '/drawio/' + this.$kConfig.drawioViewUrl.replace('%schema%', encodeURIComponent(entry.schema));
-                    entry.editUrl = this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema));
+                    entry.to = '/drawio/' + this.$kConfig.drawioViewUrl.replace('%schema%', encodeURIComponent(entry.schema));
+                    entry.editHref = this.$kConfig.drawioEditUrl.replace('%schema%', encodeURIComponent(entry.schema));
                 }
             });
 
@@ -240,7 +240,7 @@ export default {
             this.menuSide.forEach((element1) => {
                 if (element1.name == 'IPSLA') {
                     element1.subMenus.forEach((element2) => {
-                        element2.url += element2.database;
+                        element2.to += element2.database;
                     });
                 }
             });
@@ -251,7 +251,7 @@ export default {
                     this.$kConfig.databases.forEach((element2) => {
                         element1.subMenus.push({
                             name: element2,
-                            url: './graph/' + element2,
+                            to: './graph/' + element2,
                         });
                     });
                 }

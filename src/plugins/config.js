@@ -18,7 +18,7 @@ export const kConfig = {
     menu: [
         {
             i18nName: 'menuEvents',
-            url: '/panel',
+            to: '/panel',
             icon: 'mdi-table',
             type: 'div',
         }
