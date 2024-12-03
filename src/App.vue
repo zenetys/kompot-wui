@@ -215,11 +215,33 @@ export default {
     mounted() {
         this.initApp();
     },
+    destroyed() {
+        this.deinitApp();
+    },
     methods: {
         onMenuItemClicked(ev) {
             let item = ev.target.closest('.v-list-item');
             if (item)
                 item.blur();
+        },
+        /**
+         * Event handler triggered on messages received on the Kompot
+         * broadcast channel. Redispatch them to the application through
+         * our internal event bus so that any component can subscribe and
+         * listen to them.
+         */
+        onKChanMessage(ev) {
+            console.log('kChan: Event:', ev)
+            try { var data = JSON.parse(ev.data); }
+            catch (err) {
+                console.err('kChan: Decode failed', err);
+                return;
+            }
+            if (typeof data !== 'object' || typeof data.event !== 'string') {
+                console.err('kChan: Invalid event');
+                return;
+            }
+            this.$ev.$emit('kchan.' + data.event, data, ev);
         },
         initApp() {
             document.title = (this.$kConfig.title ? this.$kConfig.title + ' - ' : '') + 'Supervision';
@@ -244,6 +266,11 @@ export default {
                     });
                 }
             });
+
+            this.$kChan.addEventListener('message', this.onKChanMessage);
+        },
+        deinitApp() {
+            this.$kChan.removeEventListener('message', this.onKChanMessage);
         },
         getDataSources() {
             this.menuSide.forEach((element1) => {

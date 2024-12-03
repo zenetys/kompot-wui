@@ -7,6 +7,7 @@ import * as Store from '@/plugins/store';
 import i18n from './plugins/i18n';
 import Ev from '@/plugins/evbus';
 
+Vue.prototype.$kChan = new BroadcastChannel('kompot');
 Vue.prototype.$kConfig = Config.kConfig;
 Vue.prototype.$ev = Ev;
 Vue.prototype.$store = Store;
