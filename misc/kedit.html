@@ -157,6 +157,8 @@
                     sendToDrawio({ action: 'status', messageKey: 'saving' });
 
                     fetch(SAVE_URL + '/' + name, { method: 'PUT', body: data.xml })
+                        // consume to prevent "Fetch failed loading" on chrome
+                        .then((r) => r.text().then(() => r))
                         .then((r) => {
                             if (!r.ok)
                                 return Promise.reject(r.status + ' ' + r.statusText)
