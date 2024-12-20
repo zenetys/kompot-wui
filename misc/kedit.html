@@ -50,7 +50,7 @@
             }
 
             function sendToDrawio(data, onError) {
-                kinfo('sendToDrawio: Sending data:', data);
+                kinfo('sendToDrawio: Send data:', data);
                 try {
                     if (drawioIframe === null)
                         throw new Error('Wrong state, drawioIframe is null, cannot send message');
@@ -65,7 +65,7 @@
             }
 
             function sendToKompot(data, onError) {
-                kinfo('sendToKompot: Sending data:', data);
+                kinfo('sendToKompot: Send data:', data);
                 Object.assign(data);
                 try {
                     data = JSON.stringify(data);
